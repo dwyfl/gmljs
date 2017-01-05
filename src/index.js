@@ -1,0 +1,11 @@
+import GML from './gml';
+export {GML as default, GML as GML};
+export {default as GMLBrush}       from './nodes/brush';
+export {default as GMLDocument}    from './nodes/document';
+export {default as GMLDrawing}     from './nodes/drawing';
+export {default as GMLEnvironment} from './nodes/environment';
+export {default as GMLHeader}      from './nodes/header';
+export {default as GMLNode}        from './nodes/node';
+export {default as GMLRoot}        from './nodes/root';
+export {default as GMLStroke}      from './nodes/stroke';
+export {default as GMLTag}         from './nodes/tag';

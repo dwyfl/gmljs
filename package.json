@@ -1,0 +1,25 @@
+{
+  "name": "gmljs",
+  "version": "1.0.0",
+  "description": "Library for parsing GML documents.",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepublish": "node_modules/babel-cli/bin/babel.js src --out-dir lib",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gustav Peterz <gpeterz@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.21.0",
+    "babel-preset-es2015": "^6.18.0"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
+  "dependencies": {
+    "xmldom": "^0.1.27"
+  }
+}
