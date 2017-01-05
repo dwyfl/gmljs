@@ -23,13 +23,13 @@ export default class GMLHeader extends GMLNode {
 	getTagName() {
 		return 'header';
 	}
-	getChildren() {
-		var result = [];
+	getTagContent() {
+		var result = '';
 		if (this.client) {
-			result.push(this.client);
+			result += GMLUtil.objectToXml(this.client, 'client');
 		}
 		if (this.environment) {
-			result.push(this.environment);
+			result += this.environment.toString();
 		}
 		return result;
 	}
