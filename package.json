@@ -9,6 +9,10 @@
   },
   "author": "Gustav Peterz <gpeterz@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dwyfl/gmljs.git"
+  },
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-core": "^6.21.0",
