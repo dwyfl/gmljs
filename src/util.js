@@ -16,9 +16,9 @@ GMLUtil.getObjectProperty = function(obj, prop){
 	return o;
 };
 GMLUtil.getRealChildNodes = function(node){
-	var result = [];
-	for (var i = 0; node.childNodes && i < node.childNodes.length; ++i) {
-		if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
+	const result = [];
+	for (let i = 0; node.childNodes && i < node.childNodes.length; ++i) {
+		if (node.childNodes[i].constructor.name === 'Element') {
 			result.push(node.childNodes[i]);
 		}
 	}
@@ -39,12 +39,16 @@ GMLUtil.childNodesToObject = function(node, nodeNames){
 };
 GMLUtil.childNodeValuesToObject = function(node, nodeNames){
 	var result = {};
-	var obj = node instanceof Element ? GMLUtil.childNodesToObject(node) : node;
+	var obj = node.constructor.name === 'Element'
+		? GMLUtil.childNodesToObject(node)
+		: node;
 	for (var i in obj) {
-		if (obj[i] instanceof Element)
+		if (obj[i].constructor.name === 'Element') {
 			result[i] = obj[i].textContent;
-		else
+		}
+		else {
 			result[i] = GMLUtil.childNodeValuesToObject(obj[i]);
+		}
 	}
 	return result;
 };
