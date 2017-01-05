@@ -1,6 +1,6 @@
 {
   "name": "gmljs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library for parsing GML documents.",
   "main": "lib/index.js",
   "scripts": {
