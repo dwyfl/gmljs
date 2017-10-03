@@ -1,4 +1,3 @@
-import GMLUtil from '../util';
 import GMLNode from './node';
 import GMLTag from './tag';
 
@@ -8,7 +7,7 @@ export default class GMLRoot extends GMLNode {
 		this.tag = [];
 		this.spec = null;
 		this.supportedChildNodes = {
-			'tag': {
+			tag: {
 				required: true,
 				model: GMLTag,
 				parser: function(node){
@@ -17,11 +16,8 @@ export default class GMLRoot extends GMLNode {
 			}
 		};
 		this.supportedAttributes = {
-			'spec': {
-				default: '1.0',
-				parser: function(value){
-					this.spec = value;
-				}
+			spec: {
+				default: '1.0'
 			}
 		};
 	}

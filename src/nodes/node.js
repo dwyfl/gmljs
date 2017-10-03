@@ -1,4 +1,4 @@
-import GMLUtil from '../util';
+import { getObjectProperty, formatXmlTagStart, formatXmlTagEnd } from '../util';
 
 export default class GMLNode {
 	constructor() {
@@ -19,7 +19,7 @@ export default class GMLNode {
 	static parseChildNodes(node, context, nodeDefinitions) {
 		if (!node)
 			return;
-		// Add required check ... ?
+		// TODO: Add required check
 		// if (nodeDefinition.required && !nodeList.length)
 		// 	throw Error('Required node not found: "'+nodeDefinition.name+'".');
 		var currentNode = null;
@@ -30,15 +30,16 @@ export default class GMLNode {
 			nodeName = currentNode.nodeName.toLowerCase();
 			if (nodeDefinitions.hasOwnProperty(nodeName)) {
 				nodeDefinition = nodeDefinitions[nodeName];
-				if (nodeDefinition.hasOwnProperty('parser'))
+				if (nodeDefinition.hasOwnProperty('parser')) {
 					nodeDefinition.parser.apply(context, [currentNode]);
+				}
 			}
 		}
 	}
 	static parseAttributes(node, context, nodeDefinitions) {
 		if (!node)
 			return;
-		// Add required check ... ?
+		// TODO: Add required check
 		var nodeDefinition = null;
 		var nodeName = null;
 		var nodeValue = null;
@@ -47,8 +48,13 @@ export default class GMLNode {
 			nodeValue = node.attributes.item(i).value;
 			if (nodeDefinitions.hasOwnProperty(nodeName)) {
 				nodeDefinition = nodeDefinitions[nodeName];
-				if (nodeDefinition.hasOwnProperty('parser'))
+				if (nodeDefinition.hasOwnProperty('parser')) {
 					nodeDefinition.parser.apply(context, [nodeValue]);
+				}
+				else {
+					// By default just add to attributes object
+					context.attributes[nodeName] = nodeValue;
+				}
 			}
 		}
 	}
@@ -89,20 +95,16 @@ export default class GMLNode {
 		return this.attributes.hasOwnProperty(key) ? this.attributes[key] : null;
 	}
 	getChildPath(pathArray) {
-		return GMLUtil.getObjectProperty(this, pathArray);
+		return getObjectProperty(this, pathArray);
 	}
 	getChildren() {
 		return [];
 	}
 	toString() {
-		var result = '';
-		result += this.getTagStart();
-		result += this.getTagContent();
-		result += this.getTagEnd();
-		return result;
+		return this.getTagStart() + this.getTagContent() + this.getTagEnd();
 	}
 	getTagStart() {
-		return GMLUtil.formatXmlTagStart(this.getTagName(), this.attributes);
+		return formatXmlTagStart(this.getTagName(), this.attributes);
 	}
 	getTagContent() {
 		var result = '';
@@ -113,7 +115,7 @@ export default class GMLNode {
 		return result;
 	}
 	getTagEnd() {
-		return GMLUtil.formatXmlTagEnd(this.getTagName());
+		return formatXmlTagEnd(this.getTagName());
 	}
 	getTagName() {
 		throw new Error('GMLNode::getTagName() needs to be overridden by subclass.');

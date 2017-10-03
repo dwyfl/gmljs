@@ -36,7 +36,7 @@ export default class GMLHeader extends GMLNode {
 	initDefault() {
 		super.initDefault();
 		this.client = {
-			name: 'GMLview',
+			name: 'GML.js',
 			version: 1.0,
 			time: Math.floor(Date.now() * 0.001)
 		};
