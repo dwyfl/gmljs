@@ -4,6 +4,7 @@
   "description": "Library for parsing GML documents.",
   "main": "lib/index.js",
   "scripts": {
+    "lint": "node_modules/.bin/eslint .",
     "prepublish": "node_modules/.bin/babel src --out-dir lib",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,12 +15,16 @@
     "url": "git://github.com/dwyfl/gmljs.git"
   },
   "babel": {
-    "presets": ["env"]
+    "presets": [
+      "env"
+    ]
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-preset-env": "^1.6.0"
+    "babel-preset-env": "^1.6.0",
+    "eslint": "^4.8.0",
+    "eslint-plugin-react": "^7.4.0"
   },
   "dependencies": {
     "xmldom": "^0.1.27"

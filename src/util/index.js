@@ -14,11 +14,11 @@ export const getObjectProperty = (obj, prop) => {
     }
   }
   return o;
-}
+};
 
 export const hasOwnProperties = (obj, props) => {
   return props.every(obj.hasOwnProperty);
-}
+};
 
 export const filterProps = (obj, props) => {
   const result = {};
@@ -28,7 +28,7 @@ export const filterProps = (obj, props) => {
     }
   });
   return result;
-}
+};
 
 export const convertPropsToFloats = (obj, props) => {
   (props === undefined ? Object.keys(obj) : props).forEach(prop => {
@@ -38,7 +38,7 @@ export const convertPropsToFloats = (obj, props) => {
     }
   });
   return obj;
-}
+};
 
 // NODES
 
@@ -52,13 +52,13 @@ const COLOR_PROPS_ALL = ['r', 'g', 'b', 'a'];
 
 export const isElement = node => {
   return node.constructor.name === 'Element';
-}
+};
 
 export const getRealChildNodes = node => {
   return Array.isArray(node.childNodes)
     ? node.childNodes.filter(isElement)
     : [];
-}
+};
 
 export const childNodesToObject = (node, nodeNames) => {
   const result = {};
@@ -73,20 +73,20 @@ export const childNodesToObject = (node, nodeNames) => {
     });
   }
   return result;
-}
+};
 
 export const childNodeValuesToObject = node => {
   const obj = isElement(node)
-  ? childNodesToObject(node)
-  : node;
+    ? childNodesToObject(node)
+    : node;
   const result = {};
   Object.keys(obj).forEach(key => {
-    result[i] = isElement(obj[i])
-      ? obj[i].textContent
-      : childNodeValuesToObject(obj[i]);
+    result[key] = isElement(obj[key])
+      ? obj[key].textContent
+      : childNodeValuesToObject(obj[key]);
   });
   return result;
-}
+};
 
 export const getFloatsFromNode = (node, props, defaults) => {
   return convertPropsToFloats(
@@ -94,7 +94,7 @@ export const getFloatsFromNode = (node, props, defaults) => {
       defaults === undefined ? {} : defaults,
       filterProps(childNodeValuesToObject(node), props))
   );
-}
+};
 
 export const getColorFromNode = node => {
   const values = childNodeValuesToObject(node);
@@ -102,7 +102,7 @@ export const getColorFromNode = node => {
     throw Error('Node is not a valid Color.');
   }
   return getFloatsFromNode(values, COLOR_PROPS_ALL, COLOR_DEFAULT);
-}
+};
 
 export const getPointFromNode = node => {
   const values = childNodeValuesToObject(node);
@@ -123,7 +123,7 @@ export const getPointFromNode = node => {
     result.dir = getFloatsFromNode(values.dir, ['x', 'y', 'z'], POINT_DEFAULT);
   }
   return result;
-}
+};
 
 // XML STRINGS
 
@@ -134,16 +134,16 @@ export const formatXmlTagStart = (nodeName, attributes) => {
       attrStrings.push(`${key}="${attributes[key]}"`);
     });
   }
-  return `<${nodeName}${attrStrings.length ? ' '+attrStrings.join(' ') : ''}>`
-}
+  return `<${nodeName}${attrStrings.length ? ' '+attrStrings.join(' ') : ''}>`;
+};
 
 export const formatXmlTagEnd = nodeName => {
   return '</'+nodeName+'>';
-}
+};
 
 export const objectToXml = (obj, objName) => {
   var result = formatXmlTagStart(objName);
-  Object.keys(attributes).forEach(key => {
+  Object.keys(obj).forEach(key => {
     if (obj[key] !== null && typeof(obj[key]) === 'object') {
       result += objectToXml(obj[key], key);
     } else {
