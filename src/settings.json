@@ -1,0 +1,6 @@
+{
+  "assert": {
+    "throw_errors": true,
+    "print_errors": true
+  }
+}
