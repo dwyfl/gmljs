@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { formatXmlTagStart, formatXmlTagEnd } from '../util';
+import { formatXmlTagStart, formatXmlTagEnd } from '../util/xml';
 
 export default class GMLNode {
   constructor() {
@@ -17,10 +17,10 @@ export default class GMLNode {
     throw new Error('GMLNode::getTagName() needs to be overridden by subclass.');
   }
   static getNodeDefinition(options = {}) {
-    return Object.assign(options, {
+    return Object.assign({
       name: this.getTagName(),
       model: this,
-    });
+    }, options);
   }
   static create(node) {
     var obj = new this();
@@ -56,8 +56,21 @@ export default class GMLNode {
         this.attributes[a.name] = a.default;
       });
   }
+  getChild(child, defaultValue = null) {
+    return this.children[child] && this.children[child].length
+      ? this.children[child][0]
+      : defaultValue;
+  }
   getChildPath(path, defaultValue = null) {
     return _.get(this.children, path, defaultValue);
+  }
+  toObject() {
+    return Object.keys(this.children).reduce((obj, tag) => {
+      return {
+        ...obj,
+        [tag]: this.children[tag].map(item => item.toObject()),
+      };
+    }, {});
   }
   toString() {
     return this.getTagStart() + this.getTagContent() + this.getTagEnd();
@@ -66,7 +79,9 @@ export default class GMLNode {
     return formatXmlTagStart(this.getTagName(), this.attributes);
   }
   getTagContent() {
-    return this.children.map(item => item.toString()).join('');
+    return Object.keys(this.children).map(
+      tag => this.children[tag].map(item => item.toString()).join('')
+    ).join('');
   }
   getTagEnd() {
     return formatXmlTagEnd(this.getTagName());
@@ -109,7 +124,7 @@ export default class GMLNode {
       .filter(a => !!a.required)
       .forEach(a => {
         if (this.attributes[a.name] === undefined) {
-          throw new Error(`Invalid GML! A "${this.getTagName()}" node requires a "${nn.name}" attribute.`);
+          throw new Error(`Invalid GML! A "${this.getTagName()}" node requires a "${a.name}" attribute.`);
         }
       });
   }

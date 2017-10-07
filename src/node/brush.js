@@ -1,82 +1,76 @@
-import GMLUtil from '../util';
 import GMLNode from './node';
+import GMLColor from './color';
+import GMLPoint from './point';
+import { GMLLeafNode, GMLFloatNode, GMLIntNode } from './leafnode';
 
-export default class GMLBrush extends GMLNode {
-  constructor() {
-    super();
-    this.supportedChildNodes = {
-      'mode': {
-        parser: function(node){ this.mode = node.textContent; }
-      },
-      'uniquestyleid': {
-        parser: function(node){ this.uniqueStyleID = node.textContent; }
-      },
-      'spec': {
-        parser: function(node){ this.spec = node.textContent; }
-      },
-      'width': {
-        parser: function(node){ this.width = parseFloat(node.textContent); }
-      },
-      'speedtowidthratio': {
-        parser: function(node){ this.speedToWidthRatio = parseFloat(node.textContent); }
-      },
-      'dripamnt': {
-        parser: function(node){ this.dripAmnt = parseFloat(node.textContent); }
-      },
-      'dripspeed': {
-        parser: function(node){ this.dripSpeed = parseFloat(node.textContent); }
-      },
-      'layerabsolute': {
-        parser: function(node){ this.layerAbsolute = node.textContent; }
-      },
-      'layerrelative': {
-        parser: function(node){ this.layerRelative = node.textContent; }
-      },
-      'color': {
-        parser: function(node){ this.color = GMLUtil.getColorFromNode(node); }
-      },
-      'dripvecrelativetoup': {
-        parser: function(node){ this.dripVecRelativeToUp = GMLUtil.getPointFromNode(node); }
-      },
-    };
-  }
-  getTagName() {
-    return 'brush';
-  }
-  getChildrenAttributeNames() {
+export default class GMLDocument extends GMLNode {
+  static getSupportedChildNodes() {
     return [
-      'mode',
-      'uniqueStyleID',
-      'spec',
-      'width',
-      'speedToWidthRatio',
-      'dripAmnt',
-      'dripSpeed',
-      'layerAbsolute',
-      'layerRelative',
-      'color',
-      'dripVecRelativeToUp'
+      GMLColor.getNodeDefinition(),
+      GMLMode.getNodeDefinition(),
+      GMLUniqueStyleID.getNodeDefinition(),
+      GMLSpec.getNodeDefinition(),
+      GMLWidth.getNodeDefinition(),
+      GMLSpeedToWidthRatio.getNodeDefinition(),
+      GMLDripAmnt.getNodeDefinition(),
+      GMLDripSpeed.getNodeDefinition(),
+      GMLLayerAbsolute.getNodeDefinition(),
+      GMLLayerRelative.getNodeDefinition(),
+      GMLDripVecRelativeToUp.getNodeDefinition(),
     ];
   }
-  getChildren() {
-    var result = [];
-    var children = this.toObject();
-    for (var i in children) {
-      result.push(children[i]);
-    }
-    return result;
+  static getTagName() {
+    return 'brush';
   }
-  toObject() {
-    var obj = {};
-    var childrenAttributes = this.getChildrenAttributeNames();
-    for (var i = 0; i < childrenAttributes.length; ++i){
-      if (this.hasOwnProperty(childrenAttributes[i])){
-        obj[childrenAttributes[i].toLowerCase()] = this[childrenAttributes[i]];
-      }
-    }
-    return obj;
+}
+
+class GMLMode extends GMLLeafNode {
+  static getTagName() {
+    return 'mode';
   }
-  toString() {
-    return GMLUtil.objectToXml(this.toObject(), this.getTagName());
+}
+class GMLUniqueStyleID extends GMLLeafNode {
+  static getTagName() {
+    return 'uniquestyleid';
+  }
+}
+class GMLSpec extends GMLLeafNode {
+  static getTagName() {
+    return 'spec';
+  }
+}
+class GMLWidth extends GMLFloatNode {
+  static getTagName() {
+    return 'width';
+  }
+}
+class GMLSpeedToWidthRatio extends GMLFloatNode {
+  static getTagName() {
+    return 'speedtowidthratio';
+  }
+}
+class GMLDripAmnt extends GMLFloatNode {
+  static getTagName() {
+    return 'dripamnt';
+  }
+}
+class GMLDripSpeed extends GMLFloatNode {
+  static getTagName() {
+    return 'dripspeed';
+  }
+}
+class GMLLayerAbsolute extends GMLIntNode {
+  static getTagName() {
+    return 'layerabsolute';
+  }
+}
+class GMLLayerRelative extends GMLIntNode {
+  static getTagName() {
+    return 'layerrelative';
+  }
+}
+class GMLDripVecRelativeToUp extends GMLPoint {
+  static getTagName() {
+    return 'dripvecrelativetoup';
   }
 }

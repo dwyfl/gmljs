@@ -6,20 +6,19 @@ import GMLDrawing from './drawing';
 export default class GMLTag extends GMLNode {
   static getSupportedChildNodes() {
     return [
-      GMLHeader.getNodeDefinition(),
       GMLEnvironment.getNodeDefinition(),
+      GMLHeader.getNodeDefinition({required: true}),
       GMLDrawing.getNodeDefinition({required: true}),
     ];
   }
   static getTagName() {
     return 'tag';
   }
-  /* getEnvironment() {
-    var env = null;
-    if (this.environment)
-      env = this.environment;
-    else if (this.header && this.header.environment)
-      env = this.header.environment;
+  getEnvironment() {
+    let env = this.getChildPath(['header', 'children', 'environment', 0]);
+    if (env === null) {
+      env = this.getChild('environment');
+    }
     return env ? env.toObject() : null;
-  } */
+  }
 }

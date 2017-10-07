@@ -1,67 +1,68 @@
-import GMLUtil from '../util';
 import GMLNode from './node';
+import GMLLeafNode from './leafnode';
+import GMLPoint from './point';
 
 export default class GMLEnvironment extends GMLNode {
-  constructor() {
-    super();
-    this.supportedChildNodes = {
-      'offset': {
-        parser: function(node){ this.offset = GMLUtil.getPointFromNode(node); }
-      },
-      'rotation': {
-        parser: function(node){ this.rotation = GMLUtil.getPointFromNode(node); }
-      },
-      'up': {
-        parser: function(node){
-          var v = GMLUtil.getPointFromNode(node);
-          if (v.x || v.y || v.z) {
-            this.up = v;
-          }
-        }
-      },
-      'screenbounds': {
-        parser: function(node){ this.screenBounds = GMLUtil.getPointFromNode(node); }
-      },
-      'origin': {
-        parser: function(node){ this.origin = GMLUtil.getPointFromNode(node); }
-      },
-      'realscale': {
-        parser: function(node){ this.realScale = GMLUtil.getPointFromNode(node); }
-      },
-      'audio': {
-        parser: function(node){ this.audio = node.textContent; }
-      },
-      'background': {
-        parser: function(node){ this.background = node.textContent; }
-      }
-    };
-  }
-  getTagName() {
-    return 'environment';
-  }
-  getChildrenAttributeNames() {
+  static getSupportedChildNodes() {
     return [
-      'offset',
-      'rotation',
-      'up',
-      'screenBounds',
-      'origin',
-      'realScale',
-      'audio',
-      'background'
+      GMLOffset.getNodeDefintion(),
+      GMLRotation.getNodeDefintion(),
+      GMLUp.getNodeDefintion(),
+      GMLScreenBounds.getNodeDefintion(),
+      GMLOrigin.getNodeDefintion(),
+      GMLRealScale.getNodeDefintion(),
+      GMLAudio.getNodeDefintion(),
+      GMLBackground.getNodeDefintion(),
     ];
   }
-  toObject() {
-    var obj = {};
-    var childrenAttributes = this.getChildrenAttributeNames();
-    for (var i = 0; i < childrenAttributes.length; ++i){
-      if (this.hasOwnProperty(childrenAttributes[i])){
-        obj[childrenAttributes[i]] = this[childrenAttributes[i]];
-      }
-    }
-    return obj;
+  static getTagName() {
+    return 'environment';
   }
-  toString() {
-    return GMLUtil.objectToXml(this.toObject(), this.getTagName());
+}
+
+class GMLOffset extends GMLPoint {
+  static getTagName() {
+    return 'offset';
+  }
+}
+class GMLRotation extends GMLPoint {
+  static getTagName() {
+    return 'rotation';
+  }
+}
+class GMLUp extends GMLPoint {
+  static getTagName() {
+    return 'up';
+  }
+  initDefault() {
+    this.set({x: 0.0, y: -1.0, z: 0.0});
+  }
+}
+class GMLScreenBounds extends GMLPoint {
+  static getTagName() {
+    return 'screenbounds';
+  }
+  initDefault() {
+    this.set({x: 1920, y: 1080, z: 0});
+  }
+}
+class GMLOrigin extends GMLPoint {
+  static getTagName() {
+    return 'origin';
+  }
+}
+class GMLRealScale extends GMLPoint {
+  static getTagName() {
+    return 'realscale';
+  }
+}
+class GMLAudio extends GMLLeafNode {
+  static getTagName() {
+    return 'audio';
+  }
+}
+class GMLBackground extends GMLLeafNode {
+  static getTagName() {
+    return 'background';
   }
 }

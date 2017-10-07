@@ -1,57 +1,46 @@
-import GMLUtil from '../util';
 import GMLNode from './node';
-import GMLBrush from './brush';
+import GMLBrush from './stroke';
+import GMLPoint from './point';
+import { GMLLeafNodeParent, GMLLeafNode } from './leafnode';
 
-export default class GMLStroke extends GMLNode {
-  constructor() {
-    super();
-    this.isDrawing = true;
-    this.info = null;
-    this.brush = null;
-    this.pt = [];
-    this.supportedChildNodes = {
-      'info': {
-        parser: function(node){
-          this.info = GMLUtil.childNodeValuesToObject(node);
-        }
-      },
-      'brush': {
-        parser: function(node){
-          this.brush = GMLNode.create(GMLBrush, node);
-        }
-      },
-      'pt': {
-        required: true,
-        default: [],
-        parser: function(node){
-          this.pt.push(GMLUtil.getPointFromNode(node));
-        }
-      }
-    };
-    this.supportedAttributes = {
-      'isdrawing': {
-        parser: function(value){
-          value = typeof(value) == 'string' ? value != 'false' : !!value;
-          this.isDrawing = value;
-          this.attributes.isDrawing = value;
-        }
-      }
-    };
+export default class GMLDrawing extends GMLNode {
+  static getSupportedChildNodes() {
+    return [
+      GMLPoint.getNodeDefinition(),
+      GMLBrush.getNodeDefinition(),
+      GMLStrokeInfo.getNodeDefinition(),
+    ];
   }
-  getTagName() {
+  static getSupportedAttributes() {
+    return [
+      {
+        name: 'isdrawing',
+        parser: value => typeof value === 'string' ? value !== 'false' : !!value
+      }
+    ];
+  }
+  static getTagName() {
     return 'stroke';
   }
-  getTagContent() {
-    var result = '';
-    if (this.info) {
-      result += GMLUtil.objectToXml(this.info, 'info');
-    }
-    if (this.brush) {
-      result += this.brush.toString();
-    }
-    for (var i = 0; this.pt && i < this.pt.length; ++i) {
-      result += GMLUtil.objectToXml(this.pt[i], 'pt');
-    }
-    return result;
+  static createFromPointArray(points) {
+    const stroke = new GMLStrokeInfo();
+    stroke.children.pt = points.points(p => GMLPoint.createFromObject(p));
+    return stroke;
+  }
+}
+
+class GMLStrokeInfo extends GMLLeafNodeParent {
+  static getSupportedChildNodes() {
+    return [
+      GMLStrokeInfoCurved.getNodeDefinition(),
+    ];
+  }
+  static getTagName() {
+    return 'info';
+  }
+}
+class GMLStrokeInfoCurved extends GMLLeafNode {
+  static getTagName() {
+    return 'curved';
   }
 }

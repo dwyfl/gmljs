@@ -1,5 +1,4 @@
 import {DOMParser} from 'xmldom';
-import GMLNode from './nodes/node';
 import GMLStroke from './nodes/stroke';
 import GMLDocument from './nodes/document';
 
@@ -68,19 +67,11 @@ export default class GML {
   toString() {
     return this.doc ? this.doc.toString() : '';
   }
-  static createFromPointArrays(strokes) {
-    var gml = new GML();
-    var gmlStrokes = [];
-    var gmlStroke;
-    gml.doc = GMLNode.createDefault(GMLDocument);
-    if (strokes && strokes.length) {
-      for (var i = 0; i < strokes.length; i++) {
-        gmlStroke = GMLNode.createDefault(GMLStroke);
-        gmlStroke.pt = strokes[i];
-        gmlStrokes.push(gmlStroke);
-      }
-      gml.doc.gml.tag[0].drawing[0].stroke = gmlStrokes;
-    }
+  static createFromPointArrays(strokes = []) {
+    const gml = new GML();
+    gml.doc = GMLDocument.create();
+    const gmlDrawing = gml.doc.getChildPath(['gml', 'children', 'tag', 0, 'children', 'drawing', 0]);
+    gmlDrawing.children.stroke = strokes.map(item => GMLStroke.createFromPointArray(item));
     return gml;
   }
 }
