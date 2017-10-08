@@ -55,7 +55,7 @@ export class GMLIntegerNode extends GMLLeafNode {
   postInit() {
     const value = parseInt(this.value);
     if (isNaN(value)) {
-      throw new Error(`GMLIntNode has non-int value "${value}".`);
+      throw new Error(`GMLIntegerNode has non-int value "${value}".`);
     }
     this.value = value;
   }

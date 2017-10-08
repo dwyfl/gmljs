@@ -1,7 +1,7 @@
 import GMLNode from './node';
 import GMLColor from './color';
 import GMLPoint from './point';
-import { GMLLeafNode, GMLFloatNode, GMLIntNode } from './leafnode';
+import { GMLLeafNode, GMLFloatNode, GMLIntegerNode } from './leafnode';
 
 export default class GMLDocument extends GMLNode {
   static getSupportedChildNodes() {
@@ -59,12 +59,12 @@ class GMLDripSpeed extends GMLFloatNode {
     return 'dripspeed';
   }
 }
-class GMLLayerAbsolute extends GMLIntNode {
+class GMLLayerAbsolute extends GMLIntegerNode {
   static getTagName() {
     return 'layerabsolute';
   }
 }
-class GMLLayerRelative extends GMLIntNode {
+class GMLLayerRelative extends GMLIntegerNode {
   static getTagName() {
     return 'layerrelative';
   }

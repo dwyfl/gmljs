@@ -42,7 +42,7 @@ export default class GMLNode {
   preInit() {}
   postInit() {}
   initDefault() {
-    this.getSupportedChildNodes()
+    this.constructor.getSupportedChildNodes()
       .filter(n => !!n.required)
       .forEach(n => {
         if (this.children[n.name] === undefined) {
@@ -50,7 +50,7 @@ export default class GMLNode {
         }
         this.children[n.name].push(n.model.create());
       });
-    this.getSupportedAttributes()
+    this.constructor.getSupportedAttributes()
       .filter(a => a.hasOwnProperty('default'))
       .forEach(a => {
         this.attributes[a.name] = a.default;
@@ -87,8 +87,9 @@ export default class GMLNode {
     return formatXmlTagEnd(this.getTagName());
   }
   parseChildNodes(node) {
-    const supportedNodes = this.getSupportedChildNodes();
-    node.childNodes.forEach(n => {
+    const supportedNodes = this.constructor.getSupportedChildNodes();
+    for (let i = 0; i < node.childNodes.length; ++i) {
+      const n = node.childNodes[i];
       const name = n.nodeName.toLowerCase();
       const key = _.findKey(supportedNodes, nn => nn.name === name);
       if (key) {
@@ -97,7 +98,7 @@ export default class GMLNode {
         }
         this.children[name].push(supportedNodes[key].model.create(n));
       }
-    });
+    }
     supportedNodes
       .filter(n => !!n.required)
       .forEach(n => {
@@ -107,9 +108,10 @@ export default class GMLNode {
       });
   }
   parseAttributes(node) {
-    const supportedAttributes = this.getSupportedAttributes();
-    if (node.hasAttributes()) {
-      node.attributes.forEach(a => {
+    const supportedAttributes = this.constructor.getSupportedAttributes();
+    if (node && node.hasAttributes()) {
+      for (let i = 0; i < node.attributes.length; ++i) {
+        const a = node.attributes[i];
         const name = a.name.toLowerCase();
         const value = a.value;
         const key = _.findKey(supportedAttributes, nn => nn.name === name);
@@ -118,7 +120,7 @@ export default class GMLNode {
             ? supportedAttributes[key].parser(value)
             : value;
         }
-      });
+      }
     }
     supportedAttributes
       .filter(a => !!a.required)

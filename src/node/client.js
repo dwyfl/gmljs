@@ -1,5 +1,5 @@
 import GMLNode from './node';
-import { GMLLeafNode, GMLIntNode } from './leafnode';
+import { GMLLeafNode, GMLIntegerNode } from './leafnode';
 import GMLLocation from './location';
 
 export default class GMLRoot extends GMLNode {
@@ -37,7 +37,7 @@ class GMLVersion extends GMLLeafNode {
     this.value = '1.0';
   }
 }
-class GMLTime extends GMLIntNode {
+class GMLTime extends GMLIntegerNode {
   static getTagName() {
     return 'time';
   }

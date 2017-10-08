@@ -4,9 +4,9 @@
   "description": "Library for parsing GML documents.",
   "main": "lib/index.js",
   "scripts": {
+    "test": "node_modules/.bin/jest test",
     "lint": "node_modules/.bin/eslint .",
-    "prepublish": "node_modules/.bin/babel src --out-dir lib",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublish": "node_modules/.bin/babel src --out-dir lib"
   },
   "author": "Gustav Peterz <gpeterz@gmail.com>",
   "license": "MIT",
@@ -19,16 +19,21 @@
       "env"
     ],
     "plugins": [
-      "transform-object-rest-spread"
+      "transform-object-rest-spread",
+      ["babel-plugin-inline-import", {"extensions": [ ".xml", ".gml" ]}]
     ]
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
+    "babel-jest": "^21.2.0",
+    "babel-plugin-inline-import": "^2.0.6",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "eslint": "^4.8.0",
-    "eslint-plugin-react": "^7.4.0"
+    "eslint-plugin-react": "^7.4.0",
+    "jest": "^21.2.1",
+    "regenerator-runtime": "^0.11.0"
   },
   "dependencies": {
     "lodash": "^4.17.4",

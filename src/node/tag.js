@@ -7,7 +7,7 @@ export default class GMLTag extends GMLNode {
   static getSupportedChildNodes() {
     return [
       GMLEnvironment.getNodeDefinition(),
-      GMLHeader.getNodeDefinition({required: true}),
+      GMLHeader.getNodeDefinition(),
       GMLDrawing.getNodeDefinition({required: true}),
     ];
   }

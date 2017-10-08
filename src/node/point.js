@@ -3,15 +3,15 @@ import { GMLLeafNodeParent, GMLLeafNode, GMLFloatNode } from './leafnode';
 export default class GMLPoint extends GMLLeafNodeParent {
   static getSupportedChildNodes() {
     return [
-      GMLPointX.getNodeDefintion({required: true}),
-      GMLPointY.getNodeDefintion({required: true}),
-      GMLPointZ.getNodeDefintion(),
-      GMLPointT.getNodeDefintion(),
-      GMLPointTime.getNodeDefintion(),
-      GMLPointPressure.getNodeDefintion(),
-      GMLPointRotation.getNodeDefintion(),
-      GMLPointUnit.getNodeDefintion(),
-      GMLPointDirection.getNodeDefintion(),
+      GMLPointX.getNodeDefinition({required: true}),
+      GMLPointY.getNodeDefinition({required: true}),
+      GMLPointZ.getNodeDefinition(),
+      GMLPointT.getNodeDefinition(),
+      GMLPointTime.getNodeDefinition(),
+      GMLPointPressure.getNodeDefinition(),
+      GMLPointRotation.getNodeDefinition(),
+      GMLPointUnit.getNodeDefinition(),
+      GMLPointDirection.getNodeDefinition(),
     ];
   }
   static getTagName() {

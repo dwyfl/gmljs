@@ -1,6 +1,6 @@
 import {DOMParser} from 'xmldom';
-import GMLStroke from './nodes/stroke';
-import GMLDocument from './nodes/document';
+import GMLStroke from './node/stroke';
+import GMLDocument from './node/document';
 
 export default class GML {
   constructor(str) {
