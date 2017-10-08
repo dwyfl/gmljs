@@ -43,7 +43,7 @@ export default class GMLNode {
   postInit() {}
   initDefault() {
     this.constructor.getSupportedChildNodes()
-      .filter(n => !!n.required)
+      .filter(n => !!n.initDefault)
       .forEach(n => {
         this.addChild(n.name, n.model.create());
       });
@@ -105,12 +105,7 @@ export default class GMLNode {
       .filter(n => !!n.required)
       .forEach(n => {
         if (this.children[n.name] === undefined || !this.children[n.name].length) {
-          if (n.initDefault) {
-            this.addChild(n.name, n.model.create());
-          }
-          else {
-            throw new Error(`Invalid GML! A "${this.constructor.getTagName()}" node requires a "${n.name}" child node.`);
-          }
+          throw new Error(`Invalid GML! A "${this.constructor.getTagName()}" node requires a "${n.name}" child node.`);
         }
       });
   }

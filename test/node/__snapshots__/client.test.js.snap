@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a correct default GMLClient node 1`] = `"<client><name>GML.js</name><version>1.0</version><time>1507479541</time></client>"`;

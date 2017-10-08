@@ -11,6 +11,8 @@ export default class GMLDocument extends GMLNode {
     throw new Error('GMLDocument is not a tag.');
   }
   toString() {
-    return this.children.gml.length ? this.children.gml[0].toString() : '';
+    return this.children.gml && this.children.gml.length
+      ? this.children.gml[0].toString()
+      : '';
   }
 }

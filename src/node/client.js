@@ -5,9 +5,9 @@ import GMLLocation from './location';
 export default class GMLClient extends GMLNode {
   static getSupportedChildNodes() {
     return [
-      GMLName.getNodeDefinition(),
-      GMLVersion.getNodeDefinition(),
-      GMLTime.getNodeDefinition(),
+      GMLName.getNodeDefinition({initDefault: true}),
+      GMLVersion.getNodeDefinition({initDefault: true}),
+      GMLTime.getNodeDefinition({initDefault: true}),
       GMLUsername.getNodeDefinition(),
       GMLPermalink.getNodeDefinition(),
       GMLKeywords.getNodeDefinition(),
