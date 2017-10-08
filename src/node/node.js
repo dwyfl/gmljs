@@ -76,7 +76,7 @@ export default class GMLNode {
     return this.getTagStart() + this.getTagContent() + this.getTagEnd();
   }
   getTagStart() {
-    return formatXmlTagStart(this.getTagName(), this.attributes);
+    return formatXmlTagStart(this.constructor.getTagName(), this.attributes);
   }
   getTagContent() {
     return Object.keys(this.children).map(
@@ -84,7 +84,7 @@ export default class GMLNode {
     ).join('');
   }
   getTagEnd() {
-    return formatXmlTagEnd(this.getTagName());
+    return formatXmlTagEnd(this.constructor.getTagName());
   }
   parseChildNodes(node) {
     const supportedNodes = this.constructor.getSupportedChildNodes();
@@ -103,16 +103,16 @@ export default class GMLNode {
       .filter(n => !!n.required)
       .forEach(n => {
         if (this.children[n.name] === undefined || !this.children[n.name].length) {
-          throw new Error(`Invalid GML! A "${this.getTagName()}" node requires a "${n.name}" child node.`);
+          throw new Error(`Invalid GML! A "${this.constructor.getTagName()}" node requires a "${n.name}" child node.`);
         }
       });
   }
   parseAttributes(node) {
     const supportedAttributes = this.constructor.getSupportedAttributes();
-    if (node && node.hasAttributes()) {
+    if (node && node.attributes && node.attributes.length) {
       for (let i = 0; i < node.attributes.length; ++i) {
-        const a = node.attributes[i];
-        const name = a.name.toLowerCase();
+        const a = node.attributes.item(i);
+        const name = a.nodeName.toLowerCase();
         const value = a.value;
         const key = _.findKey(supportedAttributes, nn => nn.name === name);
         if (key) {
@@ -126,7 +126,7 @@ export default class GMLNode {
       .filter(a => !!a.required)
       .forEach(a => {
         if (this.attributes[a.name] === undefined) {
-          throw new Error(`Invalid GML! A "${this.getTagName()}" node requires a "${a.name}" attribute.`);
+          throw new Error(`Invalid GML! A "${this.constructor.getTagName()}" node requires a "${a.name}" attribute.`);
         }
       });
   }

@@ -5,15 +5,15 @@ import GMLLocation from './location';
 export default class GMLRoot extends GMLNode {
   static getSupportedChildNodes() {
     return [
-      GMLName.getNodeDefintion({required: true}),
-      GMLVersion.getNodeDefintion({required: true}),
-      GMLTime.getNodeDefintion({required: true}),
-      GMLUsername.getNodeDefintion(),
-      GMLPermalink.getNodeDefintion(),
-      GMLKeywords.getNodeDefintion(),
-      GMLUniqueKey.getNodeDefintion(),
-      GMLIp.getNodeDefintion(),
-      GMLLocation.getNodeDefintion(),
+      GMLName.getNodeDefinition({required: true}),
+      GMLVersion.getNodeDefinition(), // TODO: Set defaults
+      GMLTime.getNodeDefinition(), // TODO: Set defaults
+      GMLUsername.getNodeDefinition(),
+      GMLPermalink.getNodeDefinition(),
+      GMLKeywords.getNodeDefinition(),
+      GMLUniqueKey.getNodeDefinition(),
+      GMLIp.getNodeDefinition(),
+      GMLLocation.getNodeDefinition(),
     ];
   }
   static getTagName() {

@@ -5,14 +5,14 @@ import GMLPoint from './point';
 export default class GMLEnvironment extends GMLNode {
   static getSupportedChildNodes() {
     return [
-      GMLOffset.getNodeDefintion(),
-      GMLRotation.getNodeDefintion(),
-      GMLUp.getNodeDefintion(),
-      GMLScreenBounds.getNodeDefintion(),
-      GMLOrigin.getNodeDefintion(),
-      GMLRealScale.getNodeDefintion(),
-      GMLAudio.getNodeDefintion(),
-      GMLBackground.getNodeDefintion(),
+      GMLOffset.getNodeDefinition(),
+      GMLRotation.getNodeDefinition(),
+      GMLUp.getNodeDefinition(),
+      GMLScreenBounds.getNodeDefinition(),
+      GMLOrigin.getNodeDefinition(),
+      GMLRealScale.getNodeDefinition(),
+      GMLAudio.getNodeDefinition(),
+      GMLBackground.getNodeDefinition(),
     ];
   }
   static getTagName() {

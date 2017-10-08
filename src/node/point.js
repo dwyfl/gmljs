@@ -18,14 +18,14 @@ export default class GMLPoint extends GMLLeafNodeParent {
     return 'pt';
   }
   postInit() {
-    if (
-      this.children.hasOwnProperty('time') &&
-      this.children.time.length &&
-      !this.children.hasOwnProperty('t')
-    ) {
-      this.children.t = this.children.time;
+    if (this.children.hasOwnProperty('time')) {
+      if (this.children.time.length && !this.children.hasOwnProperty('t')) {
+        const t = new GMLPointT();
+        t.value = this.children.time[0].value;
+        this.children.t = [t];
+      }
+      delete this.children.time;
     }
-    delete this.children.time;
   }
 }
 
