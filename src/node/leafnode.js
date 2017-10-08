@@ -41,8 +41,8 @@ export default GMLLeafNode;
 export class GMLFloatNode extends GMLLeafNode {
   postInit() {
     const value = parseFloat(this.value);
-    if (isNaN(value)) {
-      throw new Error(`GMLFloatNode has non-float value "${value}".`);
+    if (isNaN(value) || !Number.isFinite(value)) {
+      throw new Error(`GMLFloatNode has non-float value "${this.value}".`);
     }
     this.value = value;
   }
@@ -53,11 +53,13 @@ export class GMLFloatNode extends GMLLeafNode {
 
 export class GMLIntegerNode extends GMLLeafNode {
   postInit() {
-    const value = parseInt(this.value);
-    if (isNaN(value)) {
-      throw new Error(`GMLIntegerNode has non-int value "${value}".`);
+    if (!Number.isInteger(this.value)) {
+      const value = parseInt(this.value);
+      if (isNaN(value)) {
+        throw new Error(`GMLIntegerNode has non-int value "${this.value}".`);
+      }
+      this.value = value;
     }
-    this.value = value;
   }
   initDefault() {
     this.value = 0;

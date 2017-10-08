@@ -2,12 +2,12 @@ import GMLNode from './node';
 import { GMLLeafNode, GMLIntegerNode } from './leafnode';
 import GMLLocation from './location';
 
-export default class GMLRoot extends GMLNode {
+export default class GMLClient extends GMLNode {
   static getSupportedChildNodes() {
     return [
-      GMLName.getNodeDefinition({required: true}),
-      GMLVersion.getNodeDefinition(), // TODO: Set defaults
-      GMLTime.getNodeDefinition(), // TODO: Set defaults
+      GMLName.getNodeDefinition(),
+      GMLVersion.getNodeDefinition(),
+      GMLTime.getNodeDefinition(),
       GMLUsername.getNodeDefinition(),
       GMLPermalink.getNodeDefinition(),
       GMLKeywords.getNodeDefinition(),
@@ -18,6 +18,9 @@ export default class GMLRoot extends GMLNode {
   }
   static getTagName() {
     return 'client';
+  }
+  postInit() {
+    // TODO: Add <version> if default <name> was created
   }
 }
 

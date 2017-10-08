@@ -3,8 +3,8 @@ import { GMLLeafNodeParent, GMLLeafNode, GMLFloatNode } from './leafnode';
 export default class GMLPoint extends GMLLeafNodeParent {
   static getSupportedChildNodes() {
     return [
-      GMLPointX.getNodeDefinition({required: true}),
-      GMLPointY.getNodeDefinition({required: true}),
+      GMLPointX.getNodeDefinition({required: true, initDefault: true}),
+      GMLPointY.getNodeDefinition({required: true, initDefault: true}),
       GMLPointZ.getNodeDefinition(),
       GMLPointT.getNodeDefinition(),
       GMLPointTime.getNodeDefinition(),

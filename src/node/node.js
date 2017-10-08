@@ -45,16 +45,19 @@ export default class GMLNode {
     this.constructor.getSupportedChildNodes()
       .filter(n => !!n.required)
       .forEach(n => {
-        if (this.children[n.name] === undefined) {
-          this.children[n.name] = [];
-        }
-        this.children[n.name].push(n.model.create());
+        this.addChild(n.name, n.model.create());
       });
     this.constructor.getSupportedAttributes()
       .filter(a => a.hasOwnProperty('default'))
       .forEach(a => {
         this.attributes[a.name] = a.default;
       });
+  }
+  addChild(type, child) {
+    if (this.children[type] === undefined) {
+      this.children[type] = [];
+    }
+    this.children[type].push(child);
   }
   getChild(child, defaultValue = null) {
     return this.children[child] && this.children[child].length
@@ -88,22 +91,26 @@ export default class GMLNode {
   }
   parseChildNodes(node) {
     const supportedNodes = this.constructor.getSupportedChildNodes();
-    for (let i = 0; i < node.childNodes.length; ++i) {
-      const n = node.childNodes[i];
-      const name = n.nodeName.toLowerCase();
-      const key = _.findKey(supportedNodes, nn => nn.name === name);
-      if (key) {
-        if (this.children[name] === undefined) {
-          this.children[name] = [];
+    if (node && node.childNodes && node.childNodes.length) {
+      for (let i = 0; i < node.childNodes.length; ++i) {
+        const n = node.childNodes[i];
+        const name = n.nodeName.toLowerCase();
+        const def = supportedNodes.find(item => item.name === name);
+        if (def) {
+          this.addChild(def.name, def.model.create(n));
         }
-        this.children[name].push(supportedNodes[key].model.create(n));
       }
     }
     supportedNodes
       .filter(n => !!n.required)
       .forEach(n => {
         if (this.children[n.name] === undefined || !this.children[n.name].length) {
-          throw new Error(`Invalid GML! A "${this.constructor.getTagName()}" node requires a "${n.name}" child node.`);
+          if (n.initDefault) {
+            this.addChild(n.name, n.model.create());
+          }
+          else {
+            throw new Error(`Invalid GML! A "${this.constructor.getTagName()}" node requires a "${n.name}" child node.`);
+          }
         }
       });
   }
@@ -114,10 +121,10 @@ export default class GMLNode {
         const a = node.attributes.item(i);
         const name = a.nodeName.toLowerCase();
         const value = a.value;
-        const key = _.findKey(supportedAttributes, nn => nn.name === name);
-        if (key) {
-          this.attributes[name] = typeof supportedAttributes[key].parser === 'function'
-            ? supportedAttributes[key].parser(value)
+        const def = supportedAttributes.find(item => item.name === name);
+        if (def) {
+          this.attributes[name] = typeof def.parser === 'function'
+            ? def.parser(value)
             : value;
         }
       }

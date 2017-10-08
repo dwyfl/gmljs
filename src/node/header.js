@@ -5,8 +5,8 @@ import GMLEnvironment from './environment';
 export default class GMLHeader extends GMLNode {
   static getSupportedChildNodes() {
     return [
-      GMLClient.getNodeDefinition(), // TODO: Set defaults
-      GMLEnvironment.getNodeDefinition(), // TODO: Set defaults
+      GMLClient.getNodeDefinition(),
+      GMLEnvironment.getNodeDefinition(),
     ];
   }
   static getTagName() {

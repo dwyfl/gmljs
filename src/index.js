@@ -4,15 +4,15 @@ import GMLDocument from './node/document';
 
 export default class GML {
   constructor(str) {
-    this.doc = null;
-    if (typeof(str) === 'string') {
+    if (typeof str === 'string') {
       this.init(str);
+    }
+    else {
+      this.doc = GMLDocument.create();
     }
   }
   init(str) {
-    var xmlDoc = this.parseXml(str);
-    this.doc = new GMLDocument();
-    this.doc.init(xmlDoc);
+    this.doc = GMLDocument.create(this.parseXml(str));
   }
   parseXml(str) {
     var parser = new DOMParser();
