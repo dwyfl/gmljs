@@ -1,6 +1,6 @@
 {
   "name": "gmljs",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Library for parsing GML documents.",
   "main": "lib/index.js",
   "scripts": {
@@ -21,7 +21,15 @@
     ],
     "plugins": [
       "transform-object-rest-spread",
-      ["babel-plugin-inline-import", {"extensions": [ ".xml", ".gml" ]}]
+      [
+        "babel-plugin-inline-import",
+        {
+          "extensions": [
+            ".xml",
+            ".gml"
+          ]
+        }
+      ]
     ]
   },
   "devDependencies": {
