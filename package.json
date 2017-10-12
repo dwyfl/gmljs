@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node_modules/.bin/jest test",
     "lint": "node_modules/.bin/eslint .",
-    "prepublish": "node_modules/.bin/babel src --out-dir lib"
+    "build": "node_modules/.bin/babel src --out-dir lib",
+    "prepublish": "npm run build"
   },
   "author": "Gustav Peterz <gpeterz@gmail.com>",
   "license": "MIT",
