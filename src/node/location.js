@@ -4,8 +4,8 @@ import { GMLFloatNode } from './leafnode';
 export default class GMLLocation extends GMLNode {
   static getSupportedChildNodes() {
     return [
-      GMLLocationLon.getNodeDefintion({required: true}),
-      GMLLocationLat.getNodeDefintion({required: true}),
+      GMLLocationLon.getNodeDefinition({required: true}),
+      GMLLocationLat.getNodeDefinition({required: true}),
     ];
   }
   static getTagName() {

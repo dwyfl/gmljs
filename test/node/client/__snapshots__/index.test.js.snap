@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a correct GMLClient node from spec XML 1`] = `"<client><name>Laser Tag</name><version>2.0</version><username>MyUserName</username><permalink>http://000000book.com/data/156/</permalink><keywords>katsu,paris,2010</keywords><uniquekey>28sks922ks992</uniquekey><ip>192.168.1.1</ip><time>1928372722</time><location><lon>-39.392922</lon><lat>53.29292</lat></location></client>"`;
+
+exports[`creates a correct default GMLClient node 1`] = `"<client><name>GML.js</name><version>1.0</version><time>0</time></client>"`;

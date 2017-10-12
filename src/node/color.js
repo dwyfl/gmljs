@@ -3,10 +3,10 @@ import { GMLLeafNodeParent, GMLFloatNode } from './leafnode';
 export default class GMLColor extends GMLLeafNodeParent {
   static getSupportedChildNodes() {
     return [
-      GMLColorR.getNodeDefintion({required: true}),
-      GMLColorG.getNodeDefintion({required: true}),
-      GMLColorB.getNodeDefintion({required: true}),
-      GMLColorA.getNodeDefintion(),
+      GMLColorR.getNodeDefinition({required: true}),
+      GMLColorG.getNodeDefinition({required: true}),
+      GMLColorB.getNodeDefinition({required: true}),
+      GMLColorA.getNodeDefinition(),
     ];
   }
   static getTagName() {

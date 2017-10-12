@@ -1,0 +1,28 @@
+<brush>
+  <mode>0</mode>
+  <!-- same as uniqueStyleID but an internal reference -->
+  <uniqueStyleID>LaserTagArrowLetters</uniqueStyleID>
+  <!-- unique blackbook string for your style -->
+  <!-- see note about spec at the bottom - like unique style but with extra info -->
+  <spec>http://aurltodescribethebrushspec.com/someSpec.xml</spec>
+  <width>10</width>
+  <speedToWidthRatio>1.5</speedToWidthRatio>
+  <!-- put 0 for fixed width -->
+  <dripAmnt>1.0</dripAmnt>
+  <dripSpeed>1.0</dripSpeed>
+  <layerAbsolute>0</layerAbsolute>
+  <!--Think photoshop layers-->
+  <color>
+    <r>255</r>
+    <g>255</g>
+    <b>255</b>
+    <a>255</a>
+    <!-- optional -->
+  </color>
+  <dripVecRelativeToUp>
+    <!-- what angle do our drips go in relation to our up vector -->
+    <x>0</x>
+    <y>1</y>
+    <z>0</z>
+  </dripVecRelativeToUp>
+</brush>

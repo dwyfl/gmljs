@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a correct GMLEnvironment node from spec XML 1`] = `"<environment><offset><x>0</x><y>0</y><z>0</z></offset><rotation><x>0</x><y>0</y><z>0</z></rotation><up><x>0</x><y>-1</y><z>0</z></up><screenbounds><x>1024</x><y>768</y><z>0</z></screenbounds><origin><x>0</x><y>0</y><z>0</z></origin><realscale><x>1000</x><y>600</y><z>0</z><unit>cm</unit></realscale><audio>youraudio.mp3</audio><background>yourimage.jpg</background></environment>"`;
+
+exports[`creates a correct default GMLEnvironment node 1`] = `"<environment></environment>"`;

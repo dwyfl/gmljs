@@ -12,26 +12,7 @@ export default class GML {
     }
   }
   init(str) {
-    this.doc = GMLDocument.create(this.parseXml(str));
-  }
-  parseXml(str) {
-    var parser = new DOMParser();
-    var doc = parser.parseFromString(str, 'text/xml');
-    if (this.parserHadError(doc)) {
-      throw new Error('Unable to parse GML!');
-    }
-    return doc;
-  }
-  parserHadError(parsedDocument) {
-    const parserError = parsedDocument.getElementsByTagName('parsererror');
-    const parsererrorNS = parserError.length ? parserError[0].namespaceURI : null;
-    if (parsererrorNS === 'http://www.w3.org/1999/xhtml') {
-      // In PhantomJS the parseerror element doesn't seem to have a special namespace
-      // Stolen from:
-      // http://stackoverflow.com/questions/11563554/how-do-i-detect-xml-parsing-errors-when-using-javascripts-domparser-in-a-cross
-      return parsedDocument.getElementsByTagName('parsererror').length > 0;
-    }
-    return parsedDocument.getElementsByTagNameNS(parsererrorNS, 'parsererror').length > 0;
+    this.doc = GMLDocument.create(GML.parseXml(str));
   }
   getTitle() {
     return this.doc ? this.doc.getChildPath(['gml','tag','0','header','client','username']) : null;
@@ -73,5 +54,28 @@ export default class GML {
     const gmlDrawing = gml.doc.getChildPath(['gml', 'children', 'tag', 0, 'children', 'drawing', 0]);
     gmlDrawing.children.stroke = strokes.map(item => GMLStroke.createFromPointArray(item));
     return gml;
+  }
+  static createNodeFromXml(nodeType, xmlStr) {
+    const xmlDocument = this.parseXml(xmlStr);
+    return nodeType.create(xmlDocument.documentElement);
+  }
+  static parseXml(str) {
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(str, 'application/xml');
+    if (this.parserHadError(doc)) {
+      throw new Error('Unable to parse GML!');
+    }
+    return doc;
+  }
+  static parserHadError(parsedDocument) {
+    const parserError = parsedDocument.getElementsByTagName('parsererror');
+    const parsererrorNS = parserError.length ? parserError[0].namespaceURI : null;
+    if (parsererrorNS === 'http://www.w3.org/1999/xhtml') {
+      // In PhantomJS the parseerror element doesn't seem to have a special namespace
+      // Stolen from:
+      // http://stackoverflow.com/questions/11563554/how-do-i-detect-xml-parsing-errors-when-using-javascripts-domparser-in-a-cross
+      return parsedDocument.getElementsByTagName('parsererror').length > 0;
+    }
+    return parsedDocument.getElementsByTagNameNS(parsererrorNS, 'parsererror').length > 0;
   }
 }

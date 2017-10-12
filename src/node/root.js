@@ -4,7 +4,7 @@ import GMLTag from './tag';
 export default class GMLRoot extends GMLNode {
   static getSupportedChildNodes() {
     return [
-      GMLTag.getNodeDefinition({required: true}),
+      GMLTag.getNodeDefinition({initDefault: true}),
     ];
   }
   static getSupportedAttributes() {

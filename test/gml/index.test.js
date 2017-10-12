@@ -1,4 +1,4 @@
-import GML from '../src';
+import GML from '../../src';
 import example000 from './data/example000.xml';
 import example001 from './data/example001.xml';
 

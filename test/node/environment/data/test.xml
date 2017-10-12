@@ -1,0 +1,45 @@
+<!-- This is all stuff that relates to the orientation and dimensions of the client -->
+<!-- So that we know how to re-map the 0.0-1.0 coordinates that come in for each point -->
+<!-- Also for figuring out the down vector for devices with accelerometers and how that effects drips -->
+<!-- All numbers should be between 0.0 - 1.0 -->
+<environment>
+  <offset>
+    <x>0.0</x>
+    <y>0.0</y>
+    <z>0.0</z>
+  </offset>
+  <rotation>
+    <x>0.0</x>
+    <y>0.0</y>
+    <z>0.0</z>
+  </rotation>
+  <up>
+    <x>0.0</x>
+    <!-- commonly up for iphone apps -->
+    <y>-1.0</y>
+    <!-- most common -->
+    <z>0.0</z>
+  </up>
+  <screenBounds>
+    <!-- use this as your multipler to get 0.0 to 1.0 back to right size - pts should never go off 0.0 to 1.0 -->
+    <x>1024</x>
+    <y>768</y>
+    <z>0</z>
+  </screenBounds>
+  <origin>
+    <x>0</x>
+    <y>0</y>
+    <z>0</z>
+  </origin>
+  <realScale>
+    <!-- how these units relate to real world units - good for laser tag -->
+    <x>1000</x>
+    <y>600</y>
+    <z>0</z>
+    <unit>cm</unit>
+  </realScale>
+  <audio>youraudio.mp3</audio>
+  <!-- path to audio file -->
+  <background>yourimage.jpg</background>
+  <!-- path to image file -->
+</environment>

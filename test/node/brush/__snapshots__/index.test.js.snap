@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates a correct GMLBrush node from spec XML 1`] = `"<brush><mode>0</mode><uniquestyleid>LaserTagArrowLetters</uniquestyleid><spec>http://aurltodescribethebrushspec.com/someSpec.xml</spec><width>10</width><speedtowidthratio>1.5</speedtowidthratio><dripamnt>1</dripamnt><dripspeed>1</dripspeed><layerabsolute>0</layerabsolute><color><r>255</r><g>255</g><b>255</b><a>255</a></color><dripvecrelativetoup><x>0</x><y>1</y><z>0</z></dripvecrelativetoup></brush>"`;
+
+exports[`creates a correct default GMLBrush node 1`] = `"<brush></brush>"`;
