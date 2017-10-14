@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { formatXmlTagStart, formatXmlTagEnd } from '../util/xml';
 
 export default class GMLNode {
@@ -60,12 +59,22 @@ export default class GMLNode {
     this.children[type].push(child);
   }
   getChild(child, defaultValue = null) {
-    return this.children[child] && this.children[child].length
-      ? this.children[child][0]
+    const childIndex = !Array.isArray(child) ? [ child, 0 ] : child;
+    const [name, index] = childIndex;
+    return this.children[name] && this.children[name].length
+      ? this.children[name][index]
       : defaultValue;
   }
   getChildPath(path, defaultValue = null) {
-    return _.get(this.children, path, defaultValue);
+    const child = path.shift();
+    const node = this.getChild(child);
+    if (!path.length) {
+      return node === null ? defaultValue : node;
+    }
+    return node === null ? defaultValue : node.getChildPath(path, defaultValue);
+  }
+  getAttribute(name, defaultValue = null) {
+    return this.attributes[name] === undefined ? defaultValue : this.attributes[name];
   }
   toObject() {
     return Object.keys(this.children).reduce((obj, tag) => {

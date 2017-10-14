@@ -7,8 +7,8 @@ export default class GMLEnvironment extends GMLNode {
     return [
       GMLOffset.getNodeDefinition(),
       GMLRotation.getNodeDefinition(),
-      GMLUp.getNodeDefinition(),
-      GMLScreenBounds.getNodeDefinition(),
+      GMLUp.getNodeDefinition({initDefault: true}),
+      GMLScreenBounds.getNodeDefinition({initDefault: true}),
       GMLOrigin.getNodeDefinition(),
       GMLRealScale.getNodeDefinition(),
       GMLAudio.getNodeDefinition(),

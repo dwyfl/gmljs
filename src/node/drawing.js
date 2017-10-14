@@ -10,4 +10,8 @@ export default class GMLDrawing extends GMLNode {
   static getTagName() {
     return 'drawing';
   }
+  getStrokes(index) {
+    const node = this.getChild('stroke');
+    return index === undefined ? node.children.stroke : node.getChild(['stroke', index]);
+  }
 }

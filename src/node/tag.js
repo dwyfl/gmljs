@@ -15,10 +15,14 @@ export default class GMLTag extends GMLNode {
     return 'tag';
   }
   getEnvironment() {
-    let env = this.getChildPath(['header', 'children', 'environment', 0]);
+    let env = this.getChildPath(['header', 'environment']);
     if (env === null) {
       env = this.getChild('environment');
     }
     return env ? env.toObject() : null;
+  }
+  getDrawings(index) {
+    const node = this.getChild('drawing');
+    return index === undefined ? node.children.drawing : node.getChild(['drawing', index]);
   }
 }

@@ -15,4 +15,8 @@ export default class GMLRoot extends GMLNode {
   static getTagName() {
     return 'gml';
   }
+  getTags(index) {
+    const node = this.getChild('tag');
+    return index === undefined ? node.children.tag : node.getChild(['tag', index]);
+  }
 }

@@ -1,4 +1,4 @@
-import {DOMParser} from 'xmldom';
+import { DOMParser } from 'xmldom';
 import GMLStroke from './node/stroke';
 import GMLDocument from './node/document';
 
@@ -15,22 +15,38 @@ export default class GML {
     this.doc = GMLDocument.create(GML.parseXml(str));
   }
   getTitle() {
-    return this.doc ? this.doc.getChildPath(['gml','tag','0','header','client','username']) : null;
+    return this.doc.getChildPath(['gml','tag','header','client','username']);
   }
   getClient() {
-    return this.doc ? this.doc.getChildPath(['gml','tag','0','header','client']) : null;
+    return this.doc.getChildPath(['gml','tag','header','client']);
   }
-  getTags(tag) {
-    return this._getChildren(['gml', 'tag'], tag);
+  getTags(index) {
+    const node = this.doc.getChildPath(['gml']);
+    if (node === null) {
+      return index === undefined ? [] : null;
+    }
+    return node.getTags(index);
   }
-  getDrawings(tag, drawing) {
-    return this._getChildren(['gml', 'tag', tag], drawing);
+  getDrawings(tag, index) {
+    const node = this.doc.getChildPath(['gml', ['tag', tag]]);
+    if (node === null) {
+      return index === undefined ? [] : null;
+    }
+    return node.getDrawings(index);
   }
-  getStrokes(tag, drawing, stroke) {
-    return this._getChildren(['gml', 'tag', tag, 'drawing', drawing], stroke);
+  getStrokes(tag, drawing, index) {
+    const node = this.doc.getChildPath(['gml', ['tag', tag], ['drawing', drawing]]);
+    if (node === null) {
+      return index === undefined ? [] : null;
+    }
+    return node.getStrokes(index);
   }
-  getPoints(tag, drawing, stroke, point) {
-    return this._getChildren(['gml', 'tag', tag, 'drawing', drawing, 'stroke', stroke], point);
+  getPoints(tag, drawing, stroke, index) {
+    const node = this.doc.getChildPath(['gml', ['tag', tag], ['drawing', drawing], ['stroke', stroke]]);
+    if (node === null) {
+      return index === undefined ? [] : null;
+    }
+    return node.getPoints(index);
   }
   _getChildren(path, childIndex) {
     if (!this.doc) {

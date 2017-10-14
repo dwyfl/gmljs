@@ -15,7 +15,7 @@ export default class GMLDrawing extends GMLNode {
     return [
       {
         name: 'isdrawing',
-        parser: value => typeof value === 'string' ? value !== 'false' : !!value
+        parser: value => typeof value === 'string' ? value === 'true' : !!value
       }
     ];
   }
@@ -26,6 +26,13 @@ export default class GMLDrawing extends GMLNode {
     const stroke = new GMLStrokeInfo();
     stroke.children.pt = points.points(p => GMLPoint.createFromObject(p));
     return stroke;
+  }
+  isDrawing() {
+    return !!this.getAttribute('isdrawing', true);
+  }
+  getPoints(index) {
+    const node = this.getChild('pt');
+    return index === undefined ? node.children.pt : node.getChild(['pt', index]);
   }
 }
 
