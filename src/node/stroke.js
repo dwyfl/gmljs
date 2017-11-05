@@ -31,8 +31,7 @@ export default class GMLDrawing extends GMLNode {
     return !!this.getAttribute('isdrawing', true);
   }
   getPoints(index) {
-    const node = this.getChild('pt');
-    return index === undefined ? node.children.pt : node.getChild(['pt', index]);
+    return this.getChild(index === undefined ? 'pt' : ['pt', index]);
   }
 }
 

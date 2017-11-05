@@ -27,6 +27,21 @@ export default class GMLPoint extends GMLLeafNodeParent {
       delete this.children.time;
     }
   }
+  get x() {
+    return this.getChild(['x', 0], {value: 0}).value;
+  }
+  get y() {
+    return this.getChild(['y', 0], {value: 0}).value;
+  }
+  get z() {
+    return this.getChild(['z', 0], {value: 0}).value;
+  }
+  get t() {
+    return this.getChild(['t', 0], {value: 0}).value;
+  }
+  getVector() {
+    return [ this.x, this.y, this.z ];
+  }
 }
 
 class GMLPointX extends GMLFloatNode {

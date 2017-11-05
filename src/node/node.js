@@ -34,7 +34,7 @@ export default class GMLNode {
     else {
       this.parseChildNodes(node);
       this.parseAttributes(node);
-      this.value = node.textContent;
+      this.value = (node.textContent || '').split('\n').shift();
     }
     this.postInit();
   }
@@ -59,11 +59,12 @@ export default class GMLNode {
     this.children[type].push(child);
   }
   getChild(child, defaultValue = null) {
-    const childIndex = !Array.isArray(child) ? [ child, 0 ] : child;
+    const childIndex = !Array.isArray(child) ? [ child, null ] : child;
     const [name, index] = childIndex;
-    return this.children[name] && this.children[name].length
-      ? this.children[name][index]
-      : defaultValue;
+    if (this.children.hasOwnProperty(name)) {
+      return index === null ? this.children[name] : this.children[name][index];
+    }
+    return defaultValue;
   }
   getChildPath(path, defaultValue = null) {
     const child = path.shift();
@@ -71,7 +72,12 @@ export default class GMLNode {
     if (!path.length) {
       return node === null ? defaultValue : node;
     }
-    return node === null ? defaultValue : node.getChildPath(path, defaultValue);
+    if (node === null) {
+      return defaultValue;
+    }
+    return Array.isArray(node)
+      ? node[0].getChildPath(path, defaultValue)
+      : node.getChildPath(path, defaultValue);
   }
   getAttribute(name, defaultValue = null) {
     return this.attributes[name] === undefined ? defaultValue : this.attributes[name];

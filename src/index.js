@@ -20,29 +20,32 @@ export default class GML {
   getClient() {
     return this.doc.getChildPath(['gml','tag','header','client']);
   }
+  getRoot() {
+    return this.doc.getChild(['gml', 0]);
+  }
   getTags(index) {
-    const node = this.doc.getChildPath(['gml']);
+    const node = this.getRoot();
     if (node === null) {
       return index === undefined ? [] : null;
     }
     return node.getTags(index);
   }
   getDrawings(tag, index) {
-    const node = this.doc.getChildPath(['gml', ['tag', tag]]);
+    const node = this.getTags(tag);
     if (node === null) {
       return index === undefined ? [] : null;
     }
     return node.getDrawings(index);
   }
   getStrokes(tag, drawing, index) {
-    const node = this.doc.getChildPath(['gml', ['tag', tag], ['drawing', drawing]]);
+    const node = this.getDrawings(tag, drawing);
     if (node === null) {
       return index === undefined ? [] : null;
     }
     return node.getStrokes(index);
   }
   getPoints(tag, drawing, stroke, index) {
-    const node = this.doc.getChildPath(['gml', ['tag', tag], ['drawing', drawing], ['stroke', stroke]]);
+    const node = this.getStrokes(tag, drawing, stroke);
     if (node === null) {
       return index === undefined ? [] : null;
     }
