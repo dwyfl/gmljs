@@ -4,10 +4,11 @@
   "description": "Library for parsing GML documents.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "node_modules/.bin/jest test",
-    "lint": "node_modules/.bin/eslint .",
-    "build": "node_modules/.bin/babel src --out-dir lib",
-    "prepublish": "npm run build"
+    "test": "npx jest test",
+    "lint": "npx eslint .",
+    "build": "npx babel src --out-dir lib",
+    "clean": "rm -rf lib && rm -rf node_modules",
+    "prepublishOnly": "rm -rf lib && npm run build"
   },
   "author": "Gustav Peterz <gpeterz@gmail.com>",
   "license": "MIT",
