@@ -22,7 +22,7 @@ export default class GMLTag extends GMLNode {
     return env ? env.toObject() : null;
   }
   getClientName() {
-    return this.doc.getChildPath(['header', 'client', 'name'], {value: null}).value;
+    return this.getChildPath(['header', 'client', 'name'], {value: null}).value;
   }
   getDrawings(index) {
     return this.getChild(index === undefined ? 'drawing' : ['drawing', index]);

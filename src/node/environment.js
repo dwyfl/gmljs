@@ -35,7 +35,8 @@ class GMLUp extends GMLPoint {
     return 'up';
   }
   initDefault() {
-    this.set({x: 0.0, y: -1.0, z: 0.0});
+    Object.getPrototypeOf(GMLUp.prototype).initDefault.call(this);
+    this.setValues({x: 0.0, y: -1.0, z: 0.0});
   }
 }
 class GMLScreenBounds extends GMLPoint {
@@ -43,7 +44,8 @@ class GMLScreenBounds extends GMLPoint {
     return 'screenbounds';
   }
   initDefault() {
-    this.set({x: 1920, y: 1080, z: 0});
+    Object.getPrototypeOf(GMLUp.prototype).initDefault.call(this);
+    this.setValues({x: 1920, y: 1080});
   }
 }
 class GMLOrigin extends GMLPoint {

@@ -5,7 +5,7 @@ export default class GMLPoint extends GMLLeafNodeParent {
     return [
       GMLPointX.getNodeDefinition({required: true, initDefault: true}),
       GMLPointY.getNodeDefinition({required: true, initDefault: true}),
-      GMLPointZ.getNodeDefinition(),
+      GMLPointZ.getNodeDefinition({initDefault: true}),
       GMLPointT.getNodeDefinition(),
       GMLPointTime.getNodeDefinition(),
       GMLPointPressure.getNodeDefinition(),
@@ -27,20 +27,17 @@ export default class GMLPoint extends GMLLeafNodeParent {
       delete this.children.time;
     }
   }
-  get x() {
-    return this.getChild(['x', 0], {value: 0}).value;
-  }
-  get y() {
-    return this.getChild(['y', 0], {value: 0}).value;
-  }
-  get z() {
-    return this.getChild(['z', 0], {value: 0}).value;
-  }
-  get t() {
-    return this.getChild(['t', 0], {value: 0}).value;
+  get values() {
+    return Object.keys(this.children).reduce((obj, key) => {
+      return {
+        ...obj,
+        [key]: this.getChild([key, 0], {value: 0}).value
+      };
+    }, {});
   }
   getVector() {
-    return [ this.x, this.y, this.z ];
+    const { x, y, z } = this.values;
+    return [ x, y, z || 0 ];
   }
 }
 

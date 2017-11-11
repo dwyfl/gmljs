@@ -2,13 +2,14 @@ import GMLNode from './node';
 
 export class GMLLeafNodeParent extends GMLNode {
   static createFromObject(obj) {
-    const p = new this();
-    p.set(obj);
-    return p;
+    const node = new this();
+    node.init();
+    node.setValues(obj);
+    return node;
   }
-  set(obj) {
+  setValues(obj) {
     for (const i in obj) {
-      const child = this.getChild(i);
+      const child = this.getChild([i, 0]);
       if (child) {
         child.value = obj[i];
       }
