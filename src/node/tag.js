@@ -15,7 +15,7 @@ export default class GMLTag extends GMLNode {
     return 'tag';
   }
   getEnvironment() {
-    let env = this.getChildPath(['header', 'environment']);
+    let env = this.getChildPath(['header', ['environment', 0]]);
     if (env === null) {
       env = this.getChild(['environment', 0]);
     }
