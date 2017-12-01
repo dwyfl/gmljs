@@ -15,7 +15,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/dwyfl/gmljs.git"
+    "url": "https://github.com/dwyfl/gmljs.git"
   },
   "babel": {
     "presets": [
