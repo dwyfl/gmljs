@@ -67,10 +67,24 @@ export default class GML {
   toString() {
     return this.doc ? this.doc.toString() : '';
   }
-  static createFromPointArrays(strokes = []) {
+  static createFromPointArrays(strokes = [], options = {}) {
     const gml = new GML();
     gml.doc = GMLDocument.create();
-    const gmlDrawing = gml.doc.getChildPath(['gml', 'children', 'tag', 0, 'children', 'drawing', 0]);
+    if (options.screenBounds) {
+      const screenBounds = gml.doc.getChildPath([
+        'gml', 'children',
+        'tag', 'children',
+        'header', 'children',
+        ['screenbounds', 0]
+      ]);
+      screenBounds.x = options.screenBounds.x;
+      screenBounds.y = options.screenBounds.y;
+    }
+    const gmlDrawing = gml.doc.getChildPath([
+      'gml', 'children',
+      'tag', 'children',
+      ['drawing', 0]
+    ]);
     gmlDrawing.children.stroke = strokes.map(item => GMLStroke.createFromPointArray(item));
     return gml;
   }

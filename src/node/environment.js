@@ -44,7 +44,7 @@ class GMLScreenBounds extends GMLPoint {
     return 'screenbounds';
   }
   initDefault() {
-    Object.getPrototypeOf(GMLUp.prototype).initDefault.call(this);
+    Object.getPrototypeOf(GMLScreenBounds.prototype).initDefault.call(this);
     this.setValues({x: 1920, y: 1080});
   }
 }
