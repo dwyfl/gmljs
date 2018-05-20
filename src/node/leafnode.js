@@ -8,12 +8,19 @@ export class GMLLeafNodeParent extends GMLNode {
     return node;
   }
   setValues(obj) {
-    for (const i in obj) {
-      const child = this.getChild([i, 0]);
-      if (child) {
-        child.value = obj[i];
+    Object.keys(obj).forEach(key => {
+      let child = this.getChild([key, 0]);
+      if (!child) {
+        const nodeDefinition = this.constructor.getChildNodeDefinition(key);
+        if (nodeDefinition) {
+          child = nodeDefinition.model.create();
+          this.addChild(key, child);
+        }
       }
-    }
+      if (child) {
+        child.setValue(obj[key]);
+      }
+    });
   }
   toObject() {
     return Object.keys(this.children).reduce((obj, tag) => {
@@ -33,7 +40,10 @@ export class GMLLeafNode extends GMLNode {
     return this.value;
   }
   initDefault() {
-    this.value = '';
+    this.setValue('');
+  }
+  setValue(value) {
+    this.value = value;
   }
 }
 
@@ -50,6 +60,9 @@ export class GMLFloatNode extends GMLLeafNode {
   initDefault() {
     this.value = 0.0;
   }
+  setValue(value) {
+    this.value = parseFloat(value);
+  }
 }
 
 export class GMLIntegerNode extends GMLLeafNode {
@@ -64,5 +77,8 @@ export class GMLIntegerNode extends GMLLeafNode {
   }
   initDefault() {
     this.value = 0;
+  }
+  setValue(value) {
+    this.value = parseInt(value, 10);
   }
 }

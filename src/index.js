@@ -72,17 +72,17 @@ export default class GML {
     gml.doc = GMLDocument.create();
     if (options.screenBounds) {
       const screenBounds = gml.doc.getChildPath([
-        'gml', 'children',
-        'tag', 'children',
-        'header', 'children',
+        'gml',
+        'tag',
+        'header',
         ['screenbounds', 0]
       ]);
       screenBounds.x = options.screenBounds.x;
       screenBounds.y = options.screenBounds.y;
     }
     const gmlDrawing = gml.doc.getChildPath([
-      'gml', 'children',
-      'tag', 'children',
+      'gml',
+      'tag',
       ['drawing', 0]
     ]);
     gmlDrawing.children.stroke = strokes.map(item => GMLStroke.createFromPointArray(item));

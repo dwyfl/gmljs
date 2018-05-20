@@ -12,6 +12,12 @@ export default class GMLNode {
   static getSupportedAttributes() {
     return [];
   }
+  static getChildNodeDefinition(name) {
+    return this.getSupportedChildNodes().find(item => item.name === name);
+  }
+  static getAttributeDefinition(name) {
+    return this.getSupportedAttributes().find(item => item.name === name);
+  }
   static getTagName() {
     throw new Error('GMLNode::getTagName() needs to be overridden by subclass.');
   }
