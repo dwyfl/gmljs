@@ -3,7 +3,7 @@ import GMLBrush from './stroke';
 import GMLPoint from './point';
 import { GMLLeafNodeParent, GMLLeafNode } from './leafnode';
 
-export default class GMLDrawing extends GMLNode {
+export default class GMLStroke extends GMLNode {
   static getSupportedChildNodes() {
     return [
       GMLPoint.getNodeDefinition(),
@@ -23,8 +23,8 @@ export default class GMLDrawing extends GMLNode {
     return 'stroke';
   }
   static createFromPointArray(points) {
-    const stroke = new GMLStrokeInfo();
-    stroke.children.pt = points.points(p => GMLPoint.createFromObject(p));
+    const stroke = new GMLStroke();
+    stroke.children.pt = points.map(p => GMLPoint.createFromObject(p));
     return stroke;
   }
   isDrawing() {
