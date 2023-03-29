@@ -1,0 +1,25 @@
+const settings = require('../settings');
+
+export function assert(condition: any, message: string) {
+  if (settings.assert.print_errors) {
+    // eslint-disable-next-line no-console
+    console.assert(condition, message);
+  }
+  if (settings.assert.throw_errors && !condition) {
+    throw new Error(message || "Assertion failed");
+  }
+}
+
+export default assert;
+
+export function assertString(str: string, message: string) {
+  assert(typeof str === "string", message);
+}
+
+export function assertStringNotEmpty(str: string, message: string) {
+  assert(typeof str === "string" && str.length, message);
+}
+
+export function assertNumber(num: number, message: string) {
+  assert(typeof num === "number" && !isNaN(num) && isFinite(num), message);
+}
