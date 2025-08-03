@@ -1,11 +1,24 @@
-import { GMLNodeDefinition, GMLNodeName, GMLNodeValue, GMLParsedNode } from "../../types";
+import {
+  GMLNodeDefinition,
+  GMLNodeName,
+  GMLNodeValue,
+  GMLParsedNode,
+} from "../../types";
 import { createGmlNodeFromTagName } from "../../util";
 import { GMLLeafNodeParent } from "../leaf/parent";
 
 export class GMLPoint extends GMLLeafNodeParent {
   init(data?: GMLParsedNode) {
-    super.init(data)
-    // Convert <time> to <t>
+    super.init(data);
+    /**
+     * Convert <time> to <t>.
+     *
+     * The spec allows for the <time> tags to exist both under <client>
+     * (as a unix timestamp) and under <point> (as a float timing value).
+     *
+     * This is the only place in the spec where tags are different
+     * depending on parent node context, so just do this for now.
+     **/
     const timeChild = this.getChild(GMLNodeName.POINT_TIME);
     if (timeChild) {
       if (!this.hasChild(GMLNodeName.POINT_T)) {
@@ -17,11 +30,15 @@ export class GMLPoint extends GMLLeafNodeParent {
     }
   }
   get values() {
-    const result: Partial<Record<GMLNodeName, GMLNodeValue>> =
-      (<GMLNodeName[]>Object.keys(this.children)).reduce((obj, key) => ({
+    const result: Partial<Record<GMLNodeName, GMLNodeValue>> = (<GMLNodeName[]>(
+      Object.keys(this.children)
+    )).reduce(
+      (obj, key) => ({
         ...obj,
         [key]: this.getChild(key)?.getValue(),
-      }), {});
+      }),
+      {}
+    );
     return result;
   }
   getT() {
@@ -30,11 +47,11 @@ export class GMLPoint extends GMLLeafNodeParent {
   }
   getXYZ() {
     const { x = 0, y = 0, z = 0 } = this.values;
-    return <number[]>[ x, y, z ];
+    return <number[]>[x, y, z];
   }
 }
 
-const definition: GMLNodeDefinition = {
+export const GMLPointDefinition: GMLNodeDefinition = {
   name: GMLNodeName.POINT,
   model: GMLPoint,
   attributes: [],
@@ -51,4 +68,4 @@ const definition: GMLNodeDefinition = {
   ],
 };
 
-export default definition;
+export default GMLPointDefinition;

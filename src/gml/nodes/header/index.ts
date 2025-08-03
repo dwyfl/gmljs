@@ -1,16 +1,13 @@
-import { GMLNode } from '../..';
-import { GMLNodeDefinition, GMLNodeName } from '../../types';
+import { GMLNode } from "../..";
+import { GMLNodeDefinition, GMLNodeName } from "../../types";
 
 export class GMLHeader extends GMLNode {}
 
-const definition: GMLNodeDefinition = {
+export const GMLHeaderDefinition: GMLNodeDefinition = {
   name: GMLNodeName.HEADER,
   model: GMLHeader,
   attributes: [],
-  children: [
-    GMLNodeName.CLIENT,
-    GMLNodeName.ENVIRONMENT,
-  ],
+  children: [GMLNodeName.CLIENT, GMLNodeName.ENVIRONMENT],
 };
 
-export default definition;
+export default GMLHeaderDefinition;

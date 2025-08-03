@@ -1,9 +1,9 @@
-import { GMLNode } from '../..';
-import { GMLNodeDefinition, GMLNodeName } from '../../types';
+import { GMLNode } from "../..";
+import { GMLNodeDefinition, GMLNodeName } from "../../types";
 
 export class GMLBrush extends GMLNode {}
 
-const definition: GMLNodeDefinition = {
+export const GMLBrushDefinition: GMLNodeDefinition = {
   name: GMLNodeName.CLIENT,
   model: GMLBrush,
   attributes: [],
@@ -22,4 +22,4 @@ const definition: GMLNodeDefinition = {
   ],
 };
 
-export default definition;
+export default GMLBrushDefinition;

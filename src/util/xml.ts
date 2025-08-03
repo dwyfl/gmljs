@@ -1,3 +1,12 @@
+import {
+  DOMParser,
+  type Document as _XmlDocument,
+  type Element as _XmlElement,
+} from "@xmldom/xmldom";
+
+export type XmlDocument = _XmlDocument;
+export type XmlElement = _XmlElement;
+
 export type XmlValue = string | number | boolean;
 export type XmlKey = string;
 export type XmlTagName = string;
@@ -16,9 +25,8 @@ export const formatXmlTagStart = (
   tagName: string,
   attributes: XmlAttributes = {}
 ) => {
-  const attrStrings = Object.entries(attributes).reduce(
-    (result, [key, value]) => [...result, `${key}="${value}"`],
-    <string[]>[]
+  const attrStrings = Object.entries(attributes).map(
+    ([key, value]) => `${key}="${value}"`
   );
   return `<${tagName}${attrStrings.length ? ` ${attrStrings.join(" ")}` : ""}>`;
 };
@@ -49,21 +57,20 @@ export const objectToXml = (obj: XmlTree, objName: string): string =>
 
 export const parseXml = (str: string) => {
   var parser = new DOMParser();
-  var doc = parser.parseFromString(str, 'application/xml');
+  var doc = parser.parseFromString(str, "application/xml");
   if (parserHadError(doc)) {
-    throw new Error('Unable to parse GML!');
+    throw new Error("Unable to parse GML!");
   }
   return doc;
-}
+};
 
-const parserHadError = (doc: Document) => {
-  const parserError = doc.getElementsByTagName('parsererror');
+const parserHadError = (doc: XmlDocument) => {
+  const parserError = doc.getElementsByTagName("parsererror");
   const parsererrorNS = parserError.length ? parserError[0].namespaceURI : null;
-  if (parsererrorNS === 'http://www.w3.org/1999/xhtml') {
+  if (parsererrorNS === "http://www.w3.org/1999/xhtml") {
     // In PhantomJS the parseerror element doesn't seem to have a special namespace
-    // Stolen from:
-    // http://stackoverflow.com/questions/11563554/how-do-i-detect-xml-parsing-errors-when-using-javascripts-domparser-in-a-cross
-    return doc.getElementsByTagName('parsererror').length > 0;
+    // Stolen from: http://stackoverflow.com/questions/11563554/how-do-i-detect-xml-parsing-errors-when-using-javascripts-domparser-in-a-cross
+    return doc.getElementsByTagName("parsererror").length > 0;
   }
-  return doc.getElementsByTagNameNS(parsererrorNS, 'parsererror').length > 0;
-}
+  return doc.getElementsByTagNameNS(parsererrorNS, "parsererror").length > 0;
+};

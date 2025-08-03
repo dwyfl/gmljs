@@ -1,38 +1,45 @@
-import { GMLClient } from './gml/nodes/client';
-import { GMLClientUsername } from './gml/nodes/client/settings';
-import { GMLDocument } from './gml/nodes/document';
-import { GMLRoot } from './gml/nodes/root';
-import { GMLTag } from './gml/nodes/tag';
-import { GMLNodeName } from './gml/types';
-import { createGmlNodeFromTagName } from './gml/util';
-import { parseXml } from './util/xml';
+import { GMLClient } from "./gml/nodes/client";
+import { GMLClientUsername } from "./gml/nodes/client/settings";
+import { GMLDocument } from "./gml/nodes/document";
+import { GMLRoot } from "./gml/nodes/root";
+import { GMLTag } from "./gml/nodes/tag";
+import { GMLNodeName } from "./gml/types";
+import { createGmlNodeFromTagName } from "./gml/util";
+import { parseXml } from "./util/xml";
 
-class GML {
+export class GML {
   doc: GMLDocument;
   constructor(str?: string) {
-    this.doc = typeof str === 'string'
-      ? createGmlNodeFromTagName(GMLNodeName.DOCUMENT, parseXml(str))
-      : createGmlNodeFromTagName(GMLNodeName.DOCUMENT);
+    this.doc =
+      typeof str === "string"
+        ? createGmlNodeFromTagName(GMLNodeName.DOCUMENT, parseXml(str))
+        : createGmlNodeFromTagName(GMLNodeName.DOCUMENT);
   }
   init(str: string) {
     this.doc = createGmlNodeFromTagName(GMLNodeName.DOCUMENT, parseXml(str));
   }
   getClient(): string | undefined {
-    return this.doc.getChildPath<GMLClient>([
-      GMLNodeName.ROOT,
-      GMLNodeName.TAG,
-      GMLNodeName.HEADER,
-      GMLNodeName.CLIENT,
-    ])?.getValue().toString();
+    return this.doc
+      .getChildPath<GMLClient>([
+        GMLNodeName.ROOT,
+        GMLNodeName.TAG,
+        GMLNodeName.HEADER,
+        GMLNodeName.CLIENT,
+      ])
+      ?.getValue()
+      .toString();
   }
   getTitle(): string | undefined {
-    return this.doc.getChildPath<GMLClientUsername>([
-      GMLNodeName.ROOT,
-      GMLNodeName.TAG,
-      GMLNodeName.HEADER,
-      GMLNodeName.CLIENT,
-      GMLNodeName.CLIENT_USERNAME,
-    ])?.getValue().toString();
+    return this.doc
+      .getChildPath<GMLClientUsername>([
+        GMLNodeName.ROOT,
+        GMLNodeName.TAG,
+        GMLNodeName.HEADER,
+        GMLNodeName.CLIENT,
+        GMLNodeName.CLIENT_USERNAME,
+      ])
+      ?.getValue()
+      .toString();
   }
   getRoot() {
     return this.doc.getChild<GMLRoot>(GMLNodeName.ROOT);
@@ -70,7 +77,7 @@ class GML {
     return node ? node[index] : undefined;
   }
   toString() {
-    return this.doc?.toString() ?? '';
+    return this.doc?.toString() ?? "";
   }
 }
 

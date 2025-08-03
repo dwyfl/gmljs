@@ -1,14 +1,14 @@
-import { GMLNode } from '../..';
-import { GMLNodeDefinition, GMLNodeName, GMLParsedNode } from '../../types';
+import { GMLNode } from "../..";
+import { GMLNodeDefinition, GMLNodeName, GMLParsedNode } from "../../types";
 
 export class GMLClient extends GMLNode {
   init(data?: GMLParsedNode) {
-    super.init(data)
+    super.init(data);
     // TODO: Add <version> if default <name> was created
   }
 }
 
-const definition: GMLNodeDefinition = {
+export const definition: GMLNodeDefinition = {
   name: GMLNodeName.CLIENT,
   model: GMLClient,
   attributes: [],

@@ -1,11 +1,11 @@
-import { GMLNode } from '../..';
+import { GMLNode } from "../..";
 import {
   GMLAttributeDefinition,
   GMLNodeAttribute,
   GMLNodeDefinition,
-  GMLNodeName
-} from '../../types';
-import { GMLPoint } from '../point';
+  GMLNodeName,
+} from "../../types";
+import { GMLPoint } from "../point";
 
 export class GMLStroke extends GMLNode {
   isDrawing() {
@@ -22,20 +22,16 @@ export class GMLStroke extends GMLNode {
 const attrIsDrawing: GMLAttributeDefinition = {
   name: GMLNodeAttribute.IS_DRAWING,
   defaultValue: true,
-  parse: value => typeof value === 'string' ? value === 'true' : Boolean(value),
-  stringify: value => value ? 'true' : 'false',
+  parse: (value) =>
+    typeof value === "string" ? value === "true" : Boolean(value),
+  stringify: (value) => (value ? "true" : "false"),
 };
 
-
-const definition: GMLNodeDefinition = {
+export const GMLStrokeDefinition: GMLNodeDefinition = {
   name: GMLNodeName.STROKE,
   model: GMLStroke,
   attributes: [attrIsDrawing],
-  children: [
-    GMLNodeName.POINT,
-    GMLNodeName.BRUSH,
-    GMLNodeName.STROKE_INFO,
-  ],
+  children: [GMLNodeName.POINT, GMLNodeName.BRUSH, GMLNodeName.STROKE_INFO],
 };
 
-export default definition;
+export default GMLStrokeDefinition;

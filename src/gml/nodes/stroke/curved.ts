@@ -3,11 +3,11 @@ import { GMLLeafNode } from "../leaf";
 
 export class GMLStrokeInfoCurved extends GMLLeafNode {}
 
-const definition: GMLNodeDefinition = {
+export const GMLStrokeInfoCurvedDefinition: GMLNodeDefinition = {
   name: GMLNodeName.STROKE_INFO_CURVED,
   model: GMLStrokeInfoCurved,
   attributes: [],
   children: [],
 };
 
-export default definition;
+export default GMLStrokeInfoCurvedDefinition;

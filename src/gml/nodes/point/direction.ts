@@ -3,7 +3,7 @@ import { GMLLeafNodeParent } from "../leaf/parent";
 
 export class GMLDirection extends GMLLeafNodeParent {}
 
-const definition: GMLNodeDefinition = {
+export const GMLDirectionDefinition: GMLNodeDefinition = {
   name: GMLNodeName.DIRECTION,
   model: GMLDirection,
   attributes: [],
@@ -14,4 +14,4 @@ const definition: GMLNodeDefinition = {
   ],
 };
 
-export default definition;
+export default GMLDirectionDefinition;

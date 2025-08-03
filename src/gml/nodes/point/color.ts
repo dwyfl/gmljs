@@ -4,20 +4,32 @@ import { GMLLeafNodeParent } from "../leaf/parent";
 import { createDefinition } from "../../util";
 
 export class GMLColorR extends GMLFloatNode {}
-export const GMLColorRDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.COLOR_R, GMLColorR);
+export const GMLColorRDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.COLOR_R,
+  GMLColorR
+);
 
 export class GMLColorG extends GMLFloatNode {}
-export const GMLColorGDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.COLOR_G, GMLColorG);
+export const GMLColorGDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.COLOR_G,
+  GMLColorG
+);
 
 export class GMLColorB extends GMLFloatNode {}
-export const GMLColorBDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.COLOR_B, GMLColorB);
+export const GMLColorBDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.COLOR_B,
+  GMLColorB
+);
 
 export class GMLColorA extends GMLFloatNode {}
-export const GMLColorADefinition: GMLNodeDefinition = createDefinition(GMLNodeName.COLOR_A, GMLColorA);
+export const GMLColorADefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.COLOR_A,
+  GMLColorA
+);
 
 export class GMLColor extends GMLLeafNodeParent {}
 
-const definition: GMLNodeDefinition = {
+export const GMLColorDefinition: GMLNodeDefinition = {
   name: GMLNodeName.COLOR,
   model: GMLColor,
   attributes: [],
@@ -29,4 +41,4 @@ const definition: GMLNodeDefinition = {
   ],
 };
 
-export default definition;
+export default GMLColorDefinition;
