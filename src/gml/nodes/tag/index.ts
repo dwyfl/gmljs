@@ -14,7 +14,7 @@ export class GMLTag extends GMLNode {
   }
   getClientName() {
     return (
-      this.getChildValue([
+      this.getChildValueString([
         GMLNodeName.HEADER,
         GMLNodeName.CLIENT,
         GMLNodeName.CLIENT_NAME,

@@ -1,18 +1,16 @@
-import { GML } from "..";
-import { GMLNode } from ".";
-import { getGMLNodeDefinition } from "./map";
-import { GMLEnvScreenBounds } from "./nodes/environment/settings";
-import { GMLPoint } from "./nodes/point";
-import { GMLStroke } from "./nodes/stroke";
+import { GMLNode } from "..";
+import { getGMLNodeDefinition } from "../map";
+import { GMLEnvScreenBounds } from "../nodes/environment/settings";
+import { GMLPoint } from "../nodes/point";
+import { GMLStroke } from "../nodes/stroke";
 import {
   GMLChildNodeDefinition,
   GMLNodeAttribute,
-  GMLNodeConstructor,
   GMLNodeDefinition,
   GMLNodeName,
   GMLParsedNode,
-} from "./types";
-import { parseXml } from "../util/xml";
+} from "../types";
+import { parseXml } from "../../util/xml";
 
 export function createGmlNodeFromTagName(
   tagName: GMLNodeName,
@@ -62,16 +60,6 @@ export const createGMLChildNodeDefinition = (
   options: Partial<GMLChildNodeDefinition> = {}
 ): GMLChildNodeDefinition => ({ name, ...options });
 
-export const createDefinition = (
-  name: GMLNodeName,
-  model: GMLNodeConstructor
-): GMLNodeDefinition => ({
-  name,
-  model,
-  attributes: [],
-  children: [],
-});
-
 type PointObj = { x: number; y: number; z?: number };
 
 const createPoint = (values: PointObj): GMLPoint => {
@@ -88,14 +76,13 @@ const createStroke = (points: PointObj[]): GMLStroke => {
   return stroke;
 };
 
-export const createGMLFromPointArrays = (
+export const createGMLDocumentFromPointArrays = (
   strokes: PointObj[][] = [],
   options: { screenBounds?: { x: number; y: number } } = {}
 ) => {
-  const gml = new GML();
-  gml.doc = createGmlNodeFromTagName(GMLNodeName.DOCUMENT);
+  const doc = createGmlNodeFromTagName(GMLNodeName.DOCUMENT);
   if (options.screenBounds) {
-    const screenBounds = gml.doc.getChildPath<GMLEnvScreenBounds>([
+    const screenBounds = doc.getChildPath<GMLEnvScreenBounds>([
       GMLNodeName.ROOT,
       GMLNodeName.TAG,
       GMLNodeName.HEADER,
@@ -103,7 +90,7 @@ export const createGMLFromPointArrays = (
     ]);
     screenBounds?.setValues(options.screenBounds);
   }
-  const drawing = gml.doc.getChildPath<GMLEnvScreenBounds>([
+  const drawing = doc.getChildPath<GMLEnvScreenBounds>([
     GMLNodeName.ROOT,
     GMLNodeName.TAG,
     GMLNodeName.DRAWING,
@@ -111,5 +98,5 @@ export const createGMLFromPointArrays = (
   strokes.forEach((points) =>
     drawing?.addChild(GMLNodeName.STROKE, createStroke(points))
   );
-  return gml;
+  return doc;
 };

@@ -1,0 +1,3 @@
+exports[`GMLClient > creates a default GMLClient node 1`] = `
+"<client></client>"
+`;

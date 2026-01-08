@@ -7,6 +7,13 @@ import { GMLNodeName } from "./gml/types";
 import { createGmlNodeFromTagName } from "./gml/util";
 import { parseXml } from "./util/xml";
 
+export { GMLPoint } from "./gml/nodes/point";
+export { GMLStroke } from "./gml/nodes/stroke";
+export { GMLDrawing } from "./gml/nodes/drawing";
+export { GMLTag } from "./gml/nodes/tag";
+export { GMLEnvironment } from "./gml/nodes/environment";
+export { GMLDocument } from "./gml/nodes/document";
+
 export class GML {
   doc: GMLDocument;
   constructor(str?: string) {

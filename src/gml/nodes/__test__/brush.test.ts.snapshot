@@ -1,0 +1,7 @@
+exports[`GMLBrush > creates a GMLBrush node from spec XML 1`] = `
+"<client><mode></mode><uniquestyleid></uniquestyleid><spec></spec><width>0</width><speedtowidthratio>0</speedtowidthratio><dripamnt>0</dripamnt><dripspeed>0</dripspeed><layerabsolute>0</layerabsolute><color></color><dripvecrelativetoup></dripvecrelativetoup></client>"
+`;
+
+exports[`GMLBrush > creates a default GMLBrush node 1`] = `
+"<client></client>"
+`;

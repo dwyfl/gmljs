@@ -1,4 +1,4 @@
-import { XmlDocument, XmlElement } from "../util/xml";
+import { XmlDocument, XmlElement, XmlNode } from "../util/xml";
 
 export const GMLNodeName = {
   BRUSH: "brush",
@@ -30,7 +30,7 @@ export const GMLNodeName = {
   COLOR_B: "b",
   COLOR_A: "a",
   DIRECTION: "dir",
-  DOCUMENT: "_",
+  DOCUMENT: "_", // TODO: fix naming
   DRAWING: "drawing",
   ENVIRONMENT: "environment",
   ENVIRONMENT_OFFSET: "offset",
@@ -77,6 +77,8 @@ export interface GMLNodeInterface {
   children: GMLNodeChildren;
   value: GMLNodeValue;
   init(data?: GMLParsedNode): void;
+  verifyAttributes(): void;
+  verifyChildren(): void;
   setAttribute(key: GMLNodeAttribute, value: GMLNodeAttributeValue): void;
   getAttribute(key: GMLNodeAttribute): GMLNodeAttributeValue | undefined;
   addChild(name: GMLNodeName, child: GMLNodeInterface): void;
@@ -89,11 +91,12 @@ export interface GMLNodeInterface {
     path: GMLNodeChildPath[]
   ): T | undefined;
   getChildValue(path: GMLNodeChildPath[]): GMLNodeValue | undefined;
+  getChildValueString(path: GMLNodeChildPath[]): string;
   getValue(): GMLNodeValue;
   setValue(value: GMLNodeValue): void;
   parseValue(value: string): void;
-  parseAttributes(data: GMLParsedNode, strict: boolean): void;
-  parseChildNodes(data: GMLParsedNode, strict: boolean): void;
+  parseAttributes(data: GMLParsedNode): void;
+  parseChildNodes(data: GMLParsedNode): void;
   getChildNodeDefinition(name: GMLNodeName): GMLChildNodeDefinition | undefined;
   getAttributeDefinition(
     name: GMLNodeAttribute
@@ -137,4 +140,4 @@ type GMLObjectOrValue = GMLNodeValue | GMLObjectRepresentation;
 export interface GMLObjectRepresentation
   extends Record<string, GMLObjectOrValue[]> {}
 
-export type GMLParsedNode = XmlDocument | XmlElement;
+export type GMLParsedNode = XmlDocument | XmlElement | XmlNode;

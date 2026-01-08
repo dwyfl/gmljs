@@ -2,10 +2,12 @@ import {
   DOMParser,
   type Document as _XmlDocument,
   type Element as _XmlElement,
+  type Node as _XmlNode,
 } from "@xmldom/xmldom";
 
 export type XmlDocument = _XmlDocument;
 export type XmlElement = _XmlElement;
+export type XmlNode = _XmlNode;
 
 export type XmlValue = string | number | boolean;
 export type XmlKey = string;

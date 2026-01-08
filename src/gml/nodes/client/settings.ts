@@ -1,32 +1,50 @@
 import { GMLNodeDefinition, GMLNodeName, GMLParsedNode } from "../../types";
 import { GMLLeafNode } from "../leaf";
 import { GMLIntegerNode } from "../leaf/integer";
-import { createDefinition } from "../../util";
+import { createDefinition } from "../../util/definition";
 import { GMLLeafNodeParent } from "../leaf/parent";
-import config from '../../../../package.json';
+import config from "../../../../package.json";
 
 export class GMLClientUsername extends GMLLeafNode {}
-export const GMLClientUsernameDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.CLIENT_USERNAME, GMLClientUsername);
+export const GMLClientUsernameDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.CLIENT_USERNAME,
+  GMLClientUsername
+);
 
 export class GMLClientPermalink extends GMLLeafNode {}
-export const GMLClientPermalinkDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.CLIENT_PERMALINK, GMLClientPermalink);
+export const GMLClientPermalinkDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.CLIENT_PERMALINK,
+  GMLClientPermalink
+);
 
 export class GMLClientKeywords extends GMLLeafNode {}
-export const GMLClientKeywordsDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.CLIENT_KEYWORDS, GMLClientKeywords);
+export const GMLClientKeywordsDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.CLIENT_KEYWORDS,
+  GMLClientKeywords
+);
 
 export class GMLClientUniqueKey extends GMLLeafNode {}
-export const GMLClientUniqueKeyDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.CLIENT_UNIQUEKEY, GMLClientUniqueKey);
+export const GMLClientUniqueKeyDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.CLIENT_UNIQUEKEY,
+  GMLClientUniqueKey
+);
 
 export class GMLClientIp extends GMLLeafNode {}
-export const GMLClientIpDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.CLIENT_IP, GMLClientIp);
+export const GMLClientIpDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.CLIENT_IP,
+  GMLClientIp
+);
 
 export class GMLClientName extends GMLLeafNode {
   init(data?: GMLParsedNode) {
-    this.setValue('gmljs');
+    this.setValue("gmljs");
     super.init(data);
   }
 }
-export const GMLClientNameDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.CLIENT_NAME, GMLClientName);
+export const GMLClientNameDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.CLIENT_NAME,
+  GMLClientName
+);
 
 export class GMLTime extends GMLIntegerNode {
   init(data?: GMLParsedNode) {
@@ -34,15 +52,21 @@ export class GMLTime extends GMLIntegerNode {
     super.init(data);
   }
 }
-export const GMLTimeDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.CLIENT_TIME, GMLTime);
+export const GMLTimeDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.CLIENT_TIME,
+  GMLTime
+);
 
 export class GMLClientVersion extends GMLLeafNode {
   init(data?: GMLParsedNode) {
-    this.setValue(config.version ?? 'unknown');
+    this.setValue(config.version ?? "unknown");
     super.init(data);
   }
 }
-export const GMLClientVersionDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.CLIENT_VERSION, GMLClientVersion);
+export const GMLClientVersionDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.CLIENT_VERSION,
+  GMLClientVersion
+);
 
 export class GMLLocation extends GMLLeafNodeParent {}
 export const GMLLocationDefinition: GMLNodeDefinition = {
@@ -56,7 +80,9 @@ export const GMLLocationDefinition: GMLNodeDefinition = {
 };
 
 export class GMLLocationLongitude extends GMLLeafNode {}
-export const GMLLocationLongitudeDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.CLIENT_LOCATION_LON, GMLLocationLongitude);
+export const GMLLocationLongitudeDefinition: GMLNodeDefinition =
+  createDefinition(GMLNodeName.CLIENT_LOCATION_LON, GMLLocationLongitude);
 
 export class GMLLocationLatitude extends GMLLeafNode {}
-export const GMLLocationLatitudeDefinition: GMLNodeDefinition = createDefinition(GMLNodeName.CLIENT_LOCATION_LAT, GMLLocationLatitude);
+export const GMLLocationLatitudeDefinition: GMLNodeDefinition =
+  createDefinition(GMLNodeName.CLIENT_LOCATION_LAT, GMLLocationLatitude);

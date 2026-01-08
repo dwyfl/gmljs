@@ -8,7 +8,10 @@ import { createGmlNodeFromTagName } from "../../util";
 import { GMLLeafNodeParent } from "../leaf/parent";
 
 export class GMLPoint extends GMLLeafNodeParent {
-  init(data?: GMLParsedNode) {
+  init(
+    data?: GMLParsedNode,
+    defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>
+  ) {
     super.init(data);
     /**
      * Convert <time> to <t>.
@@ -27,6 +30,9 @@ export class GMLPoint extends GMLLeafNodeParent {
         this.addChild(GMLNodeName.POINT_T, tChild);
       }
       this.removeChild(GMLNodeName.POINT_TIME);
+    }
+    if (!data && defaultValues) {
+      this.setValues(defaultValues);
     }
   }
   get values() {
@@ -47,7 +53,7 @@ export class GMLPoint extends GMLLeafNodeParent {
   }
   getXYZ() {
     const { x = 0, y = 0, z = 0 } = this.values;
-    return <number[]>[x, y, z];
+    return <[number, number, number]>[x, y, z];
   }
 }
 

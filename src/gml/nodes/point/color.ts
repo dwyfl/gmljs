@@ -1,7 +1,7 @@
 import { GMLNodeDefinition, GMLNodeName, GMLParsedNode } from "../../types";
 import { GMLFloatNode } from "../leaf/float";
 import { GMLLeafNodeParent } from "../leaf/parent";
-import { createDefinition } from "../../util";
+import { createDefinition } from "../../util/definition";
 
 export class GMLColorR extends GMLFloatNode {}
 export const GMLColorRDefinition: GMLNodeDefinition = createDefinition(
