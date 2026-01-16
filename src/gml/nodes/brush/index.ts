@@ -4,7 +4,7 @@ import { GMLNodeDefinition, GMLNodeName } from "../../types";
 export class GMLBrush extends GMLNode {}
 
 export const GMLBrushDefinition: GMLNodeDefinition = {
-  name: GMLNodeName.CLIENT,
+  name: GMLNodeName.BRUSH,
   model: GMLBrush,
   attributes: [],
   children: [

@@ -4,7 +4,7 @@ import {
   GMLNodeValue,
   GMLParsedNode,
 } from "../../types";
-import { createGmlNodeFromTagName } from "../../util";
+import { GMLTime } from "../client/settings";
 import { GMLLeafNodeParent } from "../leaf/parent";
 
 export class GMLPoint extends GMLLeafNodeParent {
@@ -13,6 +13,10 @@ export class GMLPoint extends GMLLeafNodeParent {
     defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>
   ) {
     super.init(data);
+    // Set defaults after parsing
+    // When parsing data: overwrite=false so parsed values aren't replaced
+    // When no data: overwrite=true so defaults override initialized children
+    this.setValues(defaultValues, !data);
     /**
      * Convert <time> to <t>.
      *
@@ -22,17 +26,10 @@ export class GMLPoint extends GMLLeafNodeParent {
      * This is the only place in the spec where tags are different
      * depending on parent node context, so just do this for now.
      **/
-    const timeChild = this.getChild(GMLNodeName.POINT_TIME);
+    const timeChild = this.getChild<GMLTime>(GMLNodeName.POINT_TIME);
     if (timeChild) {
-      if (!this.hasChild(GMLNodeName.POINT_T)) {
-        const tChild = createGmlNodeFromTagName(GMLNodeName.POINT_T);
-        tChild.setValue(timeChild.getValue());
-        this.addChild(GMLNodeName.POINT_T, tChild);
-      }
+      this.setValues({ t: timeChild.floatValue }, false);
       this.removeChild(GMLNodeName.POINT_TIME);
-    }
-    if (!data && defaultValues) {
-      this.setValues(defaultValues);
     }
   }
   get values() {
@@ -49,11 +46,15 @@ export class GMLPoint extends GMLLeafNodeParent {
   }
   getT() {
     const { t } = this.values;
-    return <number | undefined>t;
+    return typeof t === "number" ? t : undefined;
   }
   getXYZ() {
-    const { x = 0, y = 0, z = 0 } = this.values;
-    return <[number, number, number]>[x, y, z];
+    const { x, y, z } = this.values;
+    return [
+      typeof x === "number" ? x : 0,
+      typeof y === "number" ? y : 0,
+      typeof z === "number" ? z : 0,
+    ];
   }
 }
 

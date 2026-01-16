@@ -6,9 +6,10 @@ export class GMLIntegerNode extends GMLLeafNode {
     this.value = 0;
     super.init(data);
   }
-  parseValue(value: string) {
+  parseValue(data: GMLParsedNode) {
+    const value = data.textContent ?? "";
     const intValue = parseInt(value, 10);
-    if (isNaN(intValue)) {
+    if (!Number.isFinite(intValue)) {
       throw new Error(`Unable to parse value "${value}" as integer.`);
     }
     this.value = intValue;

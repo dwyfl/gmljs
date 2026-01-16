@@ -6,7 +6,8 @@ export class GMLFloatNode extends GMLLeafNode {
     this.value = 0.0;
     super.init(data);
   }
-  parseValue(value: string) {
+  parseValue(data: GMLParsedNode) {
+    const value = data.textContent ?? "";
     const floatValue = parseFloat(value);
     if (isNaN(floatValue) || !Number.isFinite(floatValue)) {
       throw new Error(`Unable to parse value "${value}" as float.`);

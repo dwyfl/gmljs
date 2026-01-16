@@ -1,4 +1,9 @@
-import { GMLNodeDefinition, GMLNodeName, GMLParsedNode } from "../../types";
+import {
+  GMLNodeDefinition,
+  GMLNodeName,
+  GMLNodeValue,
+  GMLParsedNode,
+} from "../../types";
 import { GMLLeafNode } from "../leaf";
 import { GMLIntegerNode } from "../leaf/integer";
 import { createDefinition } from "../../util/definition";
@@ -46,10 +51,32 @@ export const GMLClientNameDefinition: GMLNodeDefinition = createDefinition(
   GMLClientName
 );
 
-export class GMLTime extends GMLIntegerNode {
+export class GMLTime extends GMLLeafNode {
+  /**
+   * `declare` tells TypeScript the property exists but does not emit
+   * any initialization code. This allows the value set in init() to
+   * persist.
+   */
+  declare private stringValue: string;
+  constructor(definition: GMLNodeDefinition, data?: GMLParsedNode) {
+    super(definition, data);
+    this.stringValue = data?.textContent ?? "";
+  }
   init(data?: GMLParsedNode) {
     this.setValue(Math.floor(Date.now() * 0.001));
     super.init(data);
+  }
+  parseValue(data: GMLParsedNode) {
+    const value = data.textContent ?? "";
+    const intValue = parseInt(value, 10);
+    if (!Number.isFinite(intValue)) {
+      throw new Error(`Unable to parse value "${value}" as integer.`);
+    }
+    this.value = intValue;
+    this.stringValue = value;
+  }
+  get floatValue() {
+    return this.stringValue ? parseFloat(this.stringValue) : undefined;
   }
 }
 export const GMLTimeDefinition: GMLNodeDefinition = createDefinition(

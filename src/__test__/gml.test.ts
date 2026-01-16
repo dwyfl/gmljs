@@ -32,35 +32,35 @@ describe("GML", () => {
     t.assert.snapshot(gml);
   });
 
-  it.skip("getTags() works", (t: TestContext) => {
+  it("getTags() works", (t: TestContext) => {
     const items = new GML(example001).getTags();
-    t.assert.isArray(items);
-    t.assert.lengthOf(items, 1);
+    t.assert.ok(Array.isArray(items));
+    t.assert.strictEqual(items.length, 1);
     t.assert.snapshot(items?.[0].toString());
   });
 
-  it.skip("getDrawings() works", (t: TestContext) => {
+  it("getDrawings() works", (t: TestContext) => {
     const items = new GML(example001).getDrawings(0);
-    t.assert.isArray(items);
-    t.assert.lengthOf(items, 1);
+    t.assert.ok(Array.isArray(items));
+    t.assert.strictEqual(items?.length, 1);
     t.assert.snapshot(items?.[0].toString());
   });
 
-  it.skip("getStrokes() works", (t: TestContext) => {
+  it("getStrokes() works", (t: TestContext) => {
     const items = new GML(example001).getStrokes(0, 0);
-    t.assert.isArray(items);
-    t.assert.lengthOf(items, 1);
+    t.assert.ok(Array.isArray(items));
+    t.assert.strictEqual(items?.length, 1);
     t.assert.snapshot(items?.[0].toString());
   });
 
-  it.skip("getPoints() works", (t: TestContext) => {
+  it("getPoints() works", (t: TestContext) => {
     const items = new GML(example001).getPoints(0, 0, 0);
-    t.assert.isArray(items);
-    t.assert.lengthOf(items, 155);
+    t.assert.ok(Array.isArray(items));
+    t.assert.strictEqual(items?.length, 155);
     t.assert.snapshot(items?.map((item) => item.toString()).join(""));
   });
 
-  it.skip("GMLNode::getChildPath() works", (t: TestContext) => {
+  it("getChildPath() works", (t: TestContext) => {
     const name = new GML(example001)
       ?.getRoot()
       ?.getChildPath(["tag", "header", "client", "name"]);

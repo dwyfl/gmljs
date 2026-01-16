@@ -16,7 +16,7 @@ describe("GMLClient", () => {
       now: new Date(0),
     });
     try {
-      const gml = createGmlNodeFromTagName("brush").toString();
+      const gml = createGmlNodeFromTagName("client").toString();
       t.assert.snapshot(gml);
     } finally {
       t.mock.timers.reset();

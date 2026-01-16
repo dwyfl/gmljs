@@ -1,6 +1,11 @@
-import { createGmlNodeFromTagName, isGMLNodeName } from "../../util";
+import {
+  createGmlNode,
+  createGmlNodeFromTagName,
+  isGMLNodeName,
+} from "../../util";
 import { GMLNodeName, GMLNodeValue } from "../../types";
 import { GMLNode } from "../..";
+import { getGMLNodeDefinition } from "../../map";
 
 export const createLeafNodeParentFromObject = (
   tagName: GMLNodeName,
@@ -12,25 +17,28 @@ export const createLeafNodeParentFromObject = (
 };
 
 export class GMLLeafNodeParent extends GMLNode {
-  setValues(obj?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
+  setValues(
+    obj?: Partial<Record<GMLNodeName, GMLNodeValue>>,
+    overwrite = true
+  ) {
     if (!obj) {
       return;
     }
-    const supportedChildren = this.definition.children.map((item) =>
-      isGMLNodeName(item) ? item : item.name
-    );
-    supportedChildren
-      .filter((name) => name in obj)
-      .forEach((name) => {
+    Object.entries(obj)
+      .filter((item): item is [GMLNodeName, GMLNodeValue] =>
+        isGMLNodeName(item[0])
+      )
+      .forEach(([name, value]) => {
         const child = this.getChild(name);
         if (!child) {
           const childNode = this.getChildNodeDefinition(name);
           if (childNode) {
-            this.addChild(name, createGmlNodeFromTagName(name));
+            const definition = getGMLNodeDefinition(name);
+            const node = createGmlNode(definition);
+            this.addChild(name, node);
+            node.setValue(value);
           }
-        }
-        const value = obj[name];
-        if (child && value !== undefined) {
+        } else if (overwrite) {
           child.setValue(value);
         }
       });

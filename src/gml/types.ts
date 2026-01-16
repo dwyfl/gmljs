@@ -94,7 +94,7 @@ export interface GMLNodeInterface {
   getChildValueString(path: GMLNodeChildPath[]): string;
   getValue(): GMLNodeValue;
   setValue(value: GMLNodeValue): void;
-  parseValue(value: string): void;
+  parseValue(data: GMLParsedNode): void;
   parseAttributes(data: GMLParsedNode): void;
   parseChildNodes(data: GMLParsedNode): void;
   getChildNodeDefinition(name: GMLNodeName): GMLChildNodeDefinition | undefined;
