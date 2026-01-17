@@ -37,16 +37,17 @@ export abstract class GMLNode implements GMLNodeInterface {
   }
 
   init(data?: GMLParsedNode) {
+    // Apply attribute defaults first
+    this.definition.attributes.forEach((item) => {
+      if (item.defaultValue !== undefined) {
+        this.setAttribute(item.name, item.defaultValue);
+      }
+    });
     if (data) {
       this.parseValue(data);
       this.parseAttributes(data);
       this.parseChildNodes(data);
     } else {
-      this.definition.attributes.forEach((item) => {
-        if (item.defaultValue !== undefined) {
-          this.setAttribute(item.name, item.defaultValue);
-        }
-      });
       this.definition.children.forEach((item) => {
         if (typeof item === "object" && item.initDefault) {
           this.addChild(
