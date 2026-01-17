@@ -66,4 +66,16 @@ describe("GML", () => {
       ?.getChildPath(["tag", "header", "client", "name"]);
     t.assert.snapshot(name?.toString());
   });
+
+  it("getTitle() read client values", (t: TestContext) => {
+    const xml =
+      '<gml spec="1.0"><tag><header><client><username>gmljs</username></client></header><drawing></drawing></tag></gml>';
+    const gml = new GML(xml);
+    t.assert.strictEqual(gml.getTitle(), "gmljs");
+  });
+
+  it("getTitle() returns undefined when missing", (t: TestContext) => {
+    const gml = new GML();
+    t.assert.strictEqual(gml.getTitle(), undefined);
+  });
 });
