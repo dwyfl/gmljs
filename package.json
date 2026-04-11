@@ -1,6 +1,6 @@
 {
   "name": "gmljs",
-  "version": "3.0.0-beta-20260411",
+  "version": "3.0.0-beta.0",
   "description": "Library for parsing GML documents.",
   "homepage": "https://github.com/dwyfl/gmljs",
   "bugs": {
