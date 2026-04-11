@@ -1,5 +1,5 @@
-import { GMLLeafNode } from ".";
-import { GMLParsedNode } from "../../types";
+import { GMLLeafNode } from "./index.ts";
+import { type GMLParsedNode } from "../../types.ts";
 
 export class GMLFloatNode extends GMLLeafNode {
   init(data?: GMLParsedNode) {

@@ -1,17 +1,14 @@
 import {
-  GMLNodeDefinition,
+  type GMLNodeDefinition,
   GMLNodeName,
-  GMLNodeValue,
-  GMLParsedNode,
-} from "../../types";
-import { GMLTime } from "../client/settings";
-import { GMLLeafNodeParent } from "../leaf/parent";
+  type GMLNodeValue,
+  type GMLParsedNode,
+} from "../../types.ts";
+import { GMLTime } from "../client/settings.ts";
+import { GMLLeafNodeParent } from "../leaf/parent.ts";
 
 export class GMLPoint extends GMLLeafNodeParent {
-  init(
-    data?: GMLParsedNode,
-    defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>
-  ) {
+  init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
     super.init(data);
     // Set defaults after parsing
     // When parsing data: overwrite=false so parsed values aren't replaced
@@ -40,7 +37,7 @@ export class GMLPoint extends GMLLeafNodeParent {
         ...obj,
         [key]: this.getChild(key)?.getValue(),
       }),
-      {}
+      {},
     );
     return result;
   }

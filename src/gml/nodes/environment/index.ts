@@ -1,34 +1,23 @@
-import { GMLNode } from "../..";
-import { isNumber } from "../../../util/assert";
-import { GMLNodeDefinition, GMLNodeName } from "../../types";
-import {
-  GMLEnvOffset,
-  GMLEnvRotation,
-  GMLEnvScreenBounds,
-  GMLEnvUp,
-} from "./settings";
+import { GMLNode } from "../../node.ts";
+import { isNumber } from "../../../util/is-number.ts";
+import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import { GMLEnvOffset, GMLEnvRotation, GMLEnvScreenBounds, GMLEnvUp } from "./settings.ts";
 
 export class GMLEnvironment extends GMLNode {
   getUp() {
     return this.getChild<GMLEnvUp>(GMLNodeName.ENVIRONMENT_UP)?.getXYZ();
   }
   getScreenBounds() {
-    return this.getChild<GMLEnvScreenBounds>(
-      GMLNodeName.ENVIRONMENT_SCREEN_BOUNDS
-    )
+    return this.getChild<GMLEnvScreenBounds>(GMLNodeName.ENVIRONMENT_SCREEN_BOUNDS)
       ?.getXYZ()
       .filter(isNumber)
       .slice(0, 2);
   }
   getOffset() {
-    return this.getChild<GMLEnvOffset>(
-      GMLNodeName.ENVIRONMENT_OFFSET
-    )?.getXYZ();
+    return this.getChild<GMLEnvOffset>(GMLNodeName.ENVIRONMENT_OFFSET)?.getXYZ();
   }
   getRotation() {
-    return this.getChild<GMLEnvRotation>(
-      GMLNodeName.ENVIRONMENT_ROTATION
-    )?.getXYZ();
+    return this.getChild<GMLEnvRotation>(GMLNodeName.ENVIRONMENT_ROTATION)?.getXYZ();
   }
 }
 

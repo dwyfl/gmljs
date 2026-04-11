@@ -1,11 +1,11 @@
-import { GMLNode } from "../..";
+import { GMLNode } from "../../node.ts";
 import {
-  GMLAttributeDefinition,
+  type GMLAttributeDefinition,
   GMLNodeAttribute,
-  GMLNodeDefinition,
+  type GMLNodeDefinition,
   GMLNodeName,
-} from "../../types";
-import { GMLPoint } from "../point";
+} from "../../types.ts";
+import { GMLPoint } from "../point/index.ts";
 
 export class GMLStroke extends GMLNode {
   isDrawing() {
@@ -22,8 +22,7 @@ export class GMLStroke extends GMLNode {
 const attrIsDrawing: GMLAttributeDefinition = {
   name: GMLNodeAttribute.IS_DRAWING,
   defaultValue: true,
-  parse: (value) =>
-    typeof value === "string" ? value === "true" : Boolean(value),
+  parse: (value) => (typeof value === "string" ? value === "true" : Boolean(value)),
   stringify: (value) => (value ? "true" : "false"),
 };
 

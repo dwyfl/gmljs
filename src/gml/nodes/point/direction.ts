@@ -1,5 +1,5 @@
-import { GMLNodeDefinition, GMLNodeName } from "../../types";
-import { GMLLeafNodeParent } from "../leaf/parent";
+import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import { GMLLeafNodeParent } from "../leaf/parent.ts";
 
 export class GMLDirection extends GMLLeafNodeParent {}
 

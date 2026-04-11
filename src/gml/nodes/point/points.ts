@@ -1,52 +1,52 @@
-import { GMLNodeDefinition, GMLNodeName } from "../../types";
-import { GMLLeafNode } from "../leaf";
-import { GMLFloatNode } from "../leaf/float";
-import { createDefinition } from "../../util/definition";
+import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import { GMLLeafNode } from "../leaf/index.ts";
+import { GMLFloatNode } from "../leaf/float.ts";
+import { createDefinition } from "../../util/definition.ts";
 
 export class GMLPointX extends GMLFloatNode {}
 export const GMLPointXDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.POINT_X,
-  GMLPointX
+  GMLPointX,
 );
 
 export class GMLPointY extends GMLFloatNode {}
 export const GMLPointYDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.POINT_Y,
-  GMLPointY
+  GMLPointY,
 );
 
 export class GMLPointZ extends GMLFloatNode {}
 export const GMLPointZDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.POINT_Z,
-  GMLPointZ
+  GMLPointZ,
 );
 
 export class GMLPointT extends GMLFloatNode {}
 export const GMLPointTDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.POINT_T,
-  GMLPointT
+  GMLPointT,
 );
 
 export class GMLPointTime extends GMLFloatNode {}
 export const GMLPointTimeDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.POINT_TIME,
-  GMLPointTime
+  GMLPointTime,
 );
 
 export class GMLPointPressure extends GMLFloatNode {}
 export const GMLPointPressureDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.PRESSURE,
-  GMLPointPressure
+  GMLPointPressure,
 );
 
 export class GMLPointRotation extends GMLFloatNode {}
 export const GMLPointRotationDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.ROTATION,
-  GMLPointRotation
+  GMLPointRotation,
 );
 
 export class GMLPointUnit extends GMLLeafNode {}
 export const GMLPointUnitDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.UNIT,
-  GMLPointUnit
+  GMLPointUnit,
 );

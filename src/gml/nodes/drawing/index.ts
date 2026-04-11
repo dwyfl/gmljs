@@ -1,6 +1,6 @@
-import { GMLNode } from "../..";
-import { GMLNodeDefinition, GMLNodeName } from "../../types";
-import { GMLStroke } from "../stroke";
+import { GMLNode } from "../../node.ts";
+import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import { GMLStroke } from "../stroke/index.ts";
 
 export class GMLDrawing extends GMLNode {
   getStroke(index: number) {

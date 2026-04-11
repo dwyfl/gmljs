@@ -1,5 +1,5 @@
-import { GMLNodeDefinition, GMLNodeName } from "../../types";
-import { GMLLeafNode } from "../leaf";
+import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import { GMLLeafNode } from "../leaf/index.ts";
 
 export class GMLStrokeInfoCurved extends GMLLeafNode {}
 

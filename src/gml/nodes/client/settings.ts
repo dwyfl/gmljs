@@ -1,43 +1,37 @@
-import {
-  GMLNodeDefinition,
-  GMLNodeName,
-  GMLNodeValue,
-  GMLParsedNode,
-} from "../../types";
-import { GMLLeafNode } from "../leaf";
-import { GMLIntegerNode } from "../leaf/integer";
-import { createDefinition } from "../../util/definition";
-import { GMLLeafNodeParent } from "../leaf/parent";
-import config from "../../../../package.json";
+import { type GMLNodeDefinition, GMLNodeName, type GMLParsedNode } from "../../types.ts";
+import { GMLLeafNode } from "../leaf/index.ts";
+import { createDefinition } from "../../util/definition.ts";
+import { GMLLeafNodeParent } from "../leaf/parent.ts";
+import config from "../../../../package.json" with { type: "json" };
 
 export class GMLClientUsername extends GMLLeafNode {}
 export const GMLClientUsernameDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.CLIENT_USERNAME,
-  GMLClientUsername
+  GMLClientUsername,
 );
 
 export class GMLClientPermalink extends GMLLeafNode {}
 export const GMLClientPermalinkDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.CLIENT_PERMALINK,
-  GMLClientPermalink
+  GMLClientPermalink,
 );
 
 export class GMLClientKeywords extends GMLLeafNode {}
 export const GMLClientKeywordsDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.CLIENT_KEYWORDS,
-  GMLClientKeywords
+  GMLClientKeywords,
 );
 
 export class GMLClientUniqueKey extends GMLLeafNode {}
 export const GMLClientUniqueKeyDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.CLIENT_UNIQUEKEY,
-  GMLClientUniqueKey
+  GMLClientUniqueKey,
 );
 
 export class GMLClientIp extends GMLLeafNode {}
 export const GMLClientIpDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.CLIENT_IP,
-  GMLClientIp
+  GMLClientIp,
 );
 
 export class GMLClientName extends GMLLeafNode {
@@ -48,7 +42,7 @@ export class GMLClientName extends GMLLeafNode {
 }
 export const GMLClientNameDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.CLIENT_NAME,
-  GMLClientName
+  GMLClientName,
 );
 
 export class GMLTime extends GMLLeafNode {
@@ -81,7 +75,7 @@ export class GMLTime extends GMLLeafNode {
 }
 export const GMLTimeDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.CLIENT_TIME,
-  GMLTime
+  GMLTime,
 );
 
 export class GMLClientVersion extends GMLLeafNode {
@@ -92,7 +86,7 @@ export class GMLClientVersion extends GMLLeafNode {
 }
 export const GMLClientVersionDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.CLIENT_VERSION,
-  GMLClientVersion
+  GMLClientVersion,
 );
 
 export class GMLLocation extends GMLLeafNodeParent {}
@@ -107,9 +101,13 @@ export const GMLLocationDefinition: GMLNodeDefinition = {
 };
 
 export class GMLLocationLongitude extends GMLLeafNode {}
-export const GMLLocationLongitudeDefinition: GMLNodeDefinition =
-  createDefinition(GMLNodeName.CLIENT_LOCATION_LON, GMLLocationLongitude);
+export const GMLLocationLongitudeDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.CLIENT_LOCATION_LON,
+  GMLLocationLongitude,
+);
 
 export class GMLLocationLatitude extends GMLLeafNode {}
-export const GMLLocationLatitudeDefinition: GMLNodeDefinition =
-  createDefinition(GMLNodeName.CLIENT_LOCATION_LAT, GMLLocationLatitude);
+export const GMLLocationLatitudeDefinition: GMLNodeDefinition = createDefinition(
+  GMLNodeName.CLIENT_LOCATION_LAT,
+  GMLLocationLatitude,
+);

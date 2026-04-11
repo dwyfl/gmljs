@@ -1,6 +1,6 @@
-import { GMLNodeDefinition, GMLNodeName } from "./types";
-import GMLBrush from "./nodes/brush";
-import GMLClient from "./nodes/client";
+import { type GMLNodeDefinition, GMLNodeName } from "./types.ts";
+import GMLBrush from "./nodes/brush/index.ts";
+import GMLClient from "./nodes/client/index.ts";
 import {
   GMLBrushModeDefinition as GMLBrushMode,
   GMLBrushSpecDefinition as GMLBrushSpec,
@@ -12,7 +12,7 @@ import {
   GMLBrushDripAmountDefinition as GMLBrushDripAmount,
   GMLBrushDripSpeedDefinition as GMLBrushDripSpeed,
   GMLBrushDripVecRelativeToUpDefinition as GMLBrushDripVecRelativeToUp,
-} from "./nodes/brush/settings";
+} from "./nodes/brush/settings.ts";
 import {
   GMLClientIpDefinition as GMLClientIp,
   GMLClientKeywordsDefinition as GMLClientKeywords,
@@ -25,10 +25,10 @@ import {
   GMLLocationLatitudeDefinition as GMLLocationLatitude,
   GMLLocationLongitudeDefinition as GMLLocationLongitude,
   GMLTimeDefinition as GMLTime,
-} from "./nodes/client/settings";
-import GMLDocument from "./nodes/document";
-import GMLDrawing from "./nodes/drawing";
-import GMLEnvironment from "./nodes/environment";
+} from "./nodes/client/settings.ts";
+import GMLDocument from "./nodes/document/index.ts";
+import GMLDrawing from "./nodes/drawing/index.ts";
+import GMLEnvironment from "./nodes/environment/index.ts";
 import {
   GMLEnvOffsetDefinition as GMLEnvOffset,
   GMLEnvRotationDefinition as GMLEnvRotation,
@@ -38,15 +38,15 @@ import {
   GMLEnvBackgroundDefinition as GMLEnvBackground,
   GMLEnvUpDefinition as GMLEnvUp,
   GMLEnvScreenBoundsDefinition as GMLEnvScreenBounds,
-} from "./nodes/environment/settings";
-import GMLPoint from "./nodes/point";
+} from "./nodes/environment/settings.ts";
+import GMLPoint from "./nodes/point/index.ts";
 import GMLColor, {
   GMLColorRDefinition as GMLColorR,
   GMLColorGDefinition as GMLColorG,
   GMLColorBDefinition as GMLColorB,
   GMLColorADefinition as GMLColorA,
-} from "./nodes/point/color";
-import GMLDirection from "./nodes/point/direction";
+} from "./nodes/point/color.ts";
+import GMLDirection from "./nodes/point/direction.ts";
 import {
   GMLPointXDefinition as GMLPointX,
   GMLPointYDefinition as GMLPointY,
@@ -56,13 +56,13 @@ import {
   GMLPointPressureDefinition as GMLPointPressure,
   GMLPointRotationDefinition as GMLPointRotation,
   GMLPointUnitDefinition as GMLPointUnit,
-} from "./nodes/point/points";
-import GMLRoot from "./nodes/root";
-import GMLStroke from "./nodes/stroke";
-import GMLStrokeInfo from "./nodes/stroke/info";
-import GMLStrokeInfoCurved from "./nodes/stroke/curved";
-import GMLTag from "./nodes/tag";
-import GMLHeader from "./nodes/header";
+} from "./nodes/point/points.ts";
+import GMLRoot from "./nodes/root/index.ts";
+import GMLStroke from "./nodes/stroke/index.ts";
+import GMLStrokeInfo from "./nodes/stroke/info.ts";
+import GMLStrokeInfoCurved from "./nodes/stroke/curved.ts";
+import GMLTag from "./nodes/tag/index.ts";
+import GMLHeader from "./nodes/header/index.ts";
 
 const gmlNodeClassMap: Record<GMLNodeName, GMLNodeDefinition> = {
   [GMLNodeName.BRUSH]: GMLBrush,
@@ -121,8 +121,7 @@ const gmlNodeClassMap: Record<GMLNodeName, GMLNodeDefinition> = {
   [GMLNodeName.UNIT]: GMLPointUnit,
 };
 
-export const getGMLNodeDefinition = (
-  nodeName: GMLNodeName
-): GMLNodeDefinition => gmlNodeClassMap[nodeName];
+export const getGMLNodeDefinition = (nodeName: GMLNodeName): GMLNodeDefinition =>
+  gmlNodeClassMap[nodeName];
 
 export default gmlNodeClassMap;

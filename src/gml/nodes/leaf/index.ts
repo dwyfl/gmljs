@@ -1,4 +1,4 @@
-import { GMLNode } from '../..';
+import { GMLNode } from "../../node.ts";
 
 export class GMLLeafNode extends GMLNode {
   getTagContent() {

@@ -1,5 +1,5 @@
-import { GMLNode } from "../..";
-import { GMLNodeDefinition, GMLNodeName } from "../../types";
+import { GMLNode } from "../../node.ts";
+import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
 
 export class GMLBrush extends GMLNode {}
 

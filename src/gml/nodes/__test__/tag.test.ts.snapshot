@@ -1,7 +1,0 @@
-exports[`GMLTag > creates a GMLTag node from spec XML 1`] = `
-"<tag><drawing><stroke isdrawing=\\"true\\"><pt><x>0</x><y>0</y></pt></stroke></drawing></tag>"
-`;
-
-exports[`GMLTag > creates a default GMLTag node 1`] = `
-"<tag><drawing></drawing></tag>"
-`;

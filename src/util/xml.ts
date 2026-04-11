@@ -18,18 +18,12 @@ interface XmlObject<T> {
 export type XmlAttributes = XmlObject<XmlValue>;
 export type XmlTree = XmlObject<XmlTree | XmlValue>;
 
-export const isXmlTree = (value: any): value is XmlTree =>
-  typeof value === "object";
+export const isXmlTree = (value: any): value is XmlTree => typeof value === "object";
 export const isXmlValue = (value: any): value is XmlValue =>
   ["string", "number", "boolean"].includes(typeof value);
 
-export const formatXmlTagStart = (
-  tagName: string,
-  attributes: XmlAttributes = {}
-) => {
-  const attrStrings = Object.entries(attributes).map(
-    ([key, value]) => `${key}="${value}"`
-  );
+export const formatXmlTagStart = (tagName: string, attributes: XmlAttributes = {}) => {
+  const attrStrings = Object.entries(attributes).map(([key, value]) => `${key}="${value}"`);
   return `<${tagName}${attrStrings.length ? ` ${attrStrings.join(" ")}` : ""}>`;
 };
 
@@ -45,9 +39,7 @@ export const objectToXml = (obj: XmlTree, objName: string): string =>
     formatXmlTagStart(objName),
     Object.keys(obj).map((key) => {
       const node = obj[key];
-      return isXmlTree(node)
-        ? objectToXml(node, key)
-        : leafNodeToXml(key, node);
+      return isXmlTree(node) ? objectToXml(node, key) : leafNodeToXml(key, node);
     }),
     formatXmlTagEnd(objName),
   ].join("");

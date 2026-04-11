@@ -1,18 +1,18 @@
-import { GMLClient } from "./gml/nodes/client";
-import { GMLClientUsername } from "./gml/nodes/client/settings";
-import { GMLDocument } from "./gml/nodes/document";
-import { GMLRoot } from "./gml/nodes/root";
-import { GMLTag } from "./gml/nodes/tag";
-import { GMLNodeName } from "./gml/types";
-import { createGmlNodeFromTagName } from "./gml/util";
-import { parseXml } from "./util/xml";
+import { GMLClient } from "./gml/nodes/client/index.ts";
+import { GMLClientUsername } from "./gml/nodes/client/settings.ts";
+import { GMLDocument } from "./gml/nodes/document/index.ts";
+import { GMLRoot } from "./gml/nodes/root/index.ts";
+import { GMLTag } from "./gml/nodes/tag/index.ts";
+import { GMLNodeName } from "./gml/types.ts";
+import { createGmlNodeFromTagName } from "./gml/util/index.ts";
+import { parseXml } from "./util/xml.ts";
 
-export { GMLPoint } from "./gml/nodes/point";
-export { GMLStroke } from "./gml/nodes/stroke";
-export { GMLDrawing } from "./gml/nodes/drawing";
-export { GMLTag } from "./gml/nodes/tag";
-export { GMLEnvironment } from "./gml/nodes/environment";
-export { GMLDocument } from "./gml/nodes/document";
+export { GMLPoint } from "./gml/nodes/point/index.ts";
+export { GMLStroke } from "./gml/nodes/stroke/index.ts";
+export { GMLDrawing } from "./gml/nodes/drawing/index.ts";
+export { GMLTag } from "./gml/nodes/tag/index.ts";
+export { GMLEnvironment } from "./gml/nodes/environment/index.ts";
+export { GMLDocument } from "./gml/nodes/document/index.ts";
 
 export class GML {
   doc: GMLDocument;

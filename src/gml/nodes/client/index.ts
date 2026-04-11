@@ -1,5 +1,5 @@
-import { GMLNode } from "../..";
-import { GMLNodeDefinition, GMLNodeName, GMLParsedNode } from "../../types";
+import { GMLNode } from "../../node.ts";
+import { type GMLNodeDefinition, GMLNodeName, type GMLParsedNode } from "../../types.ts";
 
 export class GMLClient extends GMLNode {
   init(data?: GMLParsedNode) {

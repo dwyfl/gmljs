@@ -1,6 +1,6 @@
-import { GMLNode } from "../..";
-import { GMLTag } from "../tag";
-import { GMLNodeAttribute, GMLNodeDefinition, GMLNodeName } from "../../types";
+import { GMLNode } from "../../node.ts";
+import { GMLTag } from "../tag/index.ts";
+import { GMLNodeAttribute, type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
 
 export class GMLRoot extends GMLNode {
   public getTag(index: number = 0) {

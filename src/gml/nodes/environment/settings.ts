@@ -1,16 +1,16 @@
 import {
-  GMLNodeConstructor,
-  GMLNodeDefinition,
+  type GMLNodeConstructor,
+  type GMLNodeDefinition,
   GMLNodeName,
-  GMLParsedNode,
-} from "../../types";
-import { createDefinition } from "../../util/definition";
-import { GMLLeafNode } from "../leaf";
-import GMLPointDefinition, { GMLPoint } from "../point";
+  type GMLParsedNode,
+} from "../../types.ts";
+import { createDefinition } from "../../util/definition.ts";
+import { GMLLeafNode } from "../leaf/index.ts";
+import GMLPointDefinition, { GMLPoint } from "../point/index.ts";
 
 export const createGMLPointDefinition = (
   name: GMLNodeName,
-  model: GMLNodeConstructor
+  model: GMLNodeConstructor,
 ): GMLNodeDefinition => ({
   ...GMLPointDefinition,
   name,
@@ -18,31 +18,39 @@ export const createGMLPointDefinition = (
 });
 
 export class GMLEnvOffset extends GMLPoint {}
-export const GMLEnvOffsetDefinition: GMLNodeDefinition =
-  createGMLPointDefinition(GMLNodeName.ENVIRONMENT_OFFSET, GMLEnvOffset);
+export const GMLEnvOffsetDefinition: GMLNodeDefinition = createGMLPointDefinition(
+  GMLNodeName.ENVIRONMENT_OFFSET,
+  GMLEnvOffset,
+);
 
 export class GMLEnvRotation extends GMLPoint {}
-export const GMLEnvRotationDefinition: GMLNodeDefinition =
-  createGMLPointDefinition(GMLNodeName.ENVIRONMENT_ROTATION, GMLEnvRotation);
+export const GMLEnvRotationDefinition: GMLNodeDefinition = createGMLPointDefinition(
+  GMLNodeName.ENVIRONMENT_ROTATION,
+  GMLEnvRotation,
+);
 
 export class GMLEnvOrigin extends GMLPoint {}
-export const GMLEnvOriginDefinition: GMLNodeDefinition =
-  createGMLPointDefinition(GMLNodeName.ENVIRONMENT_ORIGIN, GMLEnvOrigin);
+export const GMLEnvOriginDefinition: GMLNodeDefinition = createGMLPointDefinition(
+  GMLNodeName.ENVIRONMENT_ORIGIN,
+  GMLEnvOrigin,
+);
 
 export class GMLEnvRealScare extends GMLPoint {}
-export const GMLEnvRealScareDefinition: GMLNodeDefinition =
-  createGMLPointDefinition(GMLNodeName.ENVIRONMENT_REAL_SCALE, GMLEnvRealScare);
+export const GMLEnvRealScareDefinition: GMLNodeDefinition = createGMLPointDefinition(
+  GMLNodeName.ENVIRONMENT_REAL_SCALE,
+  GMLEnvRealScare,
+);
 
 export class GMLEnvAudio extends GMLLeafNode {}
 export const GMLEnvAudioDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.ENVIRONMENT_AUDIO,
-  GMLEnvAudio
+  GMLEnvAudio,
 );
 
 export class GMLEnvBackground extends GMLLeafNode {}
 export const GMLEnvBackgroundDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.ENVIRONMENT_BACKGROUND,
-  GMLEnvBackground
+  GMLEnvBackground,
 );
 
 export class GMLEnvUp extends GMLPoint {
@@ -52,7 +60,7 @@ export class GMLEnvUp extends GMLPoint {
 }
 export const GMLEnvUpDefinition: GMLNodeDefinition = createGMLPointDefinition(
   GMLNodeName.ENVIRONMENT_UP,
-  GMLEnvUp
+  GMLEnvUp,
 );
 
 export class GMLEnvScreenBounds extends GMLPoint {
@@ -60,8 +68,7 @@ export class GMLEnvScreenBounds extends GMLPoint {
     super.init(data, { x: 1920, y: 1080 });
   }
 }
-export const GMLEnvScreenBoundsDefinition: GMLNodeDefinition =
-  createGMLPointDefinition(
-    GMLNodeName.ENVIRONMENT_SCREEN_BOUNDS,
-    GMLEnvScreenBounds
-  );
+export const GMLEnvScreenBoundsDefinition: GMLNodeDefinition = createGMLPointDefinition(
+  GMLNodeName.ENVIRONMENT_SCREEN_BOUNDS,
+  GMLEnvScreenBounds,
+);

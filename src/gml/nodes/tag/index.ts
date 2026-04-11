@@ -1,24 +1,19 @@
-import { GMLNode } from "../..";
-import { GMLNodeDefinition, GMLNodeName } from "../../types";
-import { GMLEnvironment } from "../environment";
-import { GMLDrawing } from "../drawing";
+import { GMLNode } from "../../node.ts";
+import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import { GMLEnvironment } from "../environment/index.ts";
+import { GMLDrawing } from "../drawing/index.ts";
 
 export class GMLTag extends GMLNode {
   getEnvironment() {
     return (
-      this.getChildPath<GMLEnvironment>([
-        GMLNodeName.HEADER,
-        [GMLNodeName.ENVIRONMENT, 0],
-      ]) ?? this.getChildPath<GMLEnvironment>([[GMLNodeName.ENVIRONMENT, 0]])
+      this.getChildPath<GMLEnvironment>([GMLNodeName.HEADER, [GMLNodeName.ENVIRONMENT, 0]]) ??
+      this.getChildPath<GMLEnvironment>([[GMLNodeName.ENVIRONMENT, 0]])
     );
   }
   getClientName() {
     return (
-      this.getChildValueString([
-        GMLNodeName.HEADER,
-        GMLNodeName.CLIENT,
-        GMLNodeName.CLIENT_NAME,
-      ]) ?? "unknown"
+      this.getChildValueString([GMLNodeName.HEADER, GMLNodeName.CLIENT, GMLNodeName.CLIENT_NAME]) ??
+      "unknown"
     );
   }
   getDrawing(index: number = 0) {

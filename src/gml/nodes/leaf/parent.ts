@@ -1,33 +1,14 @@
-import {
-  createGmlNode,
-  createGmlNodeFromTagName,
-  isGMLNodeName,
-} from "../../util";
-import { GMLNodeName, GMLNodeValue } from "../../types";
-import { GMLNode } from "../..";
-import { getGMLNodeDefinition } from "../../map";
-
-export const createLeafNodeParentFromObject = (
-  tagName: GMLNodeName,
-  obj: Partial<Record<GMLNodeName, GMLNodeValue>>
-): GMLLeafNodeParent => {
-  const node = createGmlNodeFromTagName(tagName) as GMLLeafNodeParent;
-  node.setValues(obj);
-  return node;
-};
+import { GMLNode, getGMLNodeDeps } from "../../node.ts";
+import { GMLNodeName, type GMLNodeValue } from "../../types.ts";
 
 export class GMLLeafNodeParent extends GMLNode {
-  setValues(
-    obj?: Partial<Record<GMLNodeName, GMLNodeValue>>,
-    overwrite = true
-  ) {
+  setValues(obj?: Partial<Record<GMLNodeName, GMLNodeValue>>, overwrite = true) {
     if (!obj) {
       return;
     }
+    const { isGMLNodeName, getGMLNodeDefinition, createGmlNode } = getGMLNodeDeps();
     Object.entries(obj)
-      .filter((item): item is [GMLNodeName, GMLNodeValue] =>
-        isGMLNodeName(item[0])
-      )
+      .filter((item): item is [GMLNodeName, GMLNodeValue] => isGMLNodeName(item[0]))
       .forEach(([name, value]) => {
         const child = this.getChild(name);
         if (!child) {
@@ -49,7 +30,7 @@ export class GMLLeafNodeParent extends GMLNode {
         ...obj,
         [tag]: this.getChild(tag)?.getValue(),
       }),
-      {}
+      {},
     );
   }
 }

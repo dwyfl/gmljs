@@ -1,8 +1,8 @@
-import { GMLNodeConstructor, GMLNodeDefinition, GMLNodeName } from "../types";
+import { type GMLNodeConstructor, type GMLNodeDefinition, GMLNodeName } from "../types.ts";
 
 export const createDefinition = (
   name: GMLNodeName,
-  model: GMLNodeConstructor
+  model: GMLNodeConstructor,
 ): GMLNodeDefinition => ({
   name,
   model,

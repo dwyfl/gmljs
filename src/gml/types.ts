@@ -1,4 +1,4 @@
-import { XmlDocument, XmlElement, XmlNode } from "../util/xml";
+import type { XmlDocument, XmlElement, XmlNode } from "../util/xml.ts";
 
 export const GMLNodeName = {
   BRUSH: "brush",
@@ -65,8 +65,7 @@ export const GMLNodeAttribute = {
   SPEC: "spec",
 } as const;
 
-export type GMLNodeAttribute =
-  (typeof GMLNodeAttribute)[keyof typeof GMLNodeAttribute];
+export type GMLNodeAttribute = (typeof GMLNodeAttribute)[keyof typeof GMLNodeAttribute];
 
 export interface GMLNodeConstructor {
   new (definition: GMLNodeDefinition, data?: GMLParsedNode): GMLNodeInterface;
@@ -87,9 +86,7 @@ export interface GMLNodeInterface {
   hasChildren(): boolean;
   getChild<T extends GMLNodeInterface>(child: GMLNodeChildPath): T | undefined;
   getChildren<T extends GMLNodeInterface>(name: GMLNodeName): T[] | undefined;
-  getChildPath<T extends GMLNodeInterface>(
-    path: GMLNodeChildPath[]
-  ): T | undefined;
+  getChildPath<T extends GMLNodeInterface>(path: GMLNodeChildPath[]): T | undefined;
   getChildValue(path: GMLNodeChildPath[]): GMLNodeValue | undefined;
   getChildValueString(path: GMLNodeChildPath[]): string;
   getValue(): GMLNodeValue;
@@ -98,9 +95,7 @@ export interface GMLNodeInterface {
   parseAttributes(data: GMLParsedNode): void;
   parseChildNodes(data: GMLParsedNode): void;
   getChildNodeDefinition(name: GMLNodeName): GMLChildNodeDefinition | undefined;
-  getAttributeDefinition(
-    name: GMLNodeAttribute
-  ): GMLAttributeDefinition | undefined;
+  getAttributeDefinition(name: GMLNodeAttribute): GMLAttributeDefinition | undefined;
   getTagStart(): string;
   getTagEnd(): string;
   getTagContent(): string;
@@ -125,9 +120,7 @@ export type GMLNodeChildPath = GMLNodeName | [GMLNodeName, number];
 export type GMLNodeChildren = Partial<Record<GMLNodeName, GMLNodeInterface[]>>;
 
 export type GMLNodeAttributeValue = string | number | boolean;
-export type GMLNodeAttributes = Partial<
-  Record<GMLNodeAttribute, GMLNodeAttributeValue>
->;
+export type GMLNodeAttributes = Partial<Record<GMLNodeAttribute, GMLNodeAttributeValue>>;
 export type GMLAttributeDefinition = {
   name: GMLNodeAttribute;
   required?: boolean;
@@ -137,7 +130,6 @@ export type GMLAttributeDefinition = {
 };
 
 type GMLObjectOrValue = GMLNodeValue | GMLObjectRepresentation;
-export interface GMLObjectRepresentation
-  extends Record<string, GMLObjectOrValue[]> {}
+export interface GMLObjectRepresentation extends Record<string, GMLObjectOrValue[]> {}
 
 export type GMLParsedNode = XmlDocument | XmlElement | XmlNode;
