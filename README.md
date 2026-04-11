@@ -16,8 +16,8 @@ npm install gmljs
 import { GML } from "gmljs";
 
 // Init GML instance with string
-const DATA = `
-<gml spec='1.0 (minimal)'>
+const gmlDocumentStr = `
+<gml spec='1.0'>
   <tag>
     <drawing>
       <stroke>
@@ -31,7 +31,7 @@ const DATA = `
   </tag>
 </gml>
 `;
-const gml = new GML("/path/to/my/file.gml");
+const gml = new GML(gmlDocumentStr);
 
 // Setup canvas
 const canvas = document.getElementById("canvas");
