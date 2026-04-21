@@ -60,10 +60,14 @@ describe("GML", () => {
   });
 
   it("getTitle() read client values", () => {
-    const xml =
+    const xml1 =
       '<gml spec="1.0"><tag><header><client><username>gmljs</username></client></header><drawing></drawing></tag></gml>';
-    const gml = new GML(xml);
-    expect(gml.getTitle()).toBe("gmljs");
+    const gml1 = new GML(xml1);
+    expect(gml1.getTitle()).toBe("gmljs");
+    const xml2 =
+      '<gml spec="1.0"><tag><header><client><name>gmljs</name></client></header><drawing></drawing></tag></gml>';
+    const gml2 = new GML(xml2);
+    expect(gml2.getTitle()).toBe("gmljs");
   });
 
   it("getTitle() returns undefined when missing", () => {

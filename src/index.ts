@@ -37,16 +37,19 @@ export class GML {
       .toString();
   }
   getTitle(): string | undefined {
-    return this.doc
-      .getChildPath<GMLClientUsername>([
-        GMLNodeName.ROOT,
-        GMLNodeName.TAG,
-        GMLNodeName.HEADER,
-        GMLNodeName.CLIENT,
-        GMLNodeName.CLIENT_USERNAME,
-      ])
-      ?.getValue()
-      .toString();
+    const client = this.doc.getChildPath<GMLClientUsername>([
+      GMLNodeName.ROOT,
+      GMLNodeName.TAG,
+      GMLNodeName.HEADER,
+      GMLNodeName.CLIENT,
+    ]);
+    return (
+      client?.getChildValue([GMLNodeName.CLIENT_NAME]) ??
+      client?.getChildValue([GMLNodeName.CLIENT_USERNAME])
+    )?.toString();
+  }
+  getSize(tag: number = 0) {
+    return this.getTag(tag)?.getEnvironment()?.getScreenBounds();
   }
   getRoot() {
     return this.doc.getChild<GMLRoot>(GMLNodeName.ROOT);
