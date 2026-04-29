@@ -54,3 +54,7 @@ for (const stroke of gml.getStrokes(0, 0)) {
   ctx.stroke();
 }
 ```
+
+## Related
+
+gmljs is the base for my other project, [gmlrender](https://github.com/dwyfl/gmlrender). It's a TypeScript library for browsers and Node.js that renders GML documents to images or video. [Check it out!](https://github.com/dwyfl/gmlrender)
