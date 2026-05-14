@@ -8,7 +8,7 @@ export class GMLClient extends GMLNode {
   }
 }
 
-export const definition: GMLNodeDefinition = {
+export const GMLClientDefinition: GMLNodeDefinition = {
   name: GMLNodeName.CLIENT,
   model: GMLClient,
   attributes: [],
@@ -24,5 +24,3 @@ export const definition: GMLNodeDefinition = {
     GMLNodeName.CLIENT_LOCATION,
   ],
 };
-
-export default definition;

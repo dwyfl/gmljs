@@ -1,6 +1,6 @@
-import { type GMLNodeDefinition, GMLNodeName } from "./types.ts";
-import GMLBrush from "./nodes/brush/index.ts";
-import GMLClient from "./nodes/client/index.ts";
+import { GMLNodeName, type GMLNodeDefinition } from "./types.ts";
+import { GMLBrushDefinition as GMLBrush } from "./nodes/brush/index.ts";
+import { GMLClientDefinition as GMLClient } from "./nodes/client/index.ts";
 import {
   GMLBrushModeDefinition as GMLBrushMode,
   GMLBrushSpecDefinition as GMLBrushSpec,
@@ -39,14 +39,15 @@ import {
   GMLEnvUpDefinition as GMLEnvUp,
   GMLEnvScreenBoundsDefinition as GMLEnvScreenBounds,
 } from "./nodes/environment/settings.ts";
-import GMLPoint from "./nodes/point/index.ts";
-import GMLColor, {
+import { GMLPointDefinition as GMLPoint } from "./nodes/point/index.ts";
+import {
+  GMLColorDefinition as GMLColor,
   GMLColorRDefinition as GMLColorR,
   GMLColorGDefinition as GMLColorG,
   GMLColorBDefinition as GMLColorB,
   GMLColorADefinition as GMLColorA,
 } from "./nodes/point/color.ts";
-import GMLDirection from "./nodes/point/direction.ts";
+import { GMLDirectionDefinition as GMLDirection } from "./nodes/point/direction.ts";
 import {
   GMLPointXDefinition as GMLPointX,
   GMLPointYDefinition as GMLPointY,
