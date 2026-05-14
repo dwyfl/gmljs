@@ -3,7 +3,7 @@ import { createDefinition } from "../../util/definition.ts";
 import { GMLLeafNode } from "../leaf/index.ts";
 import { GMLFloatNode } from "../leaf/float.ts";
 import { GMLIntegerNode } from "../leaf/integer.ts";
-import { GMLLeafNodeParent } from "../leaf/parent.ts";
+import { GMLDirection, GMLDirectionDefinition } from "../point/direction.ts";
 
 export class GMLBrushMode extends GMLLeafNode {}
 export const GMLBrushModeDefinition: GMLNodeDefinition = createDefinition(
@@ -59,14 +59,9 @@ export const GMLBrushDripSpeedDefinition: GMLNodeDefinition = createDefinition(
   GMLBrushDripSpeed,
 );
 
-export class GMLBrushDripVecRelativeToUp extends GMLLeafNodeParent {}
+export class GMLBrushDripVecRelativeToUp extends GMLDirection {}
 export const GMLBrushDripVecRelativeToUpDefinition: GMLNodeDefinition = {
+  ...GMLDirectionDefinition,
   name: GMLNodeName.BRUSH_DRIP_VEC_RELATIVE_TO_UP,
   model: GMLBrushDripVecRelativeToUp,
-  attributes: [],
-  children: [
-    { name: GMLNodeName.POINT_X, required: true },
-    { name: GMLNodeName.POINT_Y, required: true },
-    GMLNodeName.POINT_Z,
-  ],
 };

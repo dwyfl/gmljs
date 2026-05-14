@@ -14,4 +14,7 @@ export class GMLIntegerNode extends GMLLeafNode {
     }
     this.value = intValue;
   }
+  getIntValue() {
+    return this.value as number;
+  }
 }

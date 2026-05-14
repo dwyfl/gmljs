@@ -6,14 +6,27 @@ import {
 } from "../../types.ts";
 import { GMLTime } from "../client/settings.ts";
 import { GMLLeafNodeParent } from "../leaf/parent.ts";
+import type { GMLPointX, GMLPointY, GMLPointZ } from "./points.ts";
 
-export class GMLPoint extends GMLLeafNodeParent {
+export abstract class GML3DPoint extends GMLLeafNodeParent {
   init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
     super.init(data);
     // Set defaults after parsing
     // When parsing data: overwrite=false so parsed values aren't replaced
     // When no data: overwrite=true so defaults override initialized children
     this.setValues(defaultValues, !data);
+  }
+
+  getXYZ() {
+    const x = this.getChild<GMLPointX>(GMLNodeName.POINT_X)?.getFloatValue();
+    const y = this.getChild<GMLPointY>(GMLNodeName.POINT_Y)?.getFloatValue();
+    const z = this.getChild<GMLPointZ>(GMLNodeName.POINT_Z)?.getFloatValue();
+    return [x ?? 0, y ?? 0, z ?? 0];
+  }
+}
+export class GMLPoint extends GML3DPoint {
+  init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
+    super.init(data, defaultValues);
     /**
      * Convert <time> to <t>.
      *
@@ -45,14 +58,6 @@ export class GMLPoint extends GMLLeafNodeParent {
     const { t } = this.values;
     return typeof t === "number" ? t : undefined;
   }
-  getXYZ() {
-    const { x, y, z } = this.values;
-    return [
-      typeof x === "number" ? x : 0,
-      typeof y === "number" ? y : 0,
-      typeof z === "number" ? z : 0,
-    ];
-  }
 }
 
 export const GMLPointDefinition: GMLNodeDefinition = {
@@ -71,5 +76,3 @@ export const GMLPointDefinition: GMLNodeDefinition = {
     GMLNodeName.DIRECTION,
   ],
 };
-
-export default GMLPointDefinition;

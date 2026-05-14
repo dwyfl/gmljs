@@ -1,7 +1,7 @@
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
-import { GMLLeafNodeParent } from "../leaf/parent.ts";
+import { GML3DPoint } from "./index.ts";
 
-export class GMLDirection extends GMLLeafNodeParent {}
+export class GMLDirection extends GML3DPoint {}
 
 export const GMLDirectionDefinition: GMLNodeDefinition = {
   name: GMLNodeName.DIRECTION,
@@ -13,5 +13,3 @@ export const GMLDirectionDefinition: GMLNodeDefinition = {
     GMLNodeName.POINT_Z,
   ],
 };
-
-export default GMLDirectionDefinition;

@@ -1,7 +1,37 @@
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import type { GMLColor } from "../point/color.ts";
+import {
+  GMLBrushDripAmount,
+  GMLBrushDripSpeed,
+  GMLBrushDripVecRelativeToUp,
+  GMLBrushWidth,
+} from "./settings.ts";
 
-export class GMLBrush extends GMLNode {}
+export class GMLBrush extends GMLNode {
+  getWidth() {
+    return this.getChild<GMLBrushWidth>(GMLNodeName.BRUSH_WIDTH)?.getFloatValue();
+  }
+  getColor() {
+    return this.getChild<GMLColor>(GMLNodeName.COLOR)?.getRGBA();
+  }
+  getDrip() {
+    const dripAmount = this.getChild<GMLBrushDripAmount>(
+      GMLNodeName.BRUSH_DRIP_AMOUNT,
+    )?.getFloatValue();
+    const dripSpeed = this.getChild<GMLBrushDripSpeed>(
+      GMLNodeName.BRUSH_DRIP_SPEED,
+    )?.getFloatValue();
+    const dripVecUp = this.getChild<GMLBrushDripVecRelativeToUp>(
+      GMLNodeName.BRUSH_DRIP_VEC_RELATIVE_TO_UP,
+    )?.getXYZ();
+    return {
+      dripAmount,
+      dripSpeed,
+      dripVecUp,
+    };
+  }
+}
 
 export const GMLBrushDefinition: GMLNodeDefinition = {
   name: GMLNodeName.BRUSH,
@@ -21,5 +51,3 @@ export const GMLBrushDefinition: GMLNodeDefinition = {
     GMLNodeName.BRUSH_UNIQUE_STYLE_ID,
   ],
 };
-
-export default GMLBrushDefinition;

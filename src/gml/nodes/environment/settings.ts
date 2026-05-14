@@ -6,7 +6,7 @@ import {
 } from "../../types.ts";
 import { createDefinition } from "../../util/definition.ts";
 import { GMLLeafNode } from "../leaf/index.ts";
-import GMLPointDefinition, { GMLPoint } from "../point/index.ts";
+import { GMLPointDefinition, GML3DPoint } from "../point/index.ts";
 
 export const createGMLPointDefinition = (
   name: GMLNodeName,
@@ -17,25 +17,25 @@ export const createGMLPointDefinition = (
   model,
 });
 
-export class GMLEnvOffset extends GMLPoint {}
+export class GMLEnvOffset extends GML3DPoint {}
 export const GMLEnvOffsetDefinition: GMLNodeDefinition = createGMLPointDefinition(
   GMLNodeName.ENVIRONMENT_OFFSET,
   GMLEnvOffset,
 );
 
-export class GMLEnvRotation extends GMLPoint {}
+export class GMLEnvRotation extends GML3DPoint {}
 export const GMLEnvRotationDefinition: GMLNodeDefinition = createGMLPointDefinition(
   GMLNodeName.ENVIRONMENT_ROTATION,
   GMLEnvRotation,
 );
 
-export class GMLEnvOrigin extends GMLPoint {}
+export class GMLEnvOrigin extends GML3DPoint {}
 export const GMLEnvOriginDefinition: GMLNodeDefinition = createGMLPointDefinition(
   GMLNodeName.ENVIRONMENT_ORIGIN,
   GMLEnvOrigin,
 );
 
-export class GMLEnvRealScare extends GMLPoint {}
+export class GMLEnvRealScare extends GML3DPoint {}
 export const GMLEnvRealScareDefinition: GMLNodeDefinition = createGMLPointDefinition(
   GMLNodeName.ENVIRONMENT_REAL_SCALE,
   GMLEnvRealScare,
@@ -53,7 +53,7 @@ export const GMLEnvBackgroundDefinition: GMLNodeDefinition = createDefinition(
   GMLEnvBackground,
 );
 
-export class GMLEnvUp extends GMLPoint {
+export class GMLEnvUp extends GML3DPoint {
   init(data?: GMLParsedNode) {
     super.init(data, { x: 0, y: -1, z: 0 });
   }
@@ -63,7 +63,7 @@ export const GMLEnvUpDefinition: GMLNodeDefinition = createGMLPointDefinition(
   GMLEnvUp,
 );
 
-export class GMLEnvScreenBounds extends GMLPoint {
+export class GMLEnvScreenBounds extends GML3DPoint {
   init(data?: GMLParsedNode) {
     super.init(data, { x: 1920, y: 1080 });
   }

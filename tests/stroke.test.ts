@@ -26,4 +26,16 @@ describe("GMLStroke", () => {
     expect(stroke.getPoint(1)?.getXYZ()).toStrictEqual([3, 4, 0]);
     expect(stroke.getPoint(2)).toBeUndefined();
   });
+
+  it("returns undefined brush when absent", () => {
+    const stroke = createGmlNodeFromTagName(GMLNodeName.STROKE) as GMLStroke;
+    expect(stroke.getBrush()).toBeUndefined();
+  });
+
+  it("returns brush when present", () => {
+    const stroke = createGmlNodeFromXml(
+      "<stroke><brush><width>3</width></brush><pt><x>0</x><y>0</y></pt></stroke>",
+    ) as GMLStroke;
+    expect(stroke.getBrush()?.getWidth()).toBe(3);
+  });
 });

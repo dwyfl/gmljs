@@ -14,4 +14,7 @@ export class GMLFloatNode extends GMLLeafNode {
     }
     this.value = floatValue;
   }
+  getFloatValue() {
+    return this.value as number;
+  }
 }

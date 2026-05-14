@@ -5,6 +5,7 @@ import {
   type GMLNodeDefinition,
   GMLNodeName,
 } from "../../types.ts";
+import type { GMLBrush } from "../brush/index.ts";
 import { GMLPoint } from "../point/index.ts";
 
 export class GMLStroke extends GMLNode {
@@ -16,6 +17,9 @@ export class GMLStroke extends GMLNode {
   }
   getPoints() {
     return this.getChildren<GMLPoint>(GMLNodeName.POINT);
+  }
+  getBrush() {
+    return this.getChild<GMLBrush>(GMLNodeName.BRUSH);
   }
 }
 
