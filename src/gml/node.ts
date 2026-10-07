@@ -18,15 +18,15 @@ import {
 // Helpers are injected by util/index.ts after all modules load,
 // breaking the circular dependency with map.ts.
 type NodeDeps = {
-  getGMLNodeDefinition(name: GMLNodeName): GMLNodeDefinition;
-  createGmlNode(def: GMLNodeDefinition, data?: GMLParsedNode): GMLNode;
-  createGMLChildNodeDefinition(
+  getGMLNodeDefinition: (name: GMLNodeName) => GMLNodeDefinition;
+  createGmlNode: (def: GMLNodeDefinition, data?: GMLParsedNode) => GMLNode;
+  createGMLChildNodeDefinition: (
     name: GMLNodeName,
     opts?: Partial<GMLChildNodeDefinition>,
-  ): GMLChildNodeDefinition;
-  isGMLChildNodeDefinition(value: unknown): value is GMLChildNodeDefinition;
-  isGMLNodeAttribute(value: unknown): value is GMLNodeAttribute;
-  isGMLNodeName(value: unknown): value is GMLNodeName;
+  ) => GMLChildNodeDefinition;
+  isGMLChildNodeDefinition: (value: unknown) => value is GMLChildNodeDefinition;
+  isGMLNodeAttribute: (value: unknown) => value is GMLNodeAttribute;
+  isGMLNodeName: (value: unknown) => value is GMLNodeName;
 };
 
 let deps: NodeDeps | undefined;

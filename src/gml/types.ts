@@ -99,6 +99,7 @@ export interface GMLNodeInterface {
   getTagStart(): string;
   getTagEnd(): string;
   getTagContent(): string;
+  toString(): string;
   toObject(): GMLObjectRepresentation;
 }
 
