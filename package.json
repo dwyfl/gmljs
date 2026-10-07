@@ -32,14 +32,13 @@
     "prepare": "vp config"
   },
   "dependencies": {
-    "@xmldom/xmldom": "^0.9.10"
+    "@xmldom/xmldom": "^0.9.12"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
-    "@typescript/native-preview": "7.0.0-dev.20260429.1",
-    "bumpp": "^11.0.1",
-    "typescript": "^6.0.3",
-    "vite-plus": "^0.1.20"
+    "@types/node": "^26",
+    "bumpp": "^12.3.0",
+    "typescript": "^7.0.2",
+    "vite-plus": "catalog:"
   },
   "packageManager": "pnpm@10.33.0"
 }
