@@ -6,9 +6,20 @@ import type { GMLStroke } from "./gml/nodes/stroke/index.ts";
 import type { GMLTag } from "./gml/nodes/tag/index.ts";
 import { GMLNodeName, type GMLParseOptions } from "./gml/types.ts";
 import type { GMLParseError } from "./errors.ts";
+import type { GMLData } from "./gml/data.ts";
 import { createGmlNodeFromTagName, parseGML } from "./gml/util/index.ts";
 
 export { GMLParseError } from "./errors.ts";
+export type {
+  GMLBrushData,
+  GMLClientData,
+  GMLData,
+  GMLDrawingData,
+  GMLEnvironmentData,
+  GMLPointData,
+  GMLStrokeData,
+  GMLTagData,
+} from "./gml/data.ts";
 export {
   GMLNodeAttribute,
   GMLNodeName,
@@ -121,6 +132,18 @@ export class GML {
   }
   getPoint(tag: number, drawing: number, stroke: number, index: number): GMLPoint | undefined {
     return this.getPoints(tag, drawing, stroke)[index];
+  }
+  /** Iterates over the strokes of every drawing in every tag. */
+  *strokes(): Generator<GMLStroke, void, undefined> {
+    for (const tag of this.getTags()) {
+      for (const drawing of tag.getDrawings()) {
+        yield* drawing.getStrokes();
+      }
+    }
+  }
+  /** The document as plain, JSON-serializable data. */
+  toData(): GMLData {
+    return this.getRoot()?.toData() ?? { tags: [] };
   }
   toString() {
     return this.doc.toString();

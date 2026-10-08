@@ -1,3 +1,4 @@
+import { compact, type GMLEnvironmentData } from "../../data.ts";
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
 import {
@@ -24,6 +25,22 @@ export class GMLEnvironment extends GMLNode {
   }
   getRotation() {
     return this.getChild(GMLNodeName.ENVIRONMENT_ROTATION)?.getXYZ();
+  }
+  toData(): GMLEnvironmentData {
+    const text = (name: GMLNodeName) => {
+      const value = this.getChildValue([name]);
+      return value === undefined ? undefined : String(value);
+    };
+    return compact({
+      screenBounds: this.getScreenBounds(),
+      up: this.getUp(),
+      offset: this.getOffset(),
+      rotation: this.getRotation(),
+      origin: this.getChild(GMLNodeName.ENVIRONMENT_ORIGIN)?.getXYZ(),
+      realScale: this.getChild(GMLNodeName.ENVIRONMENT_REAL_SCALE)?.getXYZ(),
+      audio: text(GMLNodeName.ENVIRONMENT_AUDIO),
+      background: text(GMLNodeName.ENVIRONMENT_BACKGROUND),
+    });
   }
 }
 

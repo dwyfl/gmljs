@@ -37,8 +37,8 @@ type NodeTypes = {
   keywords: GMLLeafNode;
   uniquekey: GMLLeafNode;
   location: GMLLeafNodeParent;
-  lat: GMLLeafNode;
-  lon: GMLLeafNode;
+  lat: GMLFloatNode;
+  lon: GMLFloatNode;
   // <time> is a unix timestamp under <client> and a float under <pt>.
   time: GMLIntegerNode | GMLFloatNode;
   ip: GMLLeafNode;

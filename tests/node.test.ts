@@ -42,7 +42,7 @@ describe("GMLNode", () => {
       );
       expect(client.toObject()).toStrictEqual({
         name: ["seen"],
-        location: [{ lat: ["1.5"], lon: ["2"] }],
+        location: [{ lat: [1.5], lon: [2] }],
       });
     });
 

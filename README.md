@@ -60,6 +60,17 @@ for (const stroke of gml.getStrokes(0, 0)) {
 }
 ```
 
+To walk every stroke regardless of tag and drawing, or to get the whole document as plain JSON-serializable data:
+
+```javascript
+for (const stroke of gml.strokes()) {
+  const brush = stroke.getBrush()?.getColor(); // [r, g, b, a], 0–255
+}
+
+const { tags } = gml.toData();
+// tags[0].drawings[0].strokes[0].points → [{ x, y, z, t?, pressure?, rotation? }, …]
+```
+
 Collection getters (`getTags()`, `getStrokes()`, `getPoints()`, …) always return an array.
 
 Parsing is lenient by default: an invalid element (say, a point without a `<y>`) is skipped by the getters, kept verbatim in the output, and reported in `gml.warnings` as a `GMLParseError` whose `path` points at it. Pass `{ strict: true }` to throw on the first invalid element instead. Input that isn't well-formed XML with a `<gml>` root always throws.

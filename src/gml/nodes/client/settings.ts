@@ -1,6 +1,7 @@
 import { GMLNodeName } from "../../types.ts";
 import { createDefinition } from "../../util/definition.ts";
 import { GMLLeafNode } from "../leaf/index.ts";
+import { GMLFloatNode } from "../leaf/float.ts";
 import { GMLIntegerNode } from "../leaf/integer.ts";
 import { GMLLeafNodeParent } from "../leaf/parent.ts";
 import config from "../../../../package.json" with { type: "json" };
@@ -36,11 +37,11 @@ export const GMLTimeDefinition = createDefinition(GMLNodeName.CLIENT_TIME, GMLIn
 });
 export const GMLLocationLongitudeDefinition = createDefinition(
   GMLNodeName.CLIENT_LOCATION_LON,
-  GMLLeafNode,
+  GMLFloatNode,
 );
 export const GMLLocationLatitudeDefinition = createDefinition(
   GMLNodeName.CLIENT_LOCATION_LAT,
-  GMLLeafNode,
+  GMLFloatNode,
 );
 export const GMLLocationDefinition = createDefinition(
   GMLNodeName.CLIENT_LOCATION,

@@ -1,3 +1,4 @@
+import { compact, type GMLTagData } from "../../data.ts";
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
 import { type GMLDrawing, GMLDrawingDefinition } from "../drawing/index.ts";
@@ -24,6 +25,13 @@ export class GMLTag extends GMLNode {
   }
   getDrawings(): readonly GMLDrawing[] {
     return this.getChildren(GMLNodeName.DRAWING) ?? [];
+  }
+  toData(): GMLTagData {
+    return compact({
+      client: this.getChildPath([GMLNodeName.HEADER, GMLNodeName.CLIENT])?.toData(),
+      environment: this.getEnvironment()?.toData(),
+      drawings: this.getDrawings().map((drawing) => drawing.toData()),
+    });
   }
 }
 

@@ -1,3 +1,4 @@
+import { compact, type GMLStrokeData } from "../../data.ts";
 import { GMLNode } from "../../node.ts";
 import {
   type GMLAttributeDefinition,
@@ -21,6 +22,13 @@ export class GMLStroke extends GMLNode {
   }
   getBrush() {
     return this.getChild(GMLNodeName.BRUSH);
+  }
+  toData(): GMLStrokeData {
+    return compact({
+      isDrawing: this.isDrawing(),
+      brush: this.getBrush()?.toData(),
+      points: this.getPoints().map((point) => point.toData()),
+    });
   }
 }
 

@@ -1,3 +1,4 @@
+import { compact, type GMLBrushData } from "../../data.ts";
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
 import { GMLColorDefinition } from "../point/color.ts";
@@ -30,6 +31,18 @@ export class GMLBrush extends GMLNode {
       dripSpeed,
       dripVecUp,
     };
+  }
+  toData(): GMLBrushData {
+    const { dripAmount, dripSpeed, dripVecUp } = this.getDrip();
+    const uniqueStyleId = this.getChild(GMLNodeName.BRUSH_UNIQUE_STYLE_ID)?.getValue();
+    return compact({
+      width: this.getWidth(),
+      color: this.getColor(),
+      uniqueStyleId: uniqueStyleId === undefined ? undefined : String(uniqueStyleId),
+      dripAmount,
+      dripSpeed,
+      dripVecRelativeToUp: dripVecUp,
+    });
   }
 }
 

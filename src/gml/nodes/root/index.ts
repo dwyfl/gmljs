@@ -1,3 +1,4 @@
+import { compact, type GMLData } from "../../data.ts";
 import { GMLNode } from "../../node.ts";
 import { type GMLTag, GMLTagDefinition } from "../tag/index.ts";
 import { GMLNodeAttribute, type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
@@ -8,6 +9,13 @@ export class GMLRoot extends GMLNode {
   }
   public getTags(): readonly GMLTag[] {
     return this.getChildren(GMLNodeName.TAG) ?? [];
+  }
+  toData(): GMLData {
+    const spec = this.getAttribute(GMLNodeAttribute.SPEC);
+    return compact({
+      spec: spec === undefined ? undefined : String(spec),
+      tags: this.getTags().map((tag) => tag.toData()),
+    });
   }
 }
 

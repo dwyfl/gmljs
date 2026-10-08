@@ -5,6 +5,7 @@ import {
   type GMLParseContext,
   type GMLParsedNode,
 } from "../../types.ts";
+import { compact, type GMLPointData } from "../../data.ts";
 import { GML3DPoint } from "./base.ts";
 import { GMLDirectionDefinition } from "./direction.ts";
 import {
@@ -48,6 +49,17 @@ export class GMLPoint extends GML3DPoint {
   }
   getT() {
     return this.getChild(GMLNodeName.POINT_T)?.getFloatValue();
+  }
+  toData(): GMLPointData {
+    const [x, y, z] = this.getXYZ();
+    return compact({
+      x,
+      y,
+      z,
+      t: this.getT(),
+      pressure: this.getChild(GMLNodeName.PRESSURE)?.getFloatValue(),
+      rotation: this.getChild(GMLNodeName.ROTATION)?.getFloatValue(),
+    });
   }
 }
 
