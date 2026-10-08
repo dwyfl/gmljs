@@ -64,7 +64,7 @@ To walk every stroke regardless of tag and drawing, or to get the whole document
 
 ```javascript
 for (const stroke of gml.strokes()) {
-  const brush = stroke.getBrush()?.getColor(); // [r, g, b, a], 0–255
+  const color = stroke.getBrush()?.getColor(); // [r, g, b, a], 0–255
 }
 
 const { tags } = gml.toData();
