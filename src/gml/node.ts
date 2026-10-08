@@ -1,5 +1,6 @@
 import { GMLParseError } from "../errors.ts";
-import { formatXmlTagStart, formatXmlTagEnd } from "../util/xml.ts";
+import { formatXmlTagStart, formatXmlTagEnd, serializeXml } from "../util/xml.ts";
+import { GMLUnknownNode } from "./unknown.ts";
 import type { GMLNodeAtPath, GMLNodeTypeMap } from "./type-map.ts";
 import {
   type GMLAttributeDefinition,
@@ -18,6 +19,8 @@ import {
   isGMLNodeName,
   toXmlName,
 } from "./types.ts";
+
+const ELEMENT_NODE = 1;
 
 /** Creates a node, populating it from `data` (or with defaults) and validating it. */
 export function createGmlNode<T extends GMLNode>(
@@ -58,6 +61,10 @@ export abstract class GMLNode {
   attributes: GMLNodeAttributes = {};
   children: GMLNodeChildren = {};
   value: GMLNodeValue = "";
+  /** Attributes gmljs doesn't know for this node, by their name in the document. */
+  unknownAttributes: Map<string, string> = new Map();
+  /** All children in document order, including unknown elements. */
+  #childNodes: (GMLNode | GMLUnknownNode)[] = [];
 
   /** Use `createGmlNode()` (or the other factories) to create populated nodes. */
   constructor(definition: GMLNodeDefinition) {
@@ -113,6 +120,11 @@ export abstract class GMLNode {
 
   addChild(name: GMLNodeName, child: GMLNode) {
     (this.children[name] ??= []).push(child);
+    this.#childNodes.push(child);
+  }
+
+  addUnknownChild(child: GMLUnknownNode) {
+    this.#childNodes.push(child);
   }
 
   /** Removes the child at `index`, or all children named `name` if no index is given. */
@@ -121,17 +133,16 @@ export abstract class GMLNode {
     if (!children) {
       return;
     }
-    if (index === undefined) {
-      delete this.children[name];
+    if (index !== undefined && (index < 0 || index >= children.length)) {
       return;
     }
-    if (index < 0 || index >= children.length) {
-      return;
-    }
-    children.splice(index, 1);
+    const removed = new Set<GMLNode>(
+      index === undefined ? children.splice(0) : children.splice(index, 1),
+    );
     if (!children.length) {
       delete this.children[name];
     }
+    this.#childNodes = this.#childNodes.filter((node) => !removed.has(node as GMLNode));
   }
 
   hasChild(name: GMLNodeName): boolean {
@@ -140,6 +151,15 @@ export abstract class GMLNode {
 
   hasChildren(): boolean {
     return Object.keys(this.children).length > 0;
+  }
+
+  /** All children in document order, including unknown elements. */
+  getChildNodes(): readonly (GMLNode | GMLUnknownNode)[] {
+    return this.#childNodes;
+  }
+
+  getUnknownChildren(): GMLUnknownNode[] {
+    return this.#childNodes.filter((node) => node instanceof GMLUnknownNode);
   }
 
   getChild<N extends GMLNodeName>(child: N | readonly [N, number]): GMLNodeTypeMap[N] | undefined {
@@ -189,12 +209,20 @@ export abstract class GMLNode {
     }
     for (let i = 0; i < data.attributes.length; ++i) {
       const attr = data.attributes.item(i);
-      const name = attr?.nodeName.toLowerCase();
-      if (attr && isGMLNodeAttribute(name)) {
-        const attributeDefinition = this.getAttributeDefinition(name);
-        if (attributeDefinition) {
-          this.setAttribute(name, attributeDefinition.parse?.(attr.value) ?? attr.value);
-        }
+      if (!attr) {
+        continue;
+      }
+      const name = attr.nodeName.toLowerCase();
+      const attributeDefinition = isGMLNodeAttribute(name)
+        ? this.getAttributeDefinition(name)
+        : undefined;
+      if (attributeDefinition) {
+        this.setAttribute(
+          attributeDefinition.name,
+          attributeDefinition.parse?.(attr.value) ?? attr.value,
+        );
+      } else {
+        this.unknownAttributes.set(attr.nodeName, attr.value);
       }
     }
   }
@@ -203,21 +231,25 @@ export abstract class GMLNode {
     const { childNodes } = data;
     for (let i = 0; i < childNodes.length; ++i) {
       const child = childNodes.item(i);
-      const name = child?.nodeName.toLowerCase();
-      if (!child || !isGMLNodeName(name)) {
+      if (!child || child.nodeType !== ELEMENT_NODE) {
         continue;
       }
-      let node: GMLNode | undefined;
+      const name = child.nodeName.toLowerCase();
+      const childDefinition = isGMLNodeName(name) ? this.getChildNodeDefinition(name) : undefined;
+      if (!childDefinition) {
+        this.addUnknownChild(new GMLUnknownNode(child.nodeName, serializeXml(child)));
+        continue;
+      }
+      const { name: childName } = childDefinition.definition;
       try {
-        node = this.createChildNode(name, child);
+        this.addChild(childName, createGmlNode(childDefinition.definition, child));
       } catch (error) {
         if (error instanceof GMLParseError) {
-          throw error.withParent(`${toXmlName(name)}[${this.children[name]?.length ?? 0}]`);
+          throw error.withParent(
+            `${toXmlName(childName)}[${this.children[childName]?.length ?? 0}]`,
+          );
         }
         throw error;
-      }
-      if (node) {
-        this.addChild(name, node);
       }
     }
   }
@@ -245,6 +277,9 @@ export abstract class GMLNode {
       const stringify = this.getAttributeDefinition(key)?.stringify;
       attributes[toXmlName(key)] = stringify ? stringify(value) : String(value);
     }
+    for (const [key, value] of this.unknownAttributes) {
+      attributes[key] = value;
+    }
     return formatXmlTagStart(toXmlName(this.definition.name), attributes);
   }
 
@@ -253,9 +288,7 @@ export abstract class GMLNode {
   }
 
   getTagContent(): string {
-    return Object.values(this.children)
-      .map((children) => children.map((item) => item.toString()).join(""))
-      .join("");
+    return this.#childNodes.map((item) => item.toString()).join("");
   }
 
   toString(): string {

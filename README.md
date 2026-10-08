@@ -60,7 +60,7 @@ for (const stroke of gml.getStrokes(0, 0)) {
 
 Collection getters (`getTags()`, `getStrokes()`, `getPoints()`, …) always return an array, and invalid input throws a `GMLParseError` whose `path` points at the offending element.
 
-`toString()` writes the document back as GML, using the spec's tag casing (`screenBounds`, `isDrawing`, …) and escaping text and attribute values.
+`toString()` writes the document back as GML, using the spec's tag casing (`screenBounds`, `isDrawing`, …) and escaping text and attribute values. Element order is kept, and elements or attributes gmljs doesn't know are written back verbatim (see `getUnknownChildren()` and `unknownAttributes`).
 
 ## Related
 

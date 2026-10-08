@@ -32,6 +32,7 @@ export {
 } from "./gml/util/index.ts";
 
 export { GMLNode } from "./gml/node.ts";
+export { GMLUnknownNode } from "./gml/unknown.ts";
 export { GMLLeafNode } from "./gml/nodes/leaf/index.ts";
 export { GMLLeafNodeParent } from "./gml/nodes/leaf/parent.ts";
 export { GMLFloatNode } from "./gml/nodes/leaf/float.ts";

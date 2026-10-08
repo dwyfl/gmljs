@@ -27,6 +27,7 @@ describe("public entry", () => {
         "GMLRoot",
         "GMLStroke",
         "GMLTag",
+        "GMLUnknownNode",
         "createGMLDocumentFromPointArrays",
         "createGmlNode",
         "createGmlNodeFromTagName",

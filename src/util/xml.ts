@@ -1,5 +1,6 @@
 import {
   DOMParser,
+  XMLSerializer,
   type Document as _XmlDocument,
   type Element as _XmlElement,
   type Node as _XmlNode,
@@ -33,6 +34,8 @@ export const formatXmlTagStart = (tagName: string, attributes: Record<string, st
 export const formatXmlTagEnd = (tagName: string) => {
   return "</" + tagName + ">";
 };
+
+export const serializeXml = (node: XmlNode): string => new XMLSerializer().serializeToString(node);
 
 export const parseXml = (str: string): XmlDocument => {
   // Without an onError handler xmldom logs every problem to console.error.

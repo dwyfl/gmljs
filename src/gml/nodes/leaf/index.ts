@@ -10,6 +10,8 @@ export class GMLLeafNode extends GMLNode {
       this.setValue(typeof defaultValue === "function" ? defaultValue() : defaultValue);
     }
   }
+  /** Markup inside a leaf is flattened into its text value. */
+  override parseChildNodes(_data: GMLParsedNode) {}
   override parseValue(data: GMLParsedNode) {
     this.value = (data.textContent ?? "").trim();
   }
