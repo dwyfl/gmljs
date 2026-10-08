@@ -41,19 +41,26 @@ const ctx = canvas.getContext("2d");
 for (const stroke of gml.getStrokes(0, 0)) {
   // Get points in stroke
   const [firstPoint, ...points] = stroke.getPoints();
+  if (!firstPoint) continue;
 
   // Begin draw to canvas
   ctx.beginPath();
-  ctx.moveTo(firstPoint.values.x, firstPoint.values.y);
+  const [x, y] = firstPoint.getXYZ();
+  ctx.moveTo(x, y);
 
   for (const pt of points) {
-    ctx.lineTo(pt.x, pt.y);
+    const [x, y] = pt.getXYZ();
+    ctx.lineTo(x, y);
   }
 
   // Draw the stroke
   ctx.stroke();
 }
 ```
+
+Collection getters (`getTags()`, `getStrokes()`, `getPoints()`, …) always return an array, and invalid input throws a `GMLParseError` whose `path` points at the offending element.
+
+`toString()` writes the document back as GML, using the spec's tag casing (`screenBounds`, `isDrawing`, …) and escaping text and attribute values.
 
 ## Related
 
