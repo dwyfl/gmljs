@@ -43,7 +43,7 @@ describe("parseGML()", () => {
       "<gml><tag><drawing><stroke><pt><x>0</x><y>0</y></pt><pt><x>oops</x><y>0</y></pt></stroke></drawing></tag></gml>";
     let error: unknown;
     try {
-      parseGML(xml);
+      parseGML(xml, { strict: true });
     } catch (e) {
       error = e;
     }
@@ -55,10 +55,52 @@ describe("parseGML()", () => {
 
   it("reports the path of a missing required child", () => {
     expect(() =>
-      parseGML("<gml><tag><drawing><stroke><pt><x>0</x></pt></stroke></drawing></tag></gml>"),
+      parseGML("<gml><tag><drawing><stroke><pt><x>0</x></pt></stroke></drawing></tag></gml>", {
+        strict: true,
+      }),
     ).toThrow(
       /requires a "y" child node\. \(at gml\[0\]\/tag\[0\]\/drawing\[0\]\/stroke\[0\]\/pt\[0\]\)/,
     );
+  });
+});
+
+describe("lenient parsing (default)", () => {
+  const xml =
+    "<gml><tag><drawing><stroke><pt><x>0</x><y>0</y></pt><pt><x>oops</x><y>1</y></pt><pt><x>2</x><y>2</y></pt><pt><x>3</x></pt></stroke></drawing></tag></gml>";
+
+  it("keeps parsing past invalid elements and reports them as warnings", () => {
+    const seen: GMLParseError[] = [];
+    const doc = parseGML(xml, { onWarning: (warning) => seen.push(warning) });
+    const stroke = doc
+      .getChildPath([GMLNodeName.ROOT, GMLNodeName.TAG])
+      ?.getDrawing()
+      ?.getStroke(0);
+    expect(stroke?.getPoints().map((pt) => pt.getXYZ()[0])).toStrictEqual([0, 2]);
+    expect(doc.warnings.map(({ reason, path }) => [reason, path.join("/")])).toStrictEqual([
+      ['Unable to parse value "oops" as float.', "gml[0]/tag[0]/drawing[0]/stroke[0]/pt[1]/x[0]"],
+      [
+        'Invalid GML: A "pt" node requires a "x" child node.',
+        "gml[0]/tag[0]/drawing[0]/stroke[0]/pt[1]",
+      ],
+      [
+        'Invalid GML: A "pt" node requires a "y" child node.',
+        "gml[0]/tag[0]/drawing[0]/stroke[0]/pt[3]",
+      ],
+    ]);
+    expect(seen).toStrictEqual(doc.warnings);
+  });
+
+  it("keeps invalid elements verbatim in the output", () => {
+    expect(parseGML(xml).toString()).toContain("<pt><x>oops</x><y>1</y></pt>");
+    expect(parseGML(xml).toString()).toContain("<pt><x>3</x></pt>");
+  });
+
+  it("has no warnings for valid documents", () => {
+    expect(parseGML("<gml><tag><drawing/></tag></gml>").warnings).toStrictEqual([]);
+  });
+
+  it("still throws for errors in the root of a fragment", () => {
+    expect(() => createGmlNodeFromXml("<pt><x>0</x></pt>")).toThrow(GMLParseError);
   });
 });
 

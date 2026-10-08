@@ -19,9 +19,4 @@ export class GMLParseError extends Error {
     this.reason = reason;
     this.path = path;
   }
-
-  /** Returns a copy of this error with `segment` prepended to its path. */
-  withParent(segment: string): GMLParseError {
-    return new GMLParseError(this.reason, { path: [segment, ...this.path], cause: this.cause });
-  }
 }

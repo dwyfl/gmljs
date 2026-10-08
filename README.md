@@ -58,7 +58,18 @@ for (const stroke of gml.getStrokes(0, 0)) {
 }
 ```
 
-Collection getters (`getTags()`, `getStrokes()`, `getPoints()`, …) always return an array, and invalid input throws a `GMLParseError` whose `path` points at the offending element.
+Collection getters (`getTags()`, `getStrokes()`, `getPoints()`, …) always return an array.
+
+Parsing is lenient by default: an invalid element (say, a point without a `<y>`) is skipped by the getters, kept verbatim in the output, and reported in `gml.warnings` as a `GMLParseError` whose `path` points at it. Pass `{ strict: true }` to throw on the first invalid element instead. Input that isn't well-formed XML with a `<gml>` root always throws.
+
+```javascript
+const gml = new GML(str);
+for (const warning of gml.warnings) {
+  console.warn(warning.message); // e.g. 'Invalid GML: A "pt" node requires a "y" child node. (at gml[0]/tag[0]/drawing[0]/stroke[0]/pt[3])'
+}
+
+new GML(str, { strict: true }); // throws instead
+```
 
 `toString()` writes the document back as GML, using the spec's tag casing (`screenBounds`, `isDrawing`, …) and escaping text and attribute values. Element order is kept, and elements or attributes gmljs doesn't know are written back verbatim (see `getUnknownChildren()` and `unknownAttributes`).
 

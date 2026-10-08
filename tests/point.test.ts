@@ -31,7 +31,7 @@ describe("GMLPoint", () => {
   });
 
   it("throws on invalid float values", () => {
-    expect(() => createGmlNodeFromXml("<pt><x> </x><y>1</y></pt>")).toThrow(
+    expect(() => createGmlNodeFromXml("<pt><x> </x><y>1</y></pt>", { strict: true })).toThrow(
       /Unable to parse value/,
     );
   });

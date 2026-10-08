@@ -5,38 +5,55 @@ import type { GMLDocument } from "../nodes/document/index.ts";
 import type { GMLPoint } from "../nodes/point/index.ts";
 import type { GMLStroke } from "../nodes/stroke/index.ts";
 import type { GMLNodeTypeMap } from "../type-map.ts";
-import { GMLNodeName, type GMLParsedNode, isGMLNodeName } from "../types.ts";
+import { GMLNodeName, type GMLParsedNode, type GMLParseOptions, isGMLNodeName } from "../types.ts";
 import { parseXml } from "../../util/xml.ts";
 
 export function createGmlNodeFromTagName<N extends GMLNodeName>(
   tagName: N,
   data?: GMLParsedNode,
+  options?: GMLParseOptions,
 ): GMLNodeTypeMap[N] {
   const definition = getGMLNodeDefinition(tagName);
   if (!definition) {
     throw new Error(`Invalid GML! "${tagName}" is not a valid GML tag.`);
   }
-  return createGmlNode(definition, data);
+  return createGmlNode(definition, data, options);
 }
 
-/** Parses an XML fragment whose root element is any GML node, e.g. `<brush>…</brush>`. */
-export function createGmlNodeFromXml(xml: string): GMLNode {
+/**
+ * Parses an XML fragment whose root element is any GML node, e.g. `<brush>…</brush>`.
+ * Errors in the root element itself always throw.
+ */
+export function createGmlNodeFromXml(xml: string, options?: GMLParseOptions): GMLNode {
   const xmlElement = parseXml(xml).documentElement ?? undefined;
   const tagName = xmlElement?.nodeName.toLowerCase();
   if (!xmlElement || !isGMLNodeName(tagName) || tagName === GMLNodeName.DOCUMENT) {
     throw new GMLParseError(`Invalid GML! "${xmlElement?.nodeName}" is not a valid GML tag.`);
   }
-  return createGmlNodeFromTagName(tagName, xmlElement);
+  return createGmlNodeFromTagName(tagName, xmlElement, options);
 }
 
-/** Parses a complete GML document. The root element must be `<gml>`. */
-export function parseGML(xml: string): GMLDocument {
+/**
+ * Parses a complete GML document. The root element must be `<gml>`.
+ * Unless `strict` is set, invalid elements are kept as GMLUnknownNode and
+ * listed in the document's `warnings`.
+ */
+export function parseGML(xml: string, options: GMLParseOptions = {}): GMLDocument {
   const xmlDocument = parseXml(xml);
   const rootName = xmlDocument.documentElement?.nodeName;
   if (rootName?.toLowerCase() !== GMLNodeName.ROOT) {
     throw new GMLParseError(`Invalid GML! Expected a <gml> root element, found <${rootName}>.`);
   }
-  return createGmlNodeFromTagName(GMLNodeName.DOCUMENT, xmlDocument);
+  const warnings: GMLParseError[] = [];
+  const doc = createGmlNodeFromTagName(GMLNodeName.DOCUMENT, xmlDocument, {
+    ...options,
+    onWarning: (warning) => {
+      warnings.push(warning);
+      options.onWarning?.(warning);
+    },
+  });
+  doc.warnings = warnings;
+  return doc;
 }
 
 export { createGmlNode };

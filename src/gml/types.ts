@@ -1,3 +1,4 @@
+import type { GMLParseError } from "../errors.ts";
 import type { GMLNode } from "./node.ts";
 import type { XmlDocument, XmlElement, XmlNode } from "../util/xml.ts";
 
@@ -140,3 +141,21 @@ export type GMLAttributeDefinition = {
 export type GMLObjectRepresentation = GMLNodeValue | { [name: string]: GMLObjectRepresentation[] };
 
 export type GMLParsedNode = XmlDocument | XmlElement | XmlNode;
+
+export type GMLParseOptions = {
+  /**
+   * Throw on the first invalid element. By default invalid elements are kept
+   * verbatim as GMLUnknownNode and reported through `onWarning`.
+   */
+  strict?: boolean;
+  /** Called for each invalid element that was kept as a GMLUnknownNode. */
+  onWarning?: (warning: GMLParseError) => void;
+};
+
+/** State shared by all nodes while parsing one document. */
+export type GMLParseContext = {
+  readonly strict: boolean;
+  readonly onWarning?: ((warning: GMLParseError) => void) | undefined;
+  /** Path of the element being parsed, e.g. `["gml[0]", "tag[0]"]`. */
+  readonly path: string[];
+};

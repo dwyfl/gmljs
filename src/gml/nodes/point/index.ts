@@ -2,6 +2,7 @@ import {
   type GMLNodeDefinition,
   GMLNodeName,
   type GMLNodeValue,
+  type GMLParseContext,
   type GMLParsedNode,
 } from "../../types.ts";
 import { GML3DPoint } from "./base.ts";
@@ -18,8 +19,8 @@ import {
 } from "./points.ts";
 
 export class GMLPoint extends GML3DPoint {
-  override init(data?: GMLParsedNode) {
-    super.init(data);
+  override init(data?: GMLParsedNode, context?: GMLParseContext) {
+    super.init(data, context);
     /**
      * Convert <time> to <t>.
      *

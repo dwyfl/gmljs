@@ -1,10 +1,10 @@
 import { GMLNode } from "../../node.ts";
-import type { GMLObjectRepresentation, GMLParsedNode } from "../../types.ts";
+import type { GMLObjectRepresentation, GMLParseContext, GMLParsedNode } from "../../types.ts";
 import { escapeXmlText } from "../../../util/xml.ts";
 
 export class GMLLeafNode extends GMLNode {
-  override init(data?: GMLParsedNode) {
-    super.init(data);
+  override init(data?: GMLParsedNode, context?: GMLParseContext) {
+    super.init(data, context);
     const { defaultValue } = this.definition;
     if (!data && defaultValue !== undefined) {
       this.setValue(typeof defaultValue === "function" ? defaultValue() : defaultValue);

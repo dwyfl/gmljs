@@ -2,13 +2,14 @@ import { GMLNode } from "../../node.ts";
 import {
   type GMLNodeName,
   type GMLNodeValue,
+  type GMLParseContext,
   type GMLParsedNode,
   isGMLNodeName,
 } from "../../types.ts";
 
 export class GMLLeafNodeParent extends GMLNode {
-  override init(data?: GMLParsedNode) {
-    super.init(data);
+  override init(data?: GMLParsedNode, context?: GMLParseContext) {
+    super.init(data, context);
     // When parsing, only fill in missing children; otherwise override the default children.
     this.setValues(this.definition.defaultChildValues, !data);
   }

@@ -14,7 +14,9 @@ import {
   GMLNodeName,
   type GMLNodeValue,
   type GMLObjectRepresentation,
+  type GMLParseContext,
   type GMLParsedNode,
+  type GMLParseOptions,
   isGMLNodeAttribute,
   isGMLNodeName,
   toXmlName,
@@ -22,13 +24,28 @@ import {
 
 const ELEMENT_NODE = 1;
 
+export const createParseContext = (options: GMLParseOptions = {}): GMLParseContext => ({
+  strict: options.strict ?? false,
+  onWarning: options.onWarning,
+  path: [],
+});
+
 /** Creates a node, populating it from `data` (or with defaults) and validating it. */
 export function createGmlNode<T extends GMLNode>(
   definition: GMLNodeDefinition<T>,
   data?: GMLParsedNode,
+  options?: GMLParseOptions,
+): T {
+  return buildNode(definition, data, createParseContext(options));
+}
+
+function buildNode<T extends GMLNode>(
+  definition: GMLNodeDefinition<T>,
+  data: GMLParsedNode | undefined,
+  context: GMLParseContext,
 ): T {
   const node = new definition.model(definition);
-  node.init(data);
+  node.init(data, context);
   node.verifyAttributes();
   node.verifyChildren();
   return node;
@@ -71,7 +88,7 @@ export abstract class GMLNode {
     this.definition = definition;
   }
 
-  init(data?: GMLParsedNode) {
+  init(data?: GMLParsedNode, context: GMLParseContext = createParseContext()) {
     this.definition.attributes.forEach((item) => {
       if (item.defaultValue !== undefined) {
         this.setAttribute(item.name, item.defaultValue);
@@ -80,7 +97,7 @@ export abstract class GMLNode {
     if (data) {
       this.parseValue(data);
       this.parseAttributes(data);
-      this.parseChildNodes(data);
+      this.parseChildNodes(data, context);
     } else {
       for (const { definition, initDefault } of getChildDefinitions(this.definition).values()) {
         if (initDefault) {
@@ -227,29 +244,41 @@ export abstract class GMLNode {
     }
   }
 
-  parseChildNodes(data: GMLParsedNode) {
+  parseChildNodes(data: GMLParsedNode, context: GMLParseContext = createParseContext()) {
     const { childNodes } = data;
+    const counts = new Map<string, number>();
     for (let i = 0; i < childNodes.length; ++i) {
       const child = childNodes.item(i);
       if (!child || child.nodeType !== ELEMENT_NODE) {
         continue;
       }
       const name = child.nodeName.toLowerCase();
+      const index = counts.get(name) ?? 0;
+      counts.set(name, index + 1);
       const childDefinition = isGMLNodeName(name) ? this.getChildNodeDefinition(name) : undefined;
       if (!childDefinition) {
         this.addUnknownChild(new GMLUnknownNode(child.nodeName, serializeXml(child)));
         continue;
       }
-      const { name: childName } = childDefinition.definition;
+      const { definition } = childDefinition;
+      context.path.push(`${toXmlName(definition.name)}[${index}]`);
       try {
-        this.addChild(childName, createGmlNode(childDefinition.definition, child));
+        this.addChild(definition.name, buildNode(definition, child, context));
       } catch (error) {
-        if (error instanceof GMLParseError) {
-          throw error.withParent(
-            `${toXmlName(childName)}[${this.children[childName]?.length ?? 0}]`,
-          );
+        if (!(error instanceof GMLParseError)) {
+          throw error;
         }
-        throw error;
+        // Errors are located by the closest parent; ancestors pass them on unchanged.
+        const located = error.path.length
+          ? error
+          : new GMLParseError(error.reason, { path: [...context.path], cause: error.cause });
+        if (context.strict) {
+          throw located;
+        }
+        context.onWarning?.(located);
+        this.addUnknownChild(new GMLUnknownNode(child.nodeName, serializeXml(child)));
+      } finally {
+        context.path.pop();
       }
     }
   }

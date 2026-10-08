@@ -123,4 +123,12 @@ describe("GML", () => {
     const once = new GML(gml001).toString();
     expect(new GML(once).toString()).toBe(once);
   });
+
+  it("exposes parse warnings and supports strict mode", () => {
+    const xml = "<gml><tag><drawing><stroke><pt><x>1</x></pt></stroke></drawing></tag></gml>";
+    const gml = new GML(xml);
+    expect(gml.warnings).toHaveLength(1);
+    expect(gml.getPoints(0, 0, 0)).toStrictEqual([]);
+    expect(() => new GML(xml, { strict: true })).toThrow(GMLParseError);
+  });
 });

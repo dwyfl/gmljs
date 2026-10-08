@@ -4,7 +4,8 @@ import type { GMLDrawing } from "./gml/nodes/drawing/index.ts";
 import type { GMLPoint } from "./gml/nodes/point/index.ts";
 import type { GMLStroke } from "./gml/nodes/stroke/index.ts";
 import type { GMLTag } from "./gml/nodes/tag/index.ts";
-import { GMLNodeName } from "./gml/types.ts";
+import { GMLNodeName, type GMLParseOptions } from "./gml/types.ts";
+import type { GMLParseError } from "./errors.ts";
 import { createGmlNodeFromTagName, parseGML } from "./gml/util/index.ts";
 
 export { GMLParseError } from "./errors.ts";
@@ -20,6 +21,8 @@ export {
   type GMLNodeDefinition,
   type GMLNodeValue,
   type GMLObjectRepresentation,
+  type GMLParseContext,
+  type GMLParseOptions,
 } from "./gml/types.ts";
 export type { GMLNodeAtPath, GMLNodeTypeMap } from "./gml/type-map.ts";
 export {
@@ -52,13 +55,22 @@ export { GMLBrush } from "./gml/nodes/brush/index.ts";
 
 export class GML {
   doc: GMLDocument;
-  /** @throws {GMLParseError} if `str` is not a valid GML document. */
-  constructor(str?: string) {
+  /**
+   * @throws {GMLParseError} if `str` is not well-formed XML with a `<gml>` root,
+   * or, with `{ strict: true }`, if any element is invalid.
+   */
+  constructor(str?: string, options?: GMLParseOptions) {
     this.doc =
-      typeof str === "string" ? parseGML(str) : createGmlNodeFromTagName(GMLNodeName.DOCUMENT);
+      typeof str === "string"
+        ? parseGML(str, options)
+        : createGmlNodeFromTagName(GMLNodeName.DOCUMENT);
   }
-  init(str: string) {
-    this.doc = parseGML(str);
+  init(str: string, options?: GMLParseOptions) {
+    this.doc = parseGML(str, options);
+  }
+  /** Invalid elements that were kept as GMLUnknownNode while parsing. */
+  get warnings(): readonly GMLParseError[] {
+    return this.doc.warnings;
   }
   /** The `<client>` node of the first tag. */
   getClient(): GMLClient | undefined {
