@@ -22,6 +22,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
+      "browser": "./dist/index.browser.mjs",
       "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
@@ -41,8 +42,10 @@
     "@xmldom/xmldom": "^0.9.12"
   },
   "devDependencies": {
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^26",
     "bumpp": "^12.3.0",
+    "jsdom": "^30.1.2",
     "typescript": "^7.0.2",
     "vite-plus": "catalog:"
   },

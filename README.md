@@ -10,6 +10,8 @@
 npm install gmljs
 ```
 
+In browsers, bundlers pick a build that parses with the built-in `DOMParser` (about 6 KB gzipped). Node and other runtimes without a DOM use [@xmldom/xmldom](https://github.com/xmldom/xmldom). Both reject XML that isn't well-formed.
+
 ## Example
 
 ```javascript

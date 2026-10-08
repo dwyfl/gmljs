@@ -40,9 +40,18 @@ describe("parseXml()", () => {
     expect(doc.getElementsByTagName("child").length).toBe(1);
   });
 
-  it("throws GMLParseError on malformed XML", () => {
-    expect(() => parseXml("<root><child></root>")).toThrow(GMLParseError);
-    expect(() => parseXml("")).toThrow(GMLParseError);
+  it.each([
+    ["<root><child></root>", "mismatched tags"],
+    ["", "empty input"],
+    ["<root x=1/>", "unquoted attribute"],
+    ["<root>&nbsp;</root>", "unknown entity"],
+    ["text<root/>", "text outside the root"],
+  ])("throws GMLParseError for %j (%s), like browsers", (xml) => {
+    expect(() => parseXml(xml)).toThrow(GMLParseError);
+  });
+
+  it("describes the problem in the message", () => {
+    expect(() => parseXml("<root x=1/>")).toThrow(/^Invalid XML: attribute "1" missed quot/);
   });
 
   it("does not log parser errors to the console", () => {
