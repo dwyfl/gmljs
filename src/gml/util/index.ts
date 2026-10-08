@@ -1,16 +1,11 @@
 import { GMLParseError } from "../../errors.ts";
-import { GMLNode, _setGMLNodeDeps } from "../node.ts";
+import { createGmlNode, type GMLNode } from "../node.ts";
 import { getGMLNodeDefinition } from "../map.ts";
 import type { GMLDocument } from "../nodes/document/index.ts";
 import type { GMLPoint } from "../nodes/point/index.ts";
 import type { GMLStroke } from "../nodes/stroke/index.ts";
 import type { GMLNodeTypeMap } from "../type-map.ts";
-import {
-  type GMLNodeDefinition,
-  GMLNodeName,
-  type GMLParsedNode,
-  isGMLNodeName,
-} from "../types.ts";
+import { GMLNodeName, type GMLParsedNode, isGMLNodeName } from "../types.ts";
 import { parseXml } from "../../util/xml.ts";
 
 export function createGmlNodeFromTagName<N extends GMLNodeName>(
@@ -45,10 +40,7 @@ export function parseGML(xml: string): GMLDocument {
   return createGmlNodeFromTagName(GMLNodeName.DOCUMENT, xmlDocument);
 }
 
-export function createGmlNode(definition: GMLNodeDefinition, data?: GMLParsedNode): GMLNode {
-  const { model } = definition;
-  return new model(definition, data);
-}
+export { createGmlNode };
 
 export type GMLPointValues = { x: number; y: number; z?: number; t?: number };
 
@@ -88,8 +80,3 @@ export const createGMLDocumentFromPointArrays = (
   strokes.forEach((points) => drawing.addChild(GMLNodeName.STROKE, createStroke(points)));
   return doc;
 };
-
-_setGMLNodeDeps({
-  getGMLNodeDefinition,
-  createGmlNode,
-});

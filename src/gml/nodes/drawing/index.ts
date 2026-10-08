@@ -1,6 +1,6 @@
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
-import type { GMLStroke } from "../stroke/index.ts";
+import { type GMLStroke, GMLStrokeDefinition } from "../stroke/index.ts";
 
 export class GMLDrawing extends GMLNode {
   getStroke(index: number) {
@@ -15,7 +15,7 @@ export const GMLDrawingDefinition: GMLNodeDefinition = {
   name: GMLNodeName.DRAWING,
   model: GMLDrawing,
   attributes: [],
-  children: [GMLNodeName.STROKE],
+  children: [GMLStrokeDefinition],
 };
 
 export default GMLDrawingDefinition;

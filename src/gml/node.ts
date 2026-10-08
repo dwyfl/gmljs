@@ -19,37 +19,30 @@ import {
   toXmlName,
 } from "./types.ts";
 
-// Helpers are injected by util/index.ts after all modules load,
-// breaking the circular dependency with map.ts.
-type NodeDeps = {
-  getGMLNodeDefinition: (name: GMLNodeName) => GMLNodeDefinition;
-  createGmlNode: (def: GMLNodeDefinition, data?: GMLParsedNode) => GMLNode;
-};
-
-let deps: NodeDeps | undefined;
-
-export function _setGMLNodeDeps(d: NodeDeps): void {
-  deps = d;
+/** Creates a node, populating it from `data` (or with defaults) and validating it. */
+export function createGmlNode(definition: GMLNodeDefinition, data?: GMLParsedNode): GMLNode {
+  const node = new definition.model(definition);
+  node.init(data);
+  node.verifyAttributes();
+  node.verifyChildren();
+  return node;
 }
-
-const d = (): NodeDeps => {
-  if (!deps) throw new Error("GMLNode helpers not initialized");
-  return deps;
-};
 
 const childDefinitionCache = new WeakMap<
   GMLNodeDefinition,
   Map<GMLNodeName, GMLChildNodeDefinition>
 >();
 
+/** The allowed children of a definition, keyed by tag name. */
 const getChildDefinitions = (definition: GMLNodeDefinition) => {
   let map = childDefinitionCache.get(definition);
   if (!map) {
     map = new Map();
     for (const item of definition.children) {
-      const childDefinition = typeof item === "string" ? { name: item } : item;
-      if (!map.has(childDefinition.name)) {
-        map.set(childDefinition.name, childDefinition);
+      const childDefinition = "model" in item ? { definition: item } : item;
+      const { name } = childDefinition.definition;
+      if (!map.has(name)) {
+        map.set(name, childDefinition);
       }
     }
     childDefinitionCache.set(definition, map);
@@ -63,11 +56,9 @@ export abstract class GMLNode {
   children: GMLNodeChildren = {};
   value: GMLNodeValue = "";
 
-  constructor(definition: GMLNodeDefinition, data?: GMLParsedNode) {
+  /** Use `createGmlNode()` (or the other factories) to create populated nodes. */
+  constructor(definition: GMLNodeDefinition) {
     this.definition = definition;
-    this.init(data);
-    this.verifyAttributes();
-    this.verifyChildren();
   }
 
   init(data?: GMLParsedNode) {
@@ -81,14 +72,11 @@ export abstract class GMLNode {
       this.parseAttributes(data);
       this.parseChildNodes(data);
     } else {
-      this.definition.children.forEach((item) => {
-        if (typeof item === "object" && item.initDefault) {
-          const child = this.createChildNode(item.name);
-          if (child) {
-            this.addChild(item.name, child);
-          }
+      for (const { definition, initDefault } of getChildDefinitions(this.definition).values()) {
+        if (initDefault) {
+          this.addChild(definition.name, createGmlNode(definition));
         }
-      });
+      }
     }
   }
 
@@ -103,13 +91,13 @@ export abstract class GMLNode {
   }
 
   verifyChildren() {
-    this.definition.children.forEach((item) => {
-      if (typeof item === "object" && item.required && !this.hasChild(item.name)) {
+    for (const { definition, required } of getChildDefinitions(this.definition).values()) {
+      if (required && !this.hasChild(definition.name)) {
         throw new GMLParseError(
-          `Invalid GML: A "${this.definition.name}" node requires a "${item.name}" child node.`,
+          `Invalid GML: A "${this.definition.name}" node requires a "${definition.name}" child node.`,
         );
       }
-    });
+    }
   }
 
   setAttribute(key: GMLNodeAttribute, value: GMLNodeAttributeValue) {
@@ -234,11 +222,7 @@ export abstract class GMLNode {
   /** Creates a child node, or returns undefined if this node doesn't allow a `name` child. */
   protected createChildNode(name: GMLNodeName, data?: GMLParsedNode): GMLNode | undefined {
     const childDefinition = this.getChildNodeDefinition(name);
-    if (!childDefinition) {
-      return undefined;
-    }
-    const { createGmlNode, getGMLNodeDefinition } = d();
-    return createGmlNode(childDefinition.definition ?? getGMLNodeDefinition(name), data);
+    return childDefinition && createGmlNode(childDefinition.definition, data);
   }
 
   getChildNodeDefinition(name: GMLNodeName): GMLChildNodeDefinition | undefined {

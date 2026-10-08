@@ -1,5 +1,6 @@
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import { GMLRootDefinition } from "../root/index.ts";
 
 export class GMLDocument extends GMLNode {
   override toString() {
@@ -11,7 +12,7 @@ export const GMLDocumentDefinition: GMLNodeDefinition = {
   name: GMLNodeName.DOCUMENT,
   model: GMLDocument,
   attributes: [],
-  children: [{ name: GMLNodeName.ROOT, initDefault: true }],
+  children: [{ definition: GMLRootDefinition, initDefault: true }],
 };
 
 export default GMLDocumentDefinition;

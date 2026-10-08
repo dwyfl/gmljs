@@ -70,17 +70,6 @@ export const GMLClientVersionDefinition: GMLNodeDefinition = createDefinition(
   GMLClientVersion,
 );
 
-export class GMLLocation extends GMLLeafNodeParent {}
-export const GMLLocationDefinition: GMLNodeDefinition = {
-  name: GMLNodeName.CLIENT_LOCATION,
-  model: GMLLocation,
-  attributes: [],
-  children: [
-    { name: GMLNodeName.CLIENT_LOCATION_LAT, required: true },
-    { name: GMLNodeName.CLIENT_LOCATION_LON, required: true },
-  ],
-};
-
 export class GMLLocationLongitude extends GMLLeafNode {}
 export const GMLLocationLongitudeDefinition: GMLNodeDefinition = createDefinition(
   GMLNodeName.CLIENT_LOCATION_LON,
@@ -92,3 +81,14 @@ export const GMLLocationLatitudeDefinition: GMLNodeDefinition = createDefinition
   GMLNodeName.CLIENT_LOCATION_LAT,
   GMLLocationLatitude,
 );
+
+export class GMLLocation extends GMLLeafNodeParent {}
+export const GMLLocationDefinition: GMLNodeDefinition = {
+  name: GMLNodeName.CLIENT_LOCATION,
+  model: GMLLocation,
+  attributes: [],
+  children: [
+    { definition: GMLLocationLatitudeDefinition, required: true },
+    { definition: GMLLocationLongitudeDefinition, required: true },
+  ],
+};

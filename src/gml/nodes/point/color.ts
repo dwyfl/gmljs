@@ -42,9 +42,9 @@ export const GMLColorDefinition: GMLNodeDefinition = {
   model: GMLColor,
   attributes: [],
   children: [
-    { name: GMLNodeName.COLOR_R, required: true, initDefault: true },
-    { name: GMLNodeName.COLOR_G, required: true, initDefault: true },
-    { name: GMLNodeName.COLOR_B, required: true, initDefault: true },
-    GMLNodeName.COLOR_A,
+    { definition: GMLColorRDefinition, required: true, initDefault: true },
+    { definition: GMLColorGDefinition, required: true, initDefault: true },
+    { definition: GMLColorBDefinition, required: true, initDefault: true },
+    GMLColorADefinition,
   ],
 };

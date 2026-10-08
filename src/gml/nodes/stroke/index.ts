@@ -5,7 +5,9 @@ import {
   type GMLNodeDefinition,
   GMLNodeName,
 } from "../../types.ts";
-import type { GMLPoint } from "../point/index.ts";
+import { type GMLPoint, GMLPointDefinition } from "../point/index.ts";
+import { GMLBrushDefinition } from "../brush/index.ts";
+import { GMLStrokeInfoDefinition } from "./info.ts";
 
 export class GMLStroke extends GMLNode {
   isDrawing(): boolean {
@@ -33,7 +35,7 @@ export const GMLStrokeDefinition: GMLNodeDefinition = {
   name: GMLNodeName.STROKE,
   model: GMLStroke,
   attributes: [attrIsDrawing],
-  children: [GMLNodeName.POINT, GMLNodeName.BRUSH, GMLNodeName.STROKE_INFO],
+  children: [GMLPointDefinition, GMLBrushDefinition, GMLStrokeInfoDefinition],
 };
 
 export default GMLStrokeDefinition;

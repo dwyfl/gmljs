@@ -1,5 +1,6 @@
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
-import { GML3DPoint } from "./index.ts";
+import { GML3DPoint } from "./base.ts";
+import { GMLPointXDefinition, GMLPointYDefinition, GMLPointZDefinition } from "./points.ts";
 
 export class GMLDirection extends GML3DPoint {}
 
@@ -8,8 +9,8 @@ export const GMLDirectionDefinition: GMLNodeDefinition = {
   model: GMLDirection,
   attributes: [],
   children: [
-    { name: GMLNodeName.POINT_X, required: true },
-    { name: GMLNodeName.POINT_Y, required: true },
-    GMLNodeName.POINT_Z,
+    { definition: GMLPointXDefinition, required: true },
+    { definition: GMLPointYDefinition, required: true },
+    GMLPointZDefinition,
   ],
 };

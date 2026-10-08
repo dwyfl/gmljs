@@ -1,5 +1,15 @@
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import {
+  GMLEnvAudioDefinition,
+  GMLEnvBackgroundDefinition,
+  GMLEnvOffsetDefinition,
+  GMLEnvOriginDefinition,
+  GMLEnvRealScaleDefinition,
+  GMLEnvRotationDefinition,
+  GMLEnvScreenBoundsDefinition,
+  GMLEnvUpDefinition,
+} from "./settings.ts";
 
 export class GMLEnvironment extends GMLNode {
   getUp() {
@@ -22,14 +32,14 @@ export const GMLEnvironmentDefinition: GMLNodeDefinition = {
   model: GMLEnvironment,
   attributes: [],
   children: [
-    { name: GMLNodeName.ENVIRONMENT_UP, initDefault: true },
-    { name: GMLNodeName.ENVIRONMENT_SCREEN_BOUNDS, initDefault: true },
-    GMLNodeName.ENVIRONMENT_OFFSET,
-    GMLNodeName.ENVIRONMENT_ROTATION,
-    GMLNodeName.ENVIRONMENT_ORIGIN,
-    GMLNodeName.ENVIRONMENT_REAL_SCALE,
-    GMLNodeName.ENVIRONMENT_AUDIO,
-    GMLNodeName.ENVIRONMENT_BACKGROUND,
+    { definition: GMLEnvUpDefinition, initDefault: true },
+    { definition: GMLEnvScreenBoundsDefinition, initDefault: true },
+    GMLEnvOffsetDefinition,
+    GMLEnvRotationDefinition,
+    GMLEnvOriginDefinition,
+    GMLEnvRealScaleDefinition,
+    GMLEnvAudioDefinition,
+    GMLEnvBackgroundDefinition,
   ],
 };
 

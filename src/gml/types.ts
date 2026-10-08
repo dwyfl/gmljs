@@ -100,22 +100,21 @@ const xmlNames: Partial<Record<GMLNodeName | GMLNodeAttribute, string>> = {
 export const toXmlName = (name: GMLNodeName | GMLNodeAttribute): string => xmlNames[name] ?? name;
 
 export interface GMLNodeConstructor {
-  new (definition: GMLNodeDefinition, data?: GMLParsedNode): GMLNode;
+  new (definition: GMLNodeDefinition): GMLNode;
 }
 
 export type GMLNodeDefinition = {
   name: GMLNodeName;
   model: GMLNodeConstructor;
-  children: (GMLNodeName | GMLChildNodeDefinition)[];
+  /** Allowed child nodes. The same tag name may map to different definitions under different parents. */
+  children: (GMLNodeDefinition | GMLChildNodeDefinition)[];
   attributes: GMLAttributeDefinition[];
 };
 
 export type GMLChildNodeDefinition = {
-  name: GMLNodeName;
+  definition: GMLNodeDefinition;
   required?: boolean; // if true parsing throws when the node is missing
   initDefault?: boolean; // create by default when creating a parent which supports this node
-  // Overrides the registry definition, for tags whose meaning depends on the parent (e.g. <time>).
-  definition?: GMLNodeDefinition;
 };
 
 export type GMLNodeValue = string | number;

@@ -6,7 +6,8 @@ import {
 } from "../../types.ts";
 import { createDefinition } from "../../util/definition.ts";
 import { GMLLeafNode } from "../leaf/index.ts";
-import { GMLPointDefinition, GML3DPoint } from "../point/index.ts";
+import { GML3DPoint } from "../point/base.ts";
+import { GMLPointDefinition } from "../point/index.ts";
 
 export const createGMLPointDefinition = (
   name: GMLNodeName,

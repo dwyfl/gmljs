@@ -1,5 +1,18 @@
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import { GMLColorDefinition } from "../point/color.ts";
+import {
+  GMLBrushDripAmountDefinition,
+  GMLBrushDripSpeedDefinition,
+  GMLBrushDripVecRelativeToUpDefinition,
+  GMLBrushLayerAbsoluteDefinition,
+  GMLBrushLayerRelativeDefinition,
+  GMLBrushModeDefinition,
+  GMLBrushSpecDefinition,
+  GMLBrushSpeedToWidthRatioDefinition,
+  GMLBrushUniqueStyleIdDefinition,
+  GMLBrushWidthDefinition,
+} from "./settings.ts";
 
 export class GMLBrush extends GMLNode {
   getWidth() {
@@ -25,16 +38,16 @@ export const GMLBrushDefinition: GMLNodeDefinition = {
   model: GMLBrush,
   attributes: [],
   children: [
-    GMLNodeName.COLOR,
-    GMLNodeName.BRUSH_MODE,
-    GMLNodeName.BRUSH_SPEC,
-    GMLNodeName.BRUSH_WIDTH,
-    GMLNodeName.BRUSH_SPEED_TO_WIDTH_RATIO,
-    GMLNodeName.BRUSH_DRIP_AMOUNT,
-    GMLNodeName.BRUSH_DRIP_SPEED,
-    GMLNodeName.BRUSH_DRIP_VEC_RELATIVE_TO_UP,
-    GMLNodeName.BRUSH_LAYER_ABSOLUTE,
-    GMLNodeName.BRUSH_LAYER_RELATIVE,
-    GMLNodeName.BRUSH_UNIQUE_STYLE_ID,
+    GMLColorDefinition,
+    GMLBrushModeDefinition,
+    GMLBrushSpecDefinition,
+    GMLBrushWidthDefinition,
+    GMLBrushSpeedToWidthRatioDefinition,
+    GMLBrushDripAmountDefinition,
+    GMLBrushDripSpeedDefinition,
+    GMLBrushDripVecRelativeToUpDefinition,
+    GMLBrushLayerAbsoluteDefinition,
+    GMLBrushLayerRelativeDefinition,
+    GMLBrushUniqueStyleIdDefinition,
   ],
 };

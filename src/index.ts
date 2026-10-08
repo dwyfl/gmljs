@@ -24,6 +24,7 @@ export {
 export type { GMLNodeAtPath, GMLNodeTypeMap } from "./gml/type-map.ts";
 export {
   createGMLDocumentFromPointArrays,
+  createGmlNode,
   createGmlNodeFromTagName,
   createGmlNodeFromXml,
   parseGML,
@@ -45,7 +46,8 @@ export { GMLEnvironment } from "./gml/nodes/environment/index.ts";
 export { GMLDrawing } from "./gml/nodes/drawing/index.ts";
 export { GMLStroke } from "./gml/nodes/stroke/index.ts";
 export { GMLStrokeInfo } from "./gml/nodes/stroke/info.ts";
-export { GML3DPoint, GMLPoint } from "./gml/nodes/point/index.ts";
+export { GML3DPoint } from "./gml/nodes/point/base.ts";
+export { GMLPoint } from "./gml/nodes/point/index.ts";
 export { GMLDirection } from "./gml/nodes/point/direction.ts";
 export { GMLColor } from "./gml/nodes/point/color.ts";
 export { GMLBrush } from "./gml/nodes/brush/index.ts";

@@ -32,6 +32,7 @@ describe("public entry", () => {
         "GMLTag",
         "GMLTime",
         "createGMLDocumentFromPointArrays",
+        "createGmlNode",
         "createGmlNodeFromTagName",
         "createGmlNodeFromXml",
         "default",

@@ -1,6 +1,8 @@
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
-import type { GMLDrawing } from "../drawing/index.ts";
+import { type GMLDrawing, GMLDrawingDefinition } from "../drawing/index.ts";
+import { GMLEnvironmentDefinition } from "../environment/index.ts";
+import { GMLHeaderDefinition } from "../header/index.ts";
 
 export class GMLTag extends GMLNode {
   getEnvironment() {
@@ -30,9 +32,9 @@ export const GMLTagDefinition: GMLNodeDefinition = {
   model: GMLTag,
   attributes: [],
   children: [
-    GMLNodeName.ENVIRONMENT,
-    GMLNodeName.HEADER,
-    { name: GMLNodeName.DRAWING, initDefault: true },
+    GMLEnvironmentDefinition,
+    GMLHeaderDefinition,
+    { definition: GMLDrawingDefinition, initDefault: true },
   ],
 };
 

@@ -4,25 +4,19 @@ import {
   type GMLNodeValue,
   type GMLParsedNode,
 } from "../../types.ts";
-import { GMLLeafNodeParent } from "../leaf/parent.ts";
-import { GMLPointTimeDefinition } from "./points.ts";
+import { GML3DPoint } from "./base.ts";
+import { GMLDirectionDefinition } from "./direction.ts";
+import {
+  GMLPointPressureDefinition,
+  GMLPointRotationDefinition,
+  GMLPointTDefinition,
+  GMLPointTimeDefinition,
+  GMLPointUnitDefinition,
+  GMLPointXDefinition,
+  GMLPointYDefinition,
+  GMLPointZDefinition,
+} from "./points.ts";
 
-export abstract class GML3DPoint extends GMLLeafNodeParent {
-  override init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
-    super.init(data);
-    // Set defaults after parsing
-    // When parsing data: overwrite=false so parsed values aren't replaced
-    // When no data: overwrite=true so defaults override initialized children
-    this.setValues(defaultValues, !data);
-  }
-
-  getXYZ(): [x: number, y: number, z: number] {
-    const x = this.getChild(GMLNodeName.POINT_X)?.getFloatValue();
-    const y = this.getChild(GMLNodeName.POINT_Y)?.getFloatValue();
-    const z = this.getChild(GMLNodeName.POINT_Z)?.getFloatValue();
-    return [x ?? 0, y ?? 0, z ?? 0];
-  }
-}
 export class GMLPoint extends GML3DPoint {
   override init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
     super.init(data, defaultValues);
@@ -61,14 +55,14 @@ export const GMLPointDefinition: GMLNodeDefinition = {
   model: GMLPoint,
   attributes: [],
   children: [
-    { name: GMLNodeName.POINT_X, required: true, initDefault: true },
-    { name: GMLNodeName.POINT_Y, required: true, initDefault: true },
-    { name: GMLNodeName.POINT_Z, initDefault: true },
-    GMLNodeName.POINT_T,
-    { name: GMLNodeName.POINT_TIME, definition: GMLPointTimeDefinition },
-    GMLNodeName.PRESSURE,
-    GMLNodeName.ROTATION,
-    GMLNodeName.UNIT,
-    GMLNodeName.DIRECTION,
+    { definition: GMLPointXDefinition, required: true, initDefault: true },
+    { definition: GMLPointYDefinition, required: true, initDefault: true },
+    { definition: GMLPointZDefinition, initDefault: true },
+    GMLPointTDefinition,
+    GMLPointTimeDefinition,
+    GMLPointPressureDefinition,
+    GMLPointRotationDefinition,
+    GMLPointUnitDefinition,
+    GMLDirectionDefinition,
   ],
 };
