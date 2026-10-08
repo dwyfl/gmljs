@@ -21,37 +21,43 @@ describe("GML", () => {
     expect(gml).toMatchSnapshot();
   });
 
-  it("parses a basic GML document correctly", () => {
-    const gml = new GML(gml001).toString();
-    expect(gml).toMatchSnapshot();
-  });
+  describe("gml001.xml", () => {
+    const gml = new GML(gml001);
 
-  it("getTags() works", () => {
-    const items = new GML(gml001).getTags();
-    expect(Array.isArray(items)).toBeTruthy();
-    expect(items.length).toBe(1);
-    expect(items[0]?.toString()).toMatchSnapshot();
-  });
+    it("parses without warnings", () => {
+      expect(gml.warnings).toStrictEqual([]);
+    });
 
-  it("getDrawings() works", () => {
-    const items = new GML(gml001).getDrawings(0);
-    expect(Array.isArray(items)).toBeTruthy();
-    expect(items?.length).toBe(1);
-    expect(items[0]?.toString()).toMatchSnapshot();
-  });
+    it("reads the header", () => {
+      expect(gml.getTitle()).toBe("seen");
+      const environment = gml.getTag(0)?.getEnvironment();
+      expect(environment?.getOffset()).toStrictEqual([-58, 173, 0.96]);
+      expect(environment?.getRotation()).toStrictEqual([21, 0, 0]);
+      expect(gml.getSize()).toBeUndefined();
+    });
 
-  it("getStrokes() works", () => {
-    const items = new GML(gml001).getStrokes(0, 0);
-    expect(Array.isArray(items)).toBeTruthy();
-    expect(items?.length).toBe(1);
-    expect(items[0]?.toString()).toMatchSnapshot();
-  });
+    it("getTags()/getDrawings()/getStrokes() return the tree's nodes", () => {
+      const tags = gml.getTags();
+      expect(tags).toHaveLength(1);
+      expect(tags[0]).toBe(gml.getRoot()?.getTag(0));
+      expect(gml.getDrawings(0)).toHaveLength(1);
+      expect(gml.getDrawing(0, 0)).toBe(tags[0]?.getDrawing(0));
+      expect(gml.getStrokes(0, 0)).toHaveLength(1);
+      expect(gml.getStroke(0, 0, 0)).toBe(gml.getDrawing(0, 0)?.getStroke(0));
+    });
 
-  it("getPoints() works", () => {
-    const items = new GML(gml001).getPoints(0, 0, 0);
-    expect(Array.isArray(items)).toBeTruthy();
-    expect(items?.length).toBe(155);
-    expect(items?.map(String).join("")).toMatchSnapshot();
+    it("getPoints() reads every point, converting <time> to <t>", () => {
+      const points = gml.getPoints(0, 0, 0);
+      expect(points).toHaveLength(155);
+      expect(points[0]?.values).toStrictEqual({ x: 0.406848, y: 0.303721, z: 0, t: 0 });
+      expect(points.at(-1)?.values).toStrictEqual({
+        x: 0.530392,
+        y: 0.245618,
+        z: 589.89978,
+        t: 5.898998,
+      });
+      expect(gml.getPoint(0, 0, 0, 154)).toBe(points.at(-1));
+    });
   });
 
   it("getChildPath() works", () => {

@@ -1,12 +1,11 @@
 import { describe, it, expect, vi } from "vite-plus/test";
+import pkg from "../package.json" with { type: "json" };
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { createGmlNodeFromTagName, createGmlNodeFromXml } from "../src/gml/util/index.ts";
 import { GMLNodeName } from "../src/gml/types.ts";
 import { GMLIntegerNode } from "../src/gml/nodes/leaf/integer.ts";
-
-vi.mock("../package.json", () => ({ default: { version: "0.0.0-test" } }));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,7 +17,9 @@ describe("GMLClient", () => {
     vi.useFakeTimers({ now: new Date(0) });
     try {
       const gml = createGmlNodeFromTagName("client").toString();
-      expect(gml).toMatchSnapshot();
+      expect(gml).toBe(
+        `<client><name>gmljs</name><version>${pkg.version}</version><time>0</time></client>`,
+      );
     } finally {
       vi.useRealTimers();
     }
