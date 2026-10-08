@@ -27,7 +27,7 @@ export class GMLEnvironment extends GMLNode {
   }
 }
 
-export const GMLEnvironmentDefinition: GMLNodeDefinition = {
+export const GMLEnvironmentDefinition: GMLNodeDefinition<GMLEnvironment> = {
   name: GMLNodeName.ENVIRONMENT,
   model: GMLEnvironment,
   attributes: [],

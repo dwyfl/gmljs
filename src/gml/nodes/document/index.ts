@@ -8,7 +8,7 @@ export class GMLDocument extends GMLNode {
   }
 }
 
-export const GMLDocumentDefinition: GMLNodeDefinition = {
+export const GMLDocumentDefinition: GMLNodeDefinition<GMLDocument> = {
   name: GMLNodeName.DOCUMENT,
   model: GMLDocument,
   attributes: [],

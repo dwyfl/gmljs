@@ -11,7 +11,7 @@ export class GMLDrawing extends GMLNode {
   }
 }
 
-export const GMLDrawingDefinition: GMLNodeDefinition = {
+export const GMLDrawingDefinition: GMLNodeDefinition<GMLDrawing> = {
   name: GMLNodeName.DRAWING,
   model: GMLDrawing,
   attributes: [],

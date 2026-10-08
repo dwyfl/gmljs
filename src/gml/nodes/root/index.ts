@@ -11,7 +11,7 @@ export class GMLRoot extends GMLNode {
   }
 }
 
-export const GMLRootDefinition: GMLNodeDefinition = {
+export const GMLRootDefinition: GMLNodeDefinition<GMLRoot> = {
   name: GMLNodeName.ROOT,
   model: GMLRoot,
   attributes: [{ name: GMLNodeAttribute.SPEC, defaultValue: "1.0" }],

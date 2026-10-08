@@ -1,12 +1,10 @@
 import { GMLParseError } from "../../../errors.ts";
 import { GMLLeafNode } from "./index.ts";
-import { type GMLParsedNode } from "../../types.ts";
+import type { GMLNodeValue, GMLParsedNode } from "../../types.ts";
 
 export class GMLIntegerNode extends GMLLeafNode {
-  override init(data?: GMLParsedNode) {
-    this.value = 0;
-    super.init(data);
-  }
+  override value: GMLNodeValue = 0;
+
   override parseValue(data: GMLParsedNode) {
     const value = (data.textContent ?? "").trim();
     const intValue = parseInt(value, 10);

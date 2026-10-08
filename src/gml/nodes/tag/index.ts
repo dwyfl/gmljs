@@ -27,7 +27,7 @@ export class GMLTag extends GMLNode {
   }
 }
 
-export const GMLTagDefinition: GMLNodeDefinition = {
+export const GMLTagDefinition: GMLNodeDefinition<GMLTag> = {
   name: GMLNodeName.TAG,
   model: GMLTag,
   attributes: [],

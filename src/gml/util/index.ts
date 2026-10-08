@@ -16,8 +16,7 @@ export function createGmlNodeFromTagName<N extends GMLNodeName>(
   if (!definition) {
     throw new Error(`Invalid GML! "${tagName}" is not a valid GML tag.`);
   }
-  // The registry maps each name to a definition whose model is GMLNodeTypeMap[N].
-  return createGmlNode(definition, data) as GMLNodeTypeMap[N];
+  return createGmlNode(definition, data);
 }
 
 /** Parses an XML fragment whose root element is any GML node, e.g. `<brush>…</brush>`. */

@@ -20,7 +20,10 @@ import {
 } from "./types.ts";
 
 /** Creates a node, populating it from `data` (or with defaults) and validating it. */
-export function createGmlNode(definition: GMLNodeDefinition, data?: GMLParsedNode): GMLNode {
+export function createGmlNode<T extends GMLNode>(
+  definition: GMLNodeDefinition<T>,
+  data?: GMLParsedNode,
+): T {
   const node = new definition.model(definition);
   node.init(data);
   node.verifyAttributes();

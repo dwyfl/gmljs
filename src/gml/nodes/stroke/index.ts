@@ -31,7 +31,7 @@ const attrIsDrawing: GMLAttributeDefinition = {
   stringify: (value) => (value ? "true" : "false"),
 };
 
-export const GMLStrokeDefinition: GMLNodeDefinition = {
+export const GMLStrokeDefinition: GMLNodeDefinition<GMLStroke> = {
   name: GMLNodeName.STROKE,
   model: GMLStroke,
   attributes: [attrIsDrawing],

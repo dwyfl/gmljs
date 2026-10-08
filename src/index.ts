@@ -41,14 +41,11 @@ export { GMLRoot } from "./gml/nodes/root/index.ts";
 export { GMLTag } from "./gml/nodes/tag/index.ts";
 export { GMLHeader } from "./gml/nodes/header/index.ts";
 export { GMLClient } from "./gml/nodes/client/index.ts";
-export { GMLLocation, GMLTime } from "./gml/nodes/client/settings.ts";
 export { GMLEnvironment } from "./gml/nodes/environment/index.ts";
 export { GMLDrawing } from "./gml/nodes/drawing/index.ts";
 export { GMLStroke } from "./gml/nodes/stroke/index.ts";
-export { GMLStrokeInfo } from "./gml/nodes/stroke/info.ts";
 export { GML3DPoint } from "./gml/nodes/point/base.ts";
 export { GMLPoint } from "./gml/nodes/point/index.ts";
-export { GMLDirection } from "./gml/nodes/point/direction.ts";
 export { GMLColor } from "./gml/nodes/point/color.ts";
 export { GMLBrush } from "./gml/nodes/brush/index.ts";
 

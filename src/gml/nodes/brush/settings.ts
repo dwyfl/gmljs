@@ -3,65 +3,37 @@ import { createDefinition } from "../../util/definition.ts";
 import { GMLLeafNode } from "../leaf/index.ts";
 import { GMLFloatNode } from "../leaf/float.ts";
 import { GMLIntegerNode } from "../leaf/integer.ts";
-import { GMLDirection, GMLDirectionDefinition } from "../point/direction.ts";
+import type { GML3DPoint } from "../point/base.ts";
+import { GMLDirectionDefinition } from "../point/direction.ts";
 
-export class GMLBrushMode extends GMLLeafNode {}
-export const GMLBrushModeDefinition: GMLNodeDefinition = createDefinition(
-  GMLNodeName.BRUSH_MODE,
-  GMLBrushMode,
-);
-
-export class GMLBrushSpec extends GMLLeafNode {}
-export const GMLBrushSpecDefinition: GMLNodeDefinition = createDefinition(
-  GMLNodeName.BRUSH_SPEC,
-  GMLBrushSpec,
-);
-
-export class GMLBrushWidth extends GMLFloatNode {}
-export const GMLBrushWidthDefinition: GMLNodeDefinition = createDefinition(
-  GMLNodeName.BRUSH_WIDTH,
-  GMLBrushWidth,
-);
-
-export class GMLBrushSpeedToWidthRatio extends GMLFloatNode {}
-export const GMLBrushSpeedToWidthRatioDefinition: GMLNodeDefinition = createDefinition(
+export const GMLBrushModeDefinition = createDefinition(GMLNodeName.BRUSH_MODE, GMLLeafNode);
+export const GMLBrushSpecDefinition = createDefinition(GMLNodeName.BRUSH_SPEC, GMLLeafNode);
+export const GMLBrushWidthDefinition = createDefinition(GMLNodeName.BRUSH_WIDTH, GMLFloatNode);
+export const GMLBrushSpeedToWidthRatioDefinition = createDefinition(
   GMLNodeName.BRUSH_SPEED_TO_WIDTH_RATIO,
-  GMLBrushSpeedToWidthRatio,
+  GMLFloatNode,
 );
-
-export class GMLBrushUniqueStyleId extends GMLLeafNode {}
-export const GMLBrushUniqueStyleIdDefinition: GMLNodeDefinition = createDefinition(
+export const GMLBrushUniqueStyleIdDefinition = createDefinition(
   GMLNodeName.BRUSH_UNIQUE_STYLE_ID,
-  GMLBrushUniqueStyleId,
+  GMLLeafNode,
 );
-
-export class GMLBrushLayerAbsolute extends GMLIntegerNode {}
-export const GMLBrushLayerAbsoluteDefinition: GMLNodeDefinition = createDefinition(
+export const GMLBrushLayerAbsoluteDefinition = createDefinition(
   GMLNodeName.BRUSH_LAYER_ABSOLUTE,
-  GMLBrushLayerAbsolute,
+  GMLIntegerNode,
 );
-
-export class GMLBrushLayerRelative extends GMLIntegerNode {}
-export const GMLBrushLayerRelativeDefinition: GMLNodeDefinition = createDefinition(
+export const GMLBrushLayerRelativeDefinition = createDefinition(
   GMLNodeName.BRUSH_LAYER_RELATIVE,
-  GMLBrushLayerRelative,
+  GMLIntegerNode,
 );
-
-export class GMLBrushDripAmount extends GMLFloatNode {}
-export const GMLBrushDripAmountDefinition: GMLNodeDefinition = createDefinition(
+export const GMLBrushDripAmountDefinition = createDefinition(
   GMLNodeName.BRUSH_DRIP_AMOUNT,
-  GMLBrushDripAmount,
+  GMLFloatNode,
 );
-
-export class GMLBrushDripSpeed extends GMLFloatNode {}
-export const GMLBrushDripSpeedDefinition: GMLNodeDefinition = createDefinition(
+export const GMLBrushDripSpeedDefinition = createDefinition(
   GMLNodeName.BRUSH_DRIP_SPEED,
-  GMLBrushDripSpeed,
+  GMLFloatNode,
 );
-
-export class GMLBrushDripVecRelativeToUp extends GMLDirection {}
-export const GMLBrushDripVecRelativeToUpDefinition: GMLNodeDefinition = {
+export const GMLBrushDripVecRelativeToUpDefinition: GMLNodeDefinition<GML3DPoint> = {
   ...GMLDirectionDefinition,
   name: GMLNodeName.BRUSH_DRIP_VEC_RELATIVE_TO_UP,
-  model: GMLBrushDripVecRelativeToUp,
 };

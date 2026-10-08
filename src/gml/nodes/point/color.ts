@@ -3,29 +3,10 @@ import { GMLFloatNode } from "../leaf/float.ts";
 import { GMLLeafNodeParent } from "../leaf/parent.ts";
 import { createDefinition } from "../../util/definition.ts";
 
-export class GMLColorR extends GMLFloatNode {}
-export const GMLColorRDefinition: GMLNodeDefinition = createDefinition(
-  GMLNodeName.COLOR_R,
-  GMLColorR,
-);
-
-export class GMLColorG extends GMLFloatNode {}
-export const GMLColorGDefinition: GMLNodeDefinition = createDefinition(
-  GMLNodeName.COLOR_G,
-  GMLColorG,
-);
-
-export class GMLColorB extends GMLFloatNode {}
-export const GMLColorBDefinition: GMLNodeDefinition = createDefinition(
-  GMLNodeName.COLOR_B,
-  GMLColorB,
-);
-
-export class GMLColorA extends GMLFloatNode {}
-export const GMLColorADefinition: GMLNodeDefinition = createDefinition(
-  GMLNodeName.COLOR_A,
-  GMLColorA,
-);
+export const GMLColorRDefinition = createDefinition(GMLNodeName.COLOR_R, GMLFloatNode);
+export const GMLColorGDefinition = createDefinition(GMLNodeName.COLOR_G, GMLFloatNode);
+export const GMLColorBDefinition = createDefinition(GMLNodeName.COLOR_B, GMLFloatNode);
+export const GMLColorADefinition = createDefinition(GMLNodeName.COLOR_A, GMLFloatNode);
 
 export class GMLColor extends GMLLeafNodeParent {
   getRGBA(): [r: number, g: number, b: number, a: number] | undefined {
@@ -37,7 +18,7 @@ export class GMLColor extends GMLLeafNodeParent {
   }
 }
 
-export const GMLColorDefinition: GMLNodeDefinition = {
+export const GMLColorDefinition: GMLNodeDefinition<GMLColor> = {
   name: GMLNodeName.COLOR,
   model: GMLColor,
   attributes: [],

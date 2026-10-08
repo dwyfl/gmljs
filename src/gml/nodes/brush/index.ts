@@ -33,7 +33,7 @@ export class GMLBrush extends GMLNode {
   }
 }
 
-export const GMLBrushDefinition: GMLNodeDefinition = {
+export const GMLBrushDefinition: GMLNodeDefinition<GMLBrush> = {
   name: GMLNodeName.BRUSH,
   model: GMLBrush,
   attributes: [],

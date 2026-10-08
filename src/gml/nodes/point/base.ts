@@ -1,15 +1,8 @@
-import { GMLNodeName, type GMLNodeValue, type GMLParsedNode } from "../../types.ts";
+import { GMLNodeName } from "../../types.ts";
 import { GMLLeafNodeParent } from "../leaf/parent.ts";
 
-export abstract class GML3DPoint extends GMLLeafNodeParent {
-  override init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
-    super.init(data);
-    // Set defaults after parsing
-    // When parsing data: overwrite=false so parsed values aren't replaced
-    // When no data: overwrite=true so defaults override initialized children
-    this.setValues(defaultValues, !data);
-  }
-
+/** A node with <x>, <y> and optional <z> children. */
+export class GML3DPoint extends GMLLeafNodeParent {
   getXYZ(): [x: number, y: number, z: number] {
     const x = this.getChild(GMLNodeName.POINT_X)?.getFloatValue();
     const y = this.getChild(GMLNodeName.POINT_Y)?.getFloatValue();

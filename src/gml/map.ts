@@ -1,3 +1,4 @@
+import type { GMLNodeTypeMap } from "./type-map.ts";
 import { GMLNodeName, type GMLNodeDefinition } from "./types.ts";
 import { GMLBrushDefinition as GMLBrush } from "./nodes/brush/index.ts";
 import { GMLClientDefinition as GMLClient } from "./nodes/client/index.ts";
@@ -64,7 +65,8 @@ import GMLStrokeInfoCurved from "./nodes/stroke/curved.ts";
 import GMLTag from "./nodes/tag/index.ts";
 import GMLHeader from "./nodes/header/index.ts";
 
-const gmlNodeClassMap: Record<GMLNodeName, GMLNodeDefinition> = {
+/** The definition used for each tag name; the model must match GMLNodeTypeMap. */
+const gmlNodeClassMap: { [N in GMLNodeName]: GMLNodeDefinition<GMLNodeTypeMap[N]> } = {
   [GMLNodeName.BRUSH]: GMLBrush,
   [GMLNodeName.BRUSH_MODE]: GMLBrushMode,
   [GMLNodeName.BRUSH_SPEC]: GMLBrushSpec,
@@ -121,7 +123,8 @@ const gmlNodeClassMap: Record<GMLNodeName, GMLNodeDefinition> = {
   [GMLNodeName.UNIT]: GMLPointUnit,
 };
 
-export const getGMLNodeDefinition = (nodeName: GMLNodeName): GMLNodeDefinition =>
-  gmlNodeClassMap[nodeName];
+export const getGMLNodeDefinition = <N extends GMLNodeName>(
+  nodeName: N,
+): GMLNodeDefinition<GMLNodeTypeMap[N]> => gmlNodeClassMap[nodeName];
 
 export default gmlNodeClassMap;

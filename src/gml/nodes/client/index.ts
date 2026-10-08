@@ -14,7 +14,7 @@ import {
 
 export class GMLClient extends GMLNode {}
 
-export const GMLClientDefinition: GMLNodeDefinition = {
+export const GMLClientDefinition: GMLNodeDefinition<GMLClient> = {
   name: GMLNodeName.CLIENT,
   model: GMLClient,
   attributes: [],

@@ -1,13 +1,10 @@
-import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
+import { GMLNodeName } from "../../types.ts";
+import { createDefinition } from "../../util/definition.ts";
 import { GMLLeafNode } from "../leaf/index.ts";
 
-export class GMLStrokeInfoCurved extends GMLLeafNode {}
-
-export const GMLStrokeInfoCurvedDefinition: GMLNodeDefinition = {
-  name: GMLNodeName.STROKE_INFO_CURVED,
-  model: GMLStrokeInfoCurved,
-  attributes: [],
-  children: [],
-};
+export const GMLStrokeInfoCurvedDefinition = createDefinition(
+  GMLNodeName.STROKE_INFO_CURVED,
+  GMLLeafNode,
+);
 
 export default GMLStrokeInfoCurvedDefinition;

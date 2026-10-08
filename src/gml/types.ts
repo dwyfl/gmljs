@@ -99,16 +99,21 @@ const xmlNames: Partial<Record<GMLNodeName | GMLNodeAttribute, string>> = {
 /** Returns the name as written in GML documents, e.g. `screenbounds` → `screenBounds`. */
 export const toXmlName = (name: GMLNodeName | GMLNodeAttribute): string => xmlNames[name] ?? name;
 
-export interface GMLNodeConstructor {
-  new (definition: GMLNodeDefinition): GMLNode;
+export interface GMLNodeConstructor<T extends GMLNode = GMLNode> {
+  new (definition: GMLNodeDefinition): T;
 }
 
-export type GMLNodeDefinition = {
+/** Describes a tag: its name, the class (`model`) created for it, and its allowed children. */
+export type GMLNodeDefinition<T extends GMLNode = GMLNode> = {
   name: GMLNodeName;
-  model: GMLNodeConstructor;
+  model: GMLNodeConstructor<T>;
   /** Allowed child nodes. The same tag name may map to different definitions under different parents. */
   children: (GMLNodeDefinition | GMLChildNodeDefinition)[];
   attributes: GMLAttributeDefinition[];
+  /** Value of a leaf node created without data. */
+  defaultValue?: GMLNodeValue | (() => GMLNodeValue);
+  /** Child values of a `GMLLeafNodeParent` created without data. */
+  defaultChildValues?: Partial<Record<GMLNodeName, GMLNodeValue>>;
 };
 
 export type GMLChildNodeDefinition = {

@@ -1,121 +1,78 @@
 import type { GMLNode } from "./node.ts";
 import type { GMLNodeChildPath, GMLNodeName } from "./types.ts";
 import type { GMLBrush } from "./nodes/brush/index.ts";
-import type {
-  GMLBrushDripAmount,
-  GMLBrushDripSpeed,
-  GMLBrushDripVecRelativeToUp,
-  GMLBrushLayerAbsolute,
-  GMLBrushLayerRelative,
-  GMLBrushMode,
-  GMLBrushSpec,
-  GMLBrushSpeedToWidthRatio,
-  GMLBrushUniqueStyleId,
-  GMLBrushWidth,
-} from "./nodes/brush/settings.ts";
 import type { GMLClient } from "./nodes/client/index.ts";
-import type {
-  GMLClientIp,
-  GMLClientKeywords,
-  GMLClientName,
-  GMLClientPermalink,
-  GMLClientUniqueKey,
-  GMLClientUsername,
-  GMLClientVersion,
-  GMLLocation,
-  GMLLocationLatitude,
-  GMLLocationLongitude,
-  GMLTime,
-} from "./nodes/client/settings.ts";
 import type { GMLDocument } from "./nodes/document/index.ts";
 import type { GMLDrawing } from "./nodes/drawing/index.ts";
 import type { GMLEnvironment } from "./nodes/environment/index.ts";
-import type {
-  GMLEnvAudio,
-  GMLEnvBackground,
-  GMLEnvOffset,
-  GMLEnvOrigin,
-  GMLEnvRealScale,
-  GMLEnvRotation,
-  GMLEnvScreenBounds,
-  GMLEnvUp,
-} from "./nodes/environment/settings.ts";
 import type { GMLHeader } from "./nodes/header/index.ts";
-import type { GMLColor, GMLColorA, GMLColorB, GMLColorG, GMLColorR } from "./nodes/point/color.ts";
-import type { GMLDirection } from "./nodes/point/direction.ts";
+import type { GMLFloatNode } from "./nodes/leaf/float.ts";
+import type { GMLLeafNode } from "./nodes/leaf/index.ts";
+import type { GMLIntegerNode } from "./nodes/leaf/integer.ts";
+import type { GMLLeafNodeParent } from "./nodes/leaf/parent.ts";
+import type { GML3DPoint } from "./nodes/point/base.ts";
+import type { GMLColor } from "./nodes/point/color.ts";
 import type { GMLPoint } from "./nodes/point/index.ts";
-import type {
-  GMLPointPressure,
-  GMLPointRotation,
-  GMLPointT,
-  GMLPointTime,
-  GMLPointUnit,
-  GMLPointX,
-  GMLPointY,
-  GMLPointZ,
-} from "./nodes/point/points.ts";
 import type { GMLRoot } from "./nodes/root/index.ts";
-import type { GMLStrokeInfoCurved } from "./nodes/stroke/curved.ts";
 import type { GMLStroke } from "./nodes/stroke/index.ts";
-import type { GMLStrokeInfo } from "./nodes/stroke/info.ts";
 import type { GMLTag } from "./nodes/tag/index.ts";
 
 type NodeTypes = {
   brush: GMLBrush;
-  mode: GMLBrushMode;
-  spec: GMLBrushSpec;
-  width: GMLBrushWidth;
-  speedtowidthratio: GMLBrushSpeedToWidthRatio;
-  dripamnt: GMLBrushDripAmount;
-  dripspeed: GMLBrushDripSpeed;
-  dripvecrelativetoup: GMLBrushDripVecRelativeToUp;
-  layerabsolute: GMLBrushLayerAbsolute;
-  layerrelative: GMLBrushLayerRelative;
-  uniquestyleid: GMLBrushUniqueStyleId;
+  mode: GMLLeafNode;
+  spec: GMLLeafNode;
+  width: GMLFloatNode;
+  speedtowidthratio: GMLFloatNode;
+  dripamnt: GMLFloatNode;
+  dripspeed: GMLFloatNode;
+  dripvecrelativetoup: GML3DPoint;
+  layerabsolute: GMLIntegerNode;
+  layerrelative: GMLIntegerNode;
+  uniquestyleid: GMLLeafNode;
   client: GMLClient;
-  name: GMLClientName;
-  version: GMLClientVersion;
-  username: GMLClientUsername;
-  permalink: GMLClientPermalink;
-  keywords: GMLClientKeywords;
-  uniquekey: GMLClientUniqueKey;
-  location: GMLLocation;
-  lat: GMLLocationLatitude;
-  lon: GMLLocationLongitude;
+  name: GMLLeafNode;
+  version: GMLLeafNode;
+  username: GMLLeafNode;
+  permalink: GMLLeafNode;
+  keywords: GMLLeafNode;
+  uniquekey: GMLLeafNode;
+  location: GMLLeafNodeParent;
+  lat: GMLLeafNode;
+  lon: GMLLeafNode;
   // <time> is a unix timestamp under <client> and a float under <pt>.
-  time: GMLTime | GMLPointTime;
-  ip: GMLClientIp;
+  time: GMLIntegerNode | GMLFloatNode;
+  ip: GMLLeafNode;
   color: GMLColor;
-  r: GMLColorR;
-  g: GMLColorG;
-  b: GMLColorB;
-  a: GMLColorA;
-  dir: GMLDirection;
+  r: GMLFloatNode;
+  g: GMLFloatNode;
+  b: GMLFloatNode;
+  a: GMLFloatNode;
+  dir: GML3DPoint;
   _: GMLDocument;
   drawing: GMLDrawing;
   environment: GMLEnvironment;
-  offset: GMLEnvOffset;
-  rotation: GMLEnvRotation;
-  up: GMLEnvUp;
-  screenbounds: GMLEnvScreenBounds;
-  origin: GMLEnvOrigin;
-  realscale: GMLEnvRealScale;
-  audio: GMLEnvAudio;
-  background: GMLEnvBackground;
+  offset: GML3DPoint;
+  rotation: GML3DPoint;
+  up: GML3DPoint;
+  screenbounds: GML3DPoint;
+  origin: GML3DPoint;
+  realscale: GML3DPoint;
+  audio: GMLLeafNode;
+  background: GMLLeafNode;
   header: GMLHeader;
   pt: GMLPoint;
-  t: GMLPointT;
-  x: GMLPointX;
-  y: GMLPointY;
-  z: GMLPointZ;
-  pres: GMLPointPressure;
+  t: GMLFloatNode;
+  x: GMLFloatNode;
+  y: GMLFloatNode;
+  z: GMLFloatNode;
+  pres: GMLFloatNode;
   gml: GMLRoot;
-  rot: GMLPointRotation;
+  rot: GMLFloatNode;
   stroke: GMLStroke;
-  info: GMLStrokeInfo;
-  curved: GMLStrokeInfoCurved;
+  info: GMLLeafNodeParent;
+  curved: GMLLeafNode;
   tag: GMLTag;
-  unit: GMLPointUnit;
+  unit: GMLLeafNode;
 };
 
 /**

@@ -18,8 +18,8 @@ import {
 } from "./points.ts";
 
 export class GMLPoint extends GML3DPoint {
-  override init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
-    super.init(data, defaultValues);
+  override init(data?: GMLParsedNode) {
+    super.init(data);
     /**
      * Convert <time> to <t>.
      *
@@ -50,7 +50,7 @@ export class GMLPoint extends GML3DPoint {
   }
 }
 
-export const GMLPointDefinition: GMLNodeDefinition = {
+export const GMLPointDefinition: GMLNodeDefinition<GMLPoint> = {
   name: GMLNodeName.POINT,
   model: GMLPoint,
   attributes: [],
