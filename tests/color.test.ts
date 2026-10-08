@@ -4,20 +4,36 @@ import { GMLNodeName } from "../src/gml/types.ts";
 import { GMLColor } from "../src/gml/nodes/point/color.ts";
 
 describe("GMLColor", () => {
-  it("defaults rgb to zero and a to one", () => {
-    const color = createGmlNodeFromTagName(GMLNodeName.COLOR) as GMLColor;
-    expect(color.getRGBA()).toStrictEqual([0, 0, 0, 1]);
+  it("defaults to opaque black", () => {
+    const color = createGmlNodeFromTagName(GMLNodeName.COLOR);
+    expect(color.getRGBA()).toStrictEqual([0, 0, 0, 255]);
   });
 
-  it("parses rgb from XML and defaults a to one", () => {
-    const color = createGmlNodeFromXml("<color><r>0.2</r><g>0.4</g><b>0.6</b></color>") as GMLColor;
-    expect(color.getRGBA()).toStrictEqual([0.2, 0.4, 0.6, 1]);
+  it("parses rgb from XML and defaults a to 255", () => {
+    const color = createGmlNodeFromXml("<color><r>255</r><g>128</g><b>0</b></color>") as GMLColor;
+    expect(color.getRGBA()).toStrictEqual([255, 128, 0, 255]);
   });
 
   it("parses rgba from XML", () => {
     const color = createGmlNodeFromXml(
-      "<color><r>1</r><g>0.5</g><b>0</b><a>0.8</a></color>",
+      "<color><r>255</r><g>128</g><b>0</b><a>51</a></color>",
     ) as GMLColor;
-    expect(color.getRGBA()).toStrictEqual([1, 0.5, 0, 0.8]);
+    expect(color.getRGBA()).toStrictEqual([255, 128, 0, 51]);
+  });
+
+  it("returns normalized 0–1 components", () => {
+    const color = createGmlNodeFromXml(
+      "<color><r>255</r><g>51</g><b>0</b><a>102</a></color>",
+    ) as GMLColor;
+    expect(color.getNormalizedRGBA()).toStrictEqual([1, 0.2, 0, 0.4]);
+    const opaque = createGmlNodeFromXml("<color><r>0</r><g>0</g><b>0</b></color>") as GMLColor;
+    expect(opaque.getNormalizedRGBA()).toStrictEqual([0, 0, 0, 1]);
+  });
+
+  it("returns undefined when a component is missing", () => {
+    const color = createGmlNodeFromXml("<color><r>255</r><g>0</g><b>0</b></color>") as GMLColor;
+    color.removeChild(GMLNodeName.COLOR_B);
+    expect(color.getRGBA()).toBeUndefined();
+    expect(color.getNormalizedRGBA()).toBeUndefined();
   });
 });

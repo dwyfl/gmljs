@@ -34,9 +34,9 @@ describe("GMLBrush", () => {
 
   it("parses color from XML", () => {
     const brush = createGmlNodeFromXml(
-      "<brush><color><r>1</r><g>0.5</g><b>0</b></color></brush>",
+      "<brush><color><r>255</r><g>128</g><b>0</b></color></brush>",
     ) as GMLBrush;
-    expect(brush.getColor()).toStrictEqual([1, 0.5, 0, 1]);
+    expect(brush.getColor()).toStrictEqual([255, 128, 0, 255]);
   });
 
   it("parses drip settings from XML", () => {

@@ -50,7 +50,7 @@ export { GMLDrawing } from "./gml/nodes/drawing/index.ts";
 export { GMLStroke } from "./gml/nodes/stroke/index.ts";
 export { GML3DPoint } from "./gml/nodes/point/base.ts";
 export { GMLPoint } from "./gml/nodes/point/index.ts";
-export { GMLColor } from "./gml/nodes/point/color.ts";
+export { GMLColor, type GMLRGBA } from "./gml/nodes/point/color.ts";
 export { GMLBrush } from "./gml/nodes/brush/index.ts";
 
 export class GML {
