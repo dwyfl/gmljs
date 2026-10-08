@@ -94,4 +94,23 @@ describe("GMLNode", () => {
       );
     });
   });
+
+  it("exposes children read-only (type-level)", () => {
+    const stroke = createGmlNodeFromXml(strokeXml);
+    // Never called: each line must fail to compile.
+    const mutations = () => {
+      // @ts-expect-error children is a getter
+      stroke.children = {};
+      // @ts-expect-error the record is readonly
+      stroke.children.pt = [];
+      // @ts-expect-error the arrays are readonly
+      stroke.children.pt?.push(createGmlNodeFromTagName(GMLNodeName.POINT));
+      // @ts-expect-error getChildren() returns a readonly array
+      stroke.getChildren(GMLNodeName.POINT)?.pop();
+      // @ts-expect-error definition is readonly
+      stroke.definition = stroke.definition;
+    };
+    expect(typeof mutations).toBe("function");
+    expect(stroke.children.pt).toHaveLength(3);
+  });
 });

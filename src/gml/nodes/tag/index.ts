@@ -22,7 +22,7 @@ export class GMLTag extends GMLNode {
   getDrawing(index: number = 0) {
     return this.getChild([GMLNodeName.DRAWING, index]);
   }
-  getDrawings(): GMLDrawing[] {
+  getDrawings(): readonly GMLDrawing[] {
     return this.getChildren(GMLNodeName.DRAWING) ?? [];
   }
 }

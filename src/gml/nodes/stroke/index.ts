@@ -16,7 +16,7 @@ export class GMLStroke extends GMLNode {
   getPoint(index: number) {
     return this.getChild([GMLNodeName.POINT, index]);
   }
-  getPoints(): GMLPoint[] {
+  getPoints(): readonly GMLPoint[] {
     return this.getChildren(GMLNodeName.POINT) ?? [];
   }
   getBrush() {

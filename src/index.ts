@@ -98,25 +98,25 @@ export class GML {
   getRoot() {
     return this.doc.getChild(GMLNodeName.ROOT);
   }
-  getTags(): GMLTag[] {
+  getTags(): readonly GMLTag[] {
     return this.getRoot()?.getTags() ?? [];
   }
   getTag(index: number): GMLTag | undefined {
     return this.getTags()[index];
   }
-  getDrawings(tag: number): GMLDrawing[] {
+  getDrawings(tag: number): readonly GMLDrawing[] {
     return this.getTag(tag)?.getDrawings() ?? [];
   }
   getDrawing(tag: number, index: number): GMLDrawing | undefined {
     return this.getDrawings(tag)[index];
   }
-  getStrokes(tag: number, drawing: number): GMLStroke[] {
+  getStrokes(tag: number, drawing: number): readonly GMLStroke[] {
     return this.getDrawing(tag, drawing)?.getStrokes() ?? [];
   }
   getStroke(tag: number, drawing: number, index: number): GMLStroke | undefined {
     return this.getStrokes(tag, drawing)[index];
   }
-  getPoints(tag: number, drawing: number, stroke: number): GMLPoint[] {
+  getPoints(tag: number, drawing: number, stroke: number): readonly GMLPoint[] {
     return this.getStroke(tag, drawing, stroke)?.getPoints() ?? [];
   }
   getPoint(tag: number, drawing: number, stroke: number, index: number): GMLPoint | undefined {

@@ -74,9 +74,9 @@ const getChildDefinitions = (definition: GMLNodeDefinition) => {
 };
 
 export abstract class GMLNode {
-  definition: GMLNodeDefinition;
+  readonly definition: GMLNodeDefinition;
   attributes: GMLNodeAttributes = {};
-  children: GMLNodeChildren = {};
+  #children: GMLNodeChildren = {};
   value: GMLNodeValue = "";
   /** Attributes gmljs doesn't know for this node, by their name in the document. */
   unknownAttributes: Map<string, string> = new Map();
@@ -86,6 +86,11 @@ export abstract class GMLNode {
   /** Use `createGmlNode()` (or the other factories) to create populated nodes. */
   constructor(definition: GMLNodeDefinition) {
     this.definition = definition;
+  }
+
+  /** Children by tag name. Use addChild()/removeChild() to change them. */
+  get children(): Readonly<Partial<Record<GMLNodeName, readonly GMLNode[]>>> {
+    return this.#children;
   }
 
   init(data?: GMLParsedNode, context: GMLParseContext = createParseContext()) {
@@ -137,7 +142,7 @@ export abstract class GMLNode {
   }
 
   addChild(name: GMLNodeName, child: GMLNode) {
-    (this.children[name] ??= []).push(child);
+    (this.#children[name] ??= []).push(child);
     this.#childNodes.push(child);
   }
 
@@ -147,7 +152,7 @@ export abstract class GMLNode {
 
   /** Removes the child at `index`, or all children named `name` if no index is given. */
   removeChild(name: GMLNodeName, index?: number) {
-    const children = this.children[name];
+    const children = this.#children[name];
     if (!children) {
       return;
     }
@@ -158,13 +163,13 @@ export abstract class GMLNode {
       index === undefined ? children.splice(0) : children.splice(index, 1),
     );
     if (!children.length) {
-      delete this.children[name];
+      delete this.#children[name];
     }
     this.#childNodes = this.#childNodes.filter((node) => !removed.has(node as GMLNode));
   }
 
   hasChild(name: GMLNodeName): boolean {
-    return (this.children[name]?.length ?? 0) > 0;
+    return (this.#children[name]?.length ?? 0) > 0;
   }
 
   hasChildren(): boolean {
@@ -186,9 +191,9 @@ export abstract class GMLNode {
     return this.getChildren(name)?.[index];
   }
 
-  getChildren<N extends GMLNodeName>(name: N): GMLNodeTypeMap[N][] | undefined {
+  getChildren<N extends GMLNodeName>(name: N): readonly GMLNodeTypeMap[N][] | undefined {
     // Children are only ever created from the definition registered for their name.
-    return this.children[name] as GMLNodeTypeMap[N][] | undefined;
+    return this.#children[name] as GMLNodeTypeMap[N][] | undefined;
   }
 
   getChildPath<const P extends readonly GMLNodeChildPath[]>(path: P): GMLNodeAtPath<P> | undefined {

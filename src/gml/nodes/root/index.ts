@@ -6,7 +6,7 @@ export class GMLRoot extends GMLNode {
   public getTag(index: number = 0) {
     return this.getChild([GMLNodeName.TAG, index]);
   }
-  public getTags(): GMLTag[] {
+  public getTags(): readonly GMLTag[] {
     return this.getChildren(GMLNodeName.TAG) ?? [];
   }
 }

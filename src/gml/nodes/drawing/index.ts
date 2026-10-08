@@ -6,7 +6,7 @@ export class GMLDrawing extends GMLNode {
   getStroke(index: number) {
     return this.getChild([GMLNodeName.STROKE, index]);
   }
-  getStrokes(): GMLStroke[] {
+  getStrokes(): readonly GMLStroke[] {
     return this.getChildren(GMLNodeName.STROKE) ?? [];
   }
 }
