@@ -1,7 +1,7 @@
 # gmljs
 
-- It's a JavaScript library for parsing [GML (Graffiti Markup Language)](https://en.wikipedia.org/wiki/Graffiti_Markup_Language) documents.
-- It has full TypeScript support.
+- It parses [GML (Graffiti Markup Language)](https://en.wikipedia.org/wiki/Graffiti_Markup_Language) documents.
+- It's a JavaScript library with full TypeScript support, for Node.js and browsers.
 - It's open source.
 
 ## Installation
@@ -82,4 +82,4 @@ new GML(str, { strict: true }); // throws instead
 
 ## Related
 
-gmljs is the base for my other project, [gmlrender](https://github.com/dwyfl/gmlrender). It's a TypeScript library for browsers and Node.js that renders GML documents to images or video. [Check it out!](https://github.com/dwyfl/gmlrender)
+gmljs is the base for my other project, [gmlrender](https://github.com/dwyfl/gmlrender). It's a TypeScript library for browsers and Node.js that renders GML documents to images and videos.
