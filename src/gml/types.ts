@@ -1,5 +1,10 @@
+import type { GMLNode } from "./node.ts";
 import type { XmlDocument, XmlElement, XmlNode } from "../util/xml.ts";
 
+/**
+ * Canonical (lowercased) GML tag names. Parsing is case-insensitive;
+ * serialization uses the spec spelling (see `toXmlName`).
+ */
 export const GMLNodeName = {
   BRUSH: "brush",
   BRUSH_MODE: "mode",
@@ -67,40 +72,35 @@ export const GMLNodeAttribute = {
 
 export type GMLNodeAttribute = (typeof GMLNodeAttribute)[keyof typeof GMLNodeAttribute];
 
+const gmlNodeNames: ReadonlySet<string> = new Set(Object.values(GMLNodeName));
+const gmlNodeAttributes: ReadonlySet<string> = new Set(Object.values(GMLNodeAttribute));
+
+export const isGMLNodeName = (value: unknown): value is GMLNodeName =>
+  typeof value === "string" && gmlNodeNames.has(value);
+
+export const isGMLNodeAttribute = (value: unknown): value is GMLNodeAttribute =>
+  typeof value === "string" && gmlNodeAttributes.has(value);
+
+// Spec spelling of names whose canonical lowercase form differs.
+const xmlNames: Partial<Record<GMLNodeName | GMLNodeAttribute, string>> = {
+  speedtowidthratio: "speedToWidthRatio",
+  dripamnt: "dripAmnt",
+  dripspeed: "dripSpeed",
+  dripvecrelativetoup: "dripVecRelativeToUp",
+  layerabsolute: "layerAbsolute",
+  layerrelative: "layerRelative",
+  uniquestyleid: "uniqueStyleID",
+  uniquekey: "uniqueKey",
+  screenbounds: "screenBounds",
+  realscale: "realScale",
+  isdrawing: "isDrawing",
+};
+
+/** Returns the name as written in GML documents, e.g. `screenbounds` → `screenBounds`. */
+export const toXmlName = (name: GMLNodeName | GMLNodeAttribute): string => xmlNames[name] ?? name;
+
 export interface GMLNodeConstructor {
-  new (definition: GMLNodeDefinition, data?: GMLParsedNode): GMLNodeInterface;
-}
-export interface GMLNodeInterface {
-  definition: GMLNodeDefinition;
-  attributes: GMLNodeAttributes;
-  children: GMLNodeChildren;
-  value: GMLNodeValue;
-  init(data?: GMLParsedNode): void;
-  verifyAttributes(): void;
-  verifyChildren(): void;
-  setAttribute(key: GMLNodeAttribute, value: GMLNodeAttributeValue): void;
-  getAttribute(key: GMLNodeAttribute): GMLNodeAttributeValue | undefined;
-  addChild(name: GMLNodeName, child: GMLNodeInterface): void;
-  removeChild(name: GMLNodeName, index?: number): void;
-  hasChild(name: GMLNodeName): boolean;
-  hasChildren(): boolean;
-  getChild<T extends GMLNodeInterface>(child: GMLNodeChildPath): T | undefined;
-  getChildren<T extends GMLNodeInterface>(name: GMLNodeName): T[] | undefined;
-  getChildPath<T extends GMLNodeInterface>(path: GMLNodeChildPath[]): T | undefined;
-  getChildValue(path: GMLNodeChildPath[]): GMLNodeValue | undefined;
-  getChildValueString(path: GMLNodeChildPath[]): string;
-  getValue(): GMLNodeValue;
-  setValue(value: GMLNodeValue): void;
-  parseValue(data: GMLParsedNode): void;
-  parseAttributes(data: GMLParsedNode): void;
-  parseChildNodes(data: GMLParsedNode): void;
-  getChildNodeDefinition(name: GMLNodeName): GMLChildNodeDefinition | undefined;
-  getAttributeDefinition(name: GMLNodeAttribute): GMLAttributeDefinition | undefined;
-  getTagStart(): string;
-  getTagEnd(): string;
-  getTagContent(): string;
-  toString(): string;
-  toObject(): GMLObjectRepresentation;
+  new (definition: GMLNodeDefinition, data?: GMLParsedNode): GMLNode;
 }
 
 export type GMLNodeDefinition = {
@@ -112,13 +112,15 @@ export type GMLNodeDefinition = {
 
 export type GMLChildNodeDefinition = {
   name: GMLNodeName;
-  required?: boolean; // if true parser will throw error if node is missing when using strict parsing
+  required?: boolean; // if true parsing throws when the node is missing
   initDefault?: boolean; // create by default when creating a parent which supports this node
+  // Overrides the registry definition, for tags whose meaning depends on the parent (e.g. <time>).
+  definition?: GMLNodeDefinition;
 };
 
 export type GMLNodeValue = string | number;
-export type GMLNodeChildPath = GMLNodeName | [GMLNodeName, number];
-export type GMLNodeChildren = Partial<Record<GMLNodeName, GMLNodeInterface[]>>;
+export type GMLNodeChildPath = GMLNodeName | readonly [GMLNodeName, number];
+export type GMLNodeChildren = Partial<Record<GMLNodeName, GMLNode[]>>;
 
 export type GMLNodeAttributeValue = string | number | boolean;
 export type GMLNodeAttributes = Partial<Record<GMLNodeAttribute, GMLNodeAttributeValue>>;
@@ -130,7 +132,7 @@ export type GMLAttributeDefinition = {
   stringify?: (value: GMLNodeAttributeValue) => string;
 };
 
-type GMLObjectOrValue = GMLNodeValue | GMLObjectRepresentation;
-export interface GMLObjectRepresentation extends Record<string, GMLObjectOrValue[]> {}
+/** Leaf nodes become their value, other nodes a map of child name to child objects. */
+export type GMLObjectRepresentation = GMLNodeValue | { [name: string]: GMLObjectRepresentation[] };
 
 export type GMLParsedNode = XmlDocument | XmlElement | XmlNode;

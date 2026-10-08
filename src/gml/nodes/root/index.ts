@@ -1,13 +1,13 @@
 import { GMLNode } from "../../node.ts";
-import { GMLTag } from "../tag/index.ts";
+import type { GMLTag } from "../tag/index.ts";
 import { GMLNodeAttribute, type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
 
 export class GMLRoot extends GMLNode {
   public getTag(index: number = 0) {
-    return this.getChild<GMLTag>([GMLNodeName.TAG, index]);
+    return this.getChild([GMLNodeName.TAG, index]);
   }
-  public getTags() {
-    return this.getChildren<GMLTag>(GMLNodeName.TAG);
+  public getTags(): GMLTag[] {
+    return this.getChildren(GMLNodeName.TAG) ?? [];
   }
 }
 

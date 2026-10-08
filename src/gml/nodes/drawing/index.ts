@@ -1,13 +1,13 @@
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
-import { GMLStroke } from "../stroke/index.ts";
+import type { GMLStroke } from "../stroke/index.ts";
 
 export class GMLDrawing extends GMLNode {
   getStroke(index: number) {
-    return this.getChildPath<GMLStroke>([[GMLNodeName.STROKE, index]]);
+    return this.getChild([GMLNodeName.STROKE, index]);
   }
   getStrokes(): GMLStroke[] {
-    return this.getChildren<GMLStroke>(GMLNodeName.STROKE) ?? [];
+    return this.getChildren(GMLNodeName.STROKE) ?? [];
   }
 }
 

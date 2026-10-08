@@ -1,26 +1,27 @@
 import { GMLNode } from "../../node.ts";
 import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
-import { GMLEnvironment } from "../environment/index.ts";
-import { GMLDrawing } from "../drawing/index.ts";
+import type { GMLDrawing } from "../drawing/index.ts";
 
 export class GMLTag extends GMLNode {
   getEnvironment() {
     return (
-      this.getChildPath<GMLEnvironment>([GMLNodeName.HEADER, [GMLNodeName.ENVIRONMENT, 0]]) ??
-      this.getChildPath<GMLEnvironment>([[GMLNodeName.ENVIRONMENT, 0]])
+      this.getChildPath([GMLNodeName.HEADER, GMLNodeName.ENVIRONMENT]) ??
+      this.getChild(GMLNodeName.ENVIRONMENT)
     );
   }
-  getClientName() {
-    return (
-      this.getChildValueString([GMLNodeName.HEADER, GMLNodeName.CLIENT, GMLNodeName.CLIENT_NAME]) ??
-      "unknown"
-    );
+  getClientName(): string {
+    const name = this.getChildValue([
+      GMLNodeName.HEADER,
+      GMLNodeName.CLIENT,
+      GMLNodeName.CLIENT_NAME,
+    ]);
+    return name === undefined ? "unknown" : String(name);
   }
   getDrawing(index: number = 0) {
-    return this.getChild<GMLDrawing>([GMLNodeName.DRAWING, index]);
+    return this.getChild([GMLNodeName.DRAWING, index]);
   }
-  getDrawings() {
-    return this.getChildren<GMLDrawing>(GMLNodeName.DRAWING);
+  getDrawings(): GMLDrawing[] {
+    return this.getChildren(GMLNodeName.DRAWING) ?? [];
   }
 }
 

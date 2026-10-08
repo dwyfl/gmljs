@@ -38,4 +38,20 @@ describe("GMLStroke", () => {
     ) as GMLStroke;
     expect(stroke.getBrush()?.getWidth()).toBe(3);
   });
+
+  it.each([
+    ["false", false],
+    ["FALSE", false],
+    [" false ", false],
+    ["true", true],
+    ["TRUE", true],
+  ])("parses isDrawing=%j as %j", (value, expected) => {
+    const stroke = createGmlNodeFromXml(`<stroke isDrawing="${value}"></stroke>`) as GMLStroke;
+    expect(stroke.isDrawing()).toBe(expected);
+  });
+
+  it("returns an empty array when there are no points", () => {
+    const stroke = createGmlNodeFromTagName(GMLNodeName.STROKE) as GMLStroke;
+    expect(stroke.getPoints()).toStrictEqual([]);
+  });
 });

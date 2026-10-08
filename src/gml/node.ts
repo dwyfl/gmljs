@@ -1,4 +1,6 @@
+import { GMLParseError } from "../errors.ts";
 import { formatXmlTagStart, formatXmlTagEnd } from "../util/xml.ts";
+import type { GMLNodeAtPath, GMLNodeTypeMap } from "./type-map.ts";
 import {
   type GMLAttributeDefinition,
   type GMLChildNodeDefinition,
@@ -8,11 +10,13 @@ import {
   type GMLNodeChildPath,
   type GMLNodeChildren,
   type GMLNodeDefinition,
-  type GMLNodeInterface,
   GMLNodeName,
   type GMLNodeValue,
   type GMLObjectRepresentation,
   type GMLParsedNode,
+  isGMLNodeAttribute,
+  isGMLNodeName,
+  toXmlName,
 } from "./types.ts";
 
 // Helpers are injected by util/index.ts after all modules load,
@@ -20,13 +24,6 @@ import {
 type NodeDeps = {
   getGMLNodeDefinition: (name: GMLNodeName) => GMLNodeDefinition;
   createGmlNode: (def: GMLNodeDefinition, data?: GMLParsedNode) => GMLNode;
-  createGMLChildNodeDefinition: (
-    name: GMLNodeName,
-    opts?: Partial<GMLChildNodeDefinition>,
-  ) => GMLChildNodeDefinition;
-  isGMLChildNodeDefinition: (value: unknown) => value is GMLChildNodeDefinition;
-  isGMLNodeAttribute: (value: unknown) => value is GMLNodeAttribute;
-  isGMLNodeName: (value: unknown) => value is GMLNodeName;
 };
 
 let deps: NodeDeps | undefined;
@@ -40,9 +37,27 @@ const d = (): NodeDeps => {
   return deps;
 };
 
-export const getGMLNodeDeps = d;
+const childDefinitionCache = new WeakMap<
+  GMLNodeDefinition,
+  Map<GMLNodeName, GMLChildNodeDefinition>
+>();
 
-export abstract class GMLNode implements GMLNodeInterface {
+const getChildDefinitions = (definition: GMLNodeDefinition) => {
+  let map = childDefinitionCache.get(definition);
+  if (!map) {
+    map = new Map();
+    for (const item of definition.children) {
+      const childDefinition = typeof item === "string" ? { name: item } : item;
+      if (!map.has(childDefinition.name)) {
+        map.set(childDefinition.name, childDefinition);
+      }
+    }
+    childDefinitionCache.set(definition, map);
+  }
+  return map;
+};
+
+export abstract class GMLNode {
   definition: GMLNodeDefinition;
   attributes: GMLNodeAttributes = {};
   children: GMLNodeChildren = {};
@@ -56,7 +71,6 @@ export abstract class GMLNode implements GMLNodeInterface {
   }
 
   init(data?: GMLParsedNode) {
-    const { createGmlNode, getGMLNodeDefinition } = d();
     this.definition.attributes.forEach((item) => {
       if (item.defaultValue !== undefined) {
         this.setAttribute(item.name, item.defaultValue);
@@ -69,7 +83,10 @@ export abstract class GMLNode implements GMLNodeInterface {
     } else {
       this.definition.children.forEach((item) => {
         if (typeof item === "object" && item.initDefault) {
-          this.addChild(item.name, createGmlNode(getGMLNodeDefinition(item.name)));
+          const child = this.createChildNode(item.name);
+          if (child) {
+            this.addChild(item.name, child);
+          }
         }
       });
     }
@@ -78,7 +95,7 @@ export abstract class GMLNode implements GMLNodeInterface {
   verifyAttributes() {
     this.definition.attributes.forEach(({ name, required }) => {
       if (required && this.getAttribute(name) === undefined) {
-        throw new Error(
+        throw new GMLParseError(
           `Invalid GML: A "${this.definition.name}" node requires a "${name}" attribute.`,
         );
       }
@@ -86,10 +103,10 @@ export abstract class GMLNode implements GMLNodeInterface {
   }
 
   verifyChildren() {
-    this.definition.children.filter(d().isGMLChildNodeDefinition).forEach(({ name, required }) => {
-      if (required && !this.hasChild(name)) {
-        throw new Error(
-          `Invalid GML: A "${this.definition.name}" node requires a "${name}" child node.`,
+    this.definition.children.forEach((item) => {
+      if (typeof item === "object" && item.required && !this.hasChild(item.name)) {
+        throw new GMLParseError(
+          `Invalid GML: A "${this.definition.name}" node requires a "${item.name}" child node.`,
         );
       }
     });
@@ -104,64 +121,64 @@ export abstract class GMLNode implements GMLNodeInterface {
   }
 
   addChild(name: GMLNodeName, child: GMLNode) {
-    if (!Array.isArray(this.children[name])) {
-      this.children[name] = [];
-    }
-    this.children[name]?.push(child);
+    (this.children[name] ??= []).push(child);
   }
 
+  /** Removes the child at `index`, or all children named `name` if no index is given. */
   removeChild(name: GMLNodeName, index?: number) {
-    if (index) {
-      this.children[name]?.splice(index, 1);
-      if (!this.children[name]?.length) {
-        delete this.children[name];
-      }
-    } else {
+    const children = this.children[name];
+    if (!children) {
+      return;
+    }
+    if (index === undefined) {
+      delete this.children[name];
+      return;
+    }
+    if (index < 0 || index >= children.length) {
+      return;
+    }
+    children.splice(index, 1);
+    if (!children.length) {
       delete this.children[name];
     }
   }
 
   hasChild(name: GMLNodeName): boolean {
-    return Array.isArray(this.children[name]) && this.children[name].length > 0;
+    return (this.children[name]?.length ?? 0) > 0;
   }
 
   hasChildren(): boolean {
     return Object.keys(this.children).length > 0;
   }
 
-  getChild<T extends GMLNodeInterface>(child: GMLNodeChildPath): T | undefined {
-    let name: GMLNodeName;
-    let index: number = 0;
-    if (Array.isArray(child)) {
-      [name, index] = child;
-    } else if (typeof child === "string") {
-      name = child;
-    } else {
+  getChild<N extends GMLNodeName>(child: N | readonly [N, number]): GMLNodeTypeMap[N] | undefined {
+    const name: N = typeof child === "string" ? child : child[0];
+    const index = typeof child === "string" ? 0 : child[1];
+    return this.getChildren(name)?.[index];
+  }
+
+  getChildren<N extends GMLNodeName>(name: N): GMLNodeTypeMap[N][] | undefined {
+    // Children are only ever created from the definition registered for their name.
+    return this.children[name] as GMLNodeTypeMap[N][] | undefined;
+  }
+
+  getChildPath<const P extends readonly GMLNodeChildPath[]>(path: P): GMLNodeAtPath<P> | undefined {
+    if (!path.length) {
       return undefined;
     }
-    return this.getChildren<T>(name)?.[index];
+    const node = path.reduce<GMLNode | undefined>(
+      (parent, segment) => parent?.getChild(segment),
+      this,
+    );
+    return node as GMLNodeAtPath<P> | undefined;
   }
 
-  getChildren<T extends GMLNodeInterface>(name: GMLNodeName): T[] | undefined {
-    return this.children[name] as T[];
+  getChildValue(path: readonly GMLNodeChildPath[]): GMLNodeValue | undefined {
+    return this.getChildPath(path)?.value;
   }
 
-  getChildPath<T extends GMLNodeInterface>(path: GMLNodeChildPath[]): T | undefined {
-    if (!Array.isArray(path) || !path.length) {
-      return undefined;
-    }
-    const node = this.getChild<T>(path[0]);
-    return path.length > 1 ? node?.getChildPath<T>(path.slice(1)) : (node as T);
-  }
-
-  getChildValue(path: GMLNodeChildPath[]): GMLNodeValue | undefined {
-    const node = this.getChildPath(path);
-    return node?.value;
-  }
-
-  getChildValueString(path: GMLNodeChildPath[]): string {
-    const node = this.getChildPath(path);
-    return String(node?.value ?? "");
+  getChildValueString(path: readonly GMLNodeChildPath[]): string {
+    return String(this.getChildValue(path) ?? "");
   }
 
   getValue() {
@@ -172,89 +189,97 @@ export abstract class GMLNode implements GMLNodeInterface {
     this.value = value;
   }
 
-  parseValue(data: GMLParsedNode) {
-    const value = data.textContent ?? "";
-    this.value = (typeof value === "string" ? value : "").split("\n").shift() ?? "";
-  }
+  /** Only leaf nodes carry a value; see `GMLLeafNode`. */
+  parseValue(_data: GMLParsedNode) {}
 
   parseAttributes(data: GMLParsedNode) {
-    const { isGMLNodeAttribute } = d();
-    if (!Array.isArray(this.definition.attributes)) {
+    if (!("attributes" in data)) {
       return;
     }
-    if ("attributes" in data && data.attributes.length) {
-      for (let i = 0; i < data.attributes.length; ++i) {
-        const attr = data.attributes.item(i);
-        const name = attr?.nodeName.toLowerCase();
-        if (attr && isGMLNodeAttribute(name)) {
-          const value = attr.value;
-          const attributeDefinition = this.getAttributeDefinition(name);
-          if (attributeDefinition) {
-            const attributeValue =
-              typeof attributeDefinition.parse === "function"
-                ? attributeDefinition.parse(value)
-                : value;
-            this.setAttribute(<GMLNodeAttribute>name, attributeValue);
-          }
+    for (let i = 0; i < data.attributes.length; ++i) {
+      const attr = data.attributes.item(i);
+      const name = attr?.nodeName.toLowerCase();
+      if (attr && isGMLNodeAttribute(name)) {
+        const attributeDefinition = this.getAttributeDefinition(name);
+        if (attributeDefinition) {
+          this.setAttribute(name, attributeDefinition.parse?.(attr.value) ?? attr.value);
         }
       }
     }
   }
 
   parseChildNodes(data: GMLParsedNode) {
-    const { isGMLNodeName, getGMLNodeDefinition, createGmlNode } = d();
-    if (data.childNodes?.length) {
-      for (let i = 0; i < data.childNodes.length; ++i) {
-        const child = data.childNodes[i];
-        const name = child.nodeName.toLowerCase();
-        if (isGMLNodeName(name)) {
-          const childNode = this.getChildNodeDefinition(name);
-          if (childNode) {
-            const definition = getGMLNodeDefinition(name);
-            this.addChild(name, createGmlNode(definition, child));
-          }
+    const { childNodes } = data;
+    for (let i = 0; i < childNodes.length; ++i) {
+      const child = childNodes.item(i);
+      const name = child?.nodeName.toLowerCase();
+      if (!child || !isGMLNodeName(name)) {
+        continue;
+      }
+      let node: GMLNode | undefined;
+      try {
+        node = this.createChildNode(name, child);
+      } catch (error) {
+        if (error instanceof GMLParseError) {
+          throw error.withParent(`${toXmlName(name)}[${this.children[name]?.length ?? 0}]`);
         }
+        throw error;
+      }
+      if (node) {
+        this.addChild(name, node);
       }
     }
   }
 
+  /** Creates a child node, or returns undefined if this node doesn't allow a `name` child. */
+  protected createChildNode(name: GMLNodeName, data?: GMLParsedNode): GMLNode | undefined {
+    const childDefinition = this.getChildNodeDefinition(name);
+    if (!childDefinition) {
+      return undefined;
+    }
+    const { createGmlNode, getGMLNodeDefinition } = d();
+    return createGmlNode(childDefinition.definition ?? getGMLNodeDefinition(name), data);
+  }
+
   getChildNodeDefinition(name: GMLNodeName): GMLChildNodeDefinition | undefined {
-    const { createGMLChildNodeDefinition } = d();
-    return this.definition.children
-      .map((item) => (typeof item === "string" ? createGMLChildNodeDefinition(item) : item))
-      .find((item) => item.name === name);
+    return getChildDefinitions(this.definition).get(name);
   }
 
   getAttributeDefinition(name: GMLNodeAttribute): GMLAttributeDefinition | undefined {
-    return this.definition.attributes?.find((item) => item.name === name);
+    return this.definition.attributes.find((item) => item.name === name);
   }
 
   getTagStart() {
-    return formatXmlTagStart(this.definition.name, this.attributes);
+    const attributes: Record<string, string> = {};
+    for (const [key, value] of Object.entries(this.attributes)) {
+      if (!isGMLNodeAttribute(key) || value === undefined) {
+        continue;
+      }
+      const stringify = this.getAttributeDefinition(key)?.stringify;
+      attributes[toXmlName(key)] = stringify ? stringify(value) : String(value);
+    }
+    return formatXmlTagStart(toXmlName(this.definition.name), attributes);
   }
 
   getTagEnd() {
-    return formatXmlTagEnd(this.definition.name);
+    return formatXmlTagEnd(toXmlName(this.definition.name));
   }
 
-  getTagContent() {
-    return (<GMLNodeName[]>Object.keys(this.children))
-      .map((child) => this.children[child]?.map((item) => item.toString()).join(""))
+  getTagContent(): string {
+    return Object.values(this.children)
+      .map((children) => children.map((item) => item.toString()).join(""))
       .join("");
   }
 
-  toString() {
+  toString(): string {
     return `${this.getTagStart()}${this.getTagContent()}${this.getTagEnd()}`;
   }
 
-  toObject() {
-    const obj: GMLObjectRepresentation = (<GMLNodeName[]>Object.keys(this.children)).reduce(
-      (result, tag) => ({
-        ...result,
-        [tag]: (<GMLNode[]>this.children[tag]).map((item) => item.toObject()),
-      }),
-      {},
-    );
-    return obj;
+  toObject(): GMLObjectRepresentation {
+    const result: Record<string, GMLObjectRepresentation[]> = {};
+    for (const [name, children] of Object.entries(this.children)) {
+      result[name] = children.map((item) => item.toObject());
+    }
+    return result;
   }
 }

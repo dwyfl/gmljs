@@ -7,7 +7,7 @@ import { GMLRoot } from "../src/gml/nodes/root/index.ts";
 describe("GMLDocument/GMLRoot", () => {
   it("document string delegates to root", () => {
     const doc = createGmlNodeFromTagName(GMLNodeName.DOCUMENT) as GMLDocument;
-    const root = doc.getChild<GMLRoot>(GMLNodeName.ROOT);
+    const root = doc.getChild(GMLNodeName.ROOT);
     expect(root).toBeTruthy();
     expect(doc.toString()).toBe(root?.toString());
   });

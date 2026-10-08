@@ -35,4 +35,32 @@ describe("GMLPoint", () => {
       /Unable to parse value/,
     );
   });
+
+  it("parses <time> as a float", () => {
+    const point = createGmlNodeFromXml("<pt><x>1</x><y>2</y><time>.5</time></pt>") as GMLPoint;
+    expect(point.getT()).toBe(0.5);
+  });
+
+  it("keeps an explicit <t> over <time>", () => {
+    const point = createGmlNodeFromXml(
+      "<pt><x>1</x><y>2</y><t>1</t><time>2</time></pt>",
+    ) as GMLPoint;
+    expect(point.getT()).toBe(1);
+  });
+
+  it("exposes child values", () => {
+    const point = createGmlNodeFromXml("<pt><x>1</x><y>2</y><pres>0.5</pres></pt>") as GMLPoint;
+    expect(point.values).toStrictEqual({ x: 1, y: 2, pres: 0.5 });
+  });
+
+  it("converts a float <time> to <t>", () => {
+    const point = createGmlNodeFromXml(
+      "<pt><x>0.0</x><y>0.0</y><time>1.12342</time></pt>",
+    ) as GMLPoint;
+    expect(point.getXYZ()).toStrictEqual([0, 0, 0]);
+    expect(point.getT()).toBe(1.12342);
+    expect(point.getChild(GMLNodeName.POINT_TIME)).toBeUndefined();
+    expect(point.toString()).toContain("<t>1.12342</t>");
+    expect(point.toString()).not.toContain("<time>");
+  });
 });

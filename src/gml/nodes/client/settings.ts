@@ -1,5 +1,6 @@
 import { type GMLNodeDefinition, GMLNodeName, type GMLParsedNode } from "../../types.ts";
 import { GMLLeafNode } from "../leaf/index.ts";
+import { GMLIntegerNode } from "../leaf/integer.ts";
 import { createDefinition } from "../../util/definition.ts";
 import { GMLLeafNodeParent } from "../leaf/parent.ts";
 import config from "../../../../package.json" with { type: "json" };
@@ -35,7 +36,7 @@ export const GMLClientIpDefinition: GMLNodeDefinition = createDefinition(
 );
 
 export class GMLClientName extends GMLLeafNode {
-  init(data?: GMLParsedNode) {
+  override init(data?: GMLParsedNode) {
     this.setValue("gmljs");
     super.init(data);
   }
@@ -45,32 +46,12 @@ export const GMLClientNameDefinition: GMLNodeDefinition = createDefinition(
   GMLClientName,
 );
 
-export class GMLTime extends GMLLeafNode {
-  /**
-   * `declare` tells TypeScript the property exists but does not emit
-   * any initialization code. This allows the value set in init() to
-   * persist.
-   */
-  declare private stringValue: string;
-  constructor(definition: GMLNodeDefinition, data?: GMLParsedNode) {
-    super(definition, data);
-    this.stringValue = data?.textContent ?? "";
-  }
-  init(data?: GMLParsedNode) {
-    this.setValue(Math.floor(Date.now() * 0.001));
+export class GMLTime extends GMLIntegerNode {
+  override init(data?: GMLParsedNode) {
     super.init(data);
-  }
-  parseValue(data: GMLParsedNode) {
-    const value = data.textContent ?? "";
-    const intValue = parseInt(value, 10);
-    if (!Number.isFinite(intValue)) {
-      throw new Error(`Unable to parse value "${value}" as integer.`);
+    if (!data) {
+      this.setValue(Math.floor(Date.now() / 1000));
     }
-    this.value = intValue;
-    this.stringValue = value;
-  }
-  get floatValue() {
-    return this.stringValue ? parseFloat(this.stringValue) : undefined;
   }
 }
 export const GMLTimeDefinition: GMLNodeDefinition = createDefinition(
@@ -79,7 +60,7 @@ export const GMLTimeDefinition: GMLNodeDefinition = createDefinition(
 );
 
 export class GMLClientVersion extends GMLLeafNode {
-  init(data?: GMLParsedNode) {
+  override init(data?: GMLParsedNode) {
     this.setValue(config.version ?? "unknown");
     super.init(data);
   }

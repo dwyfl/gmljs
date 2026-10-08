@@ -5,28 +5,27 @@ import {
   type GMLNodeDefinition,
   GMLNodeName,
 } from "../../types.ts";
-import type { GMLBrush } from "../brush/index.ts";
-import { GMLPoint } from "../point/index.ts";
+import type { GMLPoint } from "../point/index.ts";
 
 export class GMLStroke extends GMLNode {
-  isDrawing() {
-    return this.getAttribute(GMLNodeAttribute.IS_DRAWING);
+  isDrawing(): boolean {
+    return this.getAttribute(GMLNodeAttribute.IS_DRAWING) !== false;
   }
   getPoint(index: number) {
-    return this.getChild<GMLPoint>([GMLNodeName.POINT, index]);
+    return this.getChild([GMLNodeName.POINT, index]);
   }
-  getPoints() {
-    return this.getChildren<GMLPoint>(GMLNodeName.POINT);
+  getPoints(): GMLPoint[] {
+    return this.getChildren(GMLNodeName.POINT) ?? [];
   }
   getBrush() {
-    return this.getChild<GMLBrush>(GMLNodeName.BRUSH);
+    return this.getChild(GMLNodeName.BRUSH);
   }
 }
 
 const attrIsDrawing: GMLAttributeDefinition = {
   name: GMLNodeAttribute.IS_DRAWING,
   defaultValue: true,
-  parse: (value) => (typeof value === "string" ? value === "true" : Boolean(value)),
+  parse: (value) => value.trim().toLowerCase() !== "false",
   stringify: (value) => (value ? "true" : "false"),
 };
 

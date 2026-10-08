@@ -35,10 +35,10 @@ export const GMLEnvOriginDefinition: GMLNodeDefinition = createGMLPointDefinitio
   GMLEnvOrigin,
 );
 
-export class GMLEnvRealScare extends GML3DPoint {}
-export const GMLEnvRealScareDefinition: GMLNodeDefinition = createGMLPointDefinition(
+export class GMLEnvRealScale extends GML3DPoint {}
+export const GMLEnvRealScaleDefinition: GMLNodeDefinition = createGMLPointDefinition(
   GMLNodeName.ENVIRONMENT_REAL_SCALE,
-  GMLEnvRealScare,
+  GMLEnvRealScale,
 );
 
 export class GMLEnvAudio extends GMLLeafNode {}
@@ -54,7 +54,7 @@ export const GMLEnvBackgroundDefinition: GMLNodeDefinition = createDefinition(
 );
 
 export class GMLEnvUp extends GML3DPoint {
-  init(data?: GMLParsedNode) {
+  override init(data?: GMLParsedNode) {
     super.init(data, { x: 0, y: -1, z: 0 });
   }
 }
@@ -64,7 +64,7 @@ export const GMLEnvUpDefinition: GMLNodeDefinition = createGMLPointDefinition(
 );
 
 export class GMLEnvScreenBounds extends GML3DPoint {
-  init(data?: GMLParsedNode) {
+  override init(data?: GMLParsedNode) {
     super.init(data, { x: 1920, y: 1080 });
   }
 }

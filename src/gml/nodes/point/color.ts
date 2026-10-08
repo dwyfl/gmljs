@@ -28,11 +28,11 @@ export const GMLColorADefinition: GMLNodeDefinition = createDefinition(
 );
 
 export class GMLColor extends GMLLeafNodeParent {
-  getRGBA() {
-    const r = this.getChild<GMLColorR>(GMLNodeName.COLOR_R)?.getFloatValue();
-    const g = this.getChild<GMLColorG>(GMLNodeName.COLOR_G)?.getFloatValue();
-    const b = this.getChild<GMLColorB>(GMLNodeName.COLOR_B)?.getFloatValue();
-    const a = this.getChild<GMLColorA>(GMLNodeName.COLOR_A)?.getFloatValue() ?? 1;
+  getRGBA(): [r: number, g: number, b: number, a: number] | undefined {
+    const r = this.getChild(GMLNodeName.COLOR_R)?.getFloatValue();
+    const g = this.getChild(GMLNodeName.COLOR_G)?.getFloatValue();
+    const b = this.getChild(GMLNodeName.COLOR_B)?.getFloatValue();
+    const a = this.getChild(GMLNodeName.COLOR_A)?.getFloatValue() ?? 1;
     return r !== undefined && g !== undefined && b !== undefined ? [r, g, b, a] : undefined;
   }
 }

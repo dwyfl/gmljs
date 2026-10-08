@@ -4,26 +4,29 @@ import {
   type Element as _XmlElement,
   type Node as _XmlNode,
 } from "@xmldom/xmldom";
+import { GMLParseError } from "../errors.ts";
 
 export type XmlDocument = _XmlDocument;
 export type XmlElement = _XmlElement;
 export type XmlNode = _XmlNode;
 
-export type XmlValue = string | number | boolean;
-export type XmlKey = string;
-export type XmlTagName = string;
-interface XmlObject<T> {
-  [key: XmlKey]: T;
-}
-export type XmlAttributes = XmlObject<XmlValue>;
-export type XmlTree = XmlObject<XmlTree | XmlValue>;
+const XML_ENTITIES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+};
 
-export const isXmlTree = (value: any): value is XmlTree => typeof value === "object";
-export const isXmlValue = (value: any): value is XmlValue =>
-  ["string", "number", "boolean"].includes(typeof value);
+export const escapeXmlText = (value: string) =>
+  value.replace(/[&<>]/g, (char) => XML_ENTITIES[char] ?? char);
 
-export const formatXmlTagStart = (tagName: string, attributes: XmlAttributes = {}) => {
-  const attrStrings = Object.entries(attributes).map(([key, value]) => `${key}="${value}"`);
+export const escapeXmlAttribute = (value: string) =>
+  value.replace(/[&<>"]/g, (char) => XML_ENTITIES[char] ?? char);
+
+export const formatXmlTagStart = (tagName: string, attributes: Record<string, string> = {}) => {
+  const attrStrings = Object.entries(attributes).map(
+    ([key, value]) => `${key}="${escapeXmlAttribute(value)}"`,
+  );
   return `<${tagName}${attrStrings.length ? ` ${attrStrings.join(" ")}` : ""}>`;
 };
 
@@ -31,40 +34,14 @@ export const formatXmlTagEnd = (tagName: string) => {
   return "</" + tagName + ">";
 };
 
-export const leafNodeToXml = (tagName: XmlTagName, value: XmlValue): string =>
-  `${formatXmlTagStart(tagName)}${value}${formatXmlTagEnd(tagName)}`;
-
-export const objectToXml = (obj: XmlTree, objName: string): string =>
-  [
-    formatXmlTagStart(objName),
-    Object.keys(obj).map((key) => {
-      const node = obj[key];
-      return isXmlTree(node) ? objectToXml(node, key) : leafNodeToXml(key, node);
-    }),
-    formatXmlTagEnd(objName),
-  ].join("");
-
-// export const createNodeFromXml = (nodeType, xmlStr) => {
-//   const xmlDocument = this.parseXml(xmlStr);
-//   return nodeType.create(xmlDocument.documentElement);
-// }
-
-export const parseXml = (str: string) => {
-  var parser = new DOMParser();
-  var doc = parser.parseFromString(str, "application/xml");
-  if (parserHadError(doc)) {
-    throw new Error("Unable to parse GML!");
+export const parseXml = (str: string): XmlDocument => {
+  // Without an onError handler xmldom logs every problem to console.error.
+  // Fatal errors still throw, everything else is tolerated.
+  const parser = new DOMParser({ onError: () => {} });
+  try {
+    return parser.parseFromString(str, "application/xml");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new GMLParseError(`Invalid XML: ${message}`, { cause: error });
   }
-  return doc;
-};
-
-const parserHadError = (doc: XmlDocument) => {
-  const parserError = doc.getElementsByTagName("parsererror");
-  const parsererrorNS = parserError.length ? parserError[0].namespaceURI : null;
-  if (parsererrorNS === "http://www.w3.org/1999/xhtml") {
-    // In PhantomJS the parseerror element doesn't seem to have a special namespace
-    // Stolen from: http://stackoverflow.com/questions/11563554/how-do-i-detect-xml-parsing-errors-when-using-javascripts-domparser-in-a-cross
-    return doc.getElementsByTagName("parsererror").length > 0;
-  }
-  return doc.getElementsByTagNameNS(parsererrorNS, "parsererror").length > 0;
 };

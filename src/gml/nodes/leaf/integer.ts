@@ -1,16 +1,17 @@
+import { GMLParseError } from "../../../errors.ts";
 import { GMLLeafNode } from "./index.ts";
 import { type GMLParsedNode } from "../../types.ts";
 
 export class GMLIntegerNode extends GMLLeafNode {
-  init(data?: GMLParsedNode) {
+  override init(data?: GMLParsedNode) {
     this.value = 0;
     super.init(data);
   }
-  parseValue(data: GMLParsedNode) {
-    const value = data.textContent ?? "";
+  override parseValue(data: GMLParsedNode) {
+    const value = (data.textContent ?? "").trim();
     const intValue = parseInt(value, 10);
     if (!Number.isFinite(intValue)) {
-      throw new Error(`Unable to parse value "${value}" as integer.`);
+      throw new GMLParseError(`Unable to parse value "${value}" as integer.`);
     }
     this.value = intValue;
   }

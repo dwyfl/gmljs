@@ -4,12 +4,11 @@ import {
   type GMLNodeValue,
   type GMLParsedNode,
 } from "../../types.ts";
-import { GMLTime } from "../client/settings.ts";
 import { GMLLeafNodeParent } from "../leaf/parent.ts";
-import type { GMLPointX, GMLPointY, GMLPointZ } from "./points.ts";
+import { GMLPointTimeDefinition } from "./points.ts";
 
 export abstract class GML3DPoint extends GMLLeafNodeParent {
-  init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
+  override init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
     super.init(data);
     // Set defaults after parsing
     // When parsing data: overwrite=false so parsed values aren't replaced
@@ -17,46 +16,43 @@ export abstract class GML3DPoint extends GMLLeafNodeParent {
     this.setValues(defaultValues, !data);
   }
 
-  getXYZ() {
-    const x = this.getChild<GMLPointX>(GMLNodeName.POINT_X)?.getFloatValue();
-    const y = this.getChild<GMLPointY>(GMLNodeName.POINT_Y)?.getFloatValue();
-    const z = this.getChild<GMLPointZ>(GMLNodeName.POINT_Z)?.getFloatValue();
+  getXYZ(): [x: number, y: number, z: number] {
+    const x = this.getChild(GMLNodeName.POINT_X)?.getFloatValue();
+    const y = this.getChild(GMLNodeName.POINT_Y)?.getFloatValue();
+    const z = this.getChild(GMLNodeName.POINT_Z)?.getFloatValue();
     return [x ?? 0, y ?? 0, z ?? 0];
   }
 }
 export class GMLPoint extends GML3DPoint {
-  init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
+  override init(data?: GMLParsedNode, defaultValues?: Partial<Record<GMLNodeName, GMLNodeValue>>) {
     super.init(data, defaultValues);
     /**
      * Convert <time> to <t>.
      *
      * The spec allows for the <time> tags to exist both under <client>
      * (as a unix timestamp) and under <point> (as a float timing value).
-     *
-     * This is the only place in the spec where tags are different
-     * depending on parent node context, so just do this for now.
+     * GMLPointDefinition maps <time> to GMLPointTime, so the value is a float.
      **/
-    const timeChild = this.getChild<GMLTime>(GMLNodeName.POINT_TIME);
-    if (timeChild) {
-      this.setValues({ t: timeChild.floatValue }, false);
+    const time = this.getChild(GMLNodeName.POINT_TIME)?.getValue();
+    if (time !== undefined) {
+      if (typeof time === "number") {
+        this.setValues({ t: time }, false);
+      }
       this.removeChild(GMLNodeName.POINT_TIME);
     }
   }
   get values() {
-    const result: Partial<Record<GMLNodeName, GMLNodeValue>> = (<GMLNodeName[]>(
-      Object.keys(this.children)
-    )).reduce(
-      (obj, key) => ({
-        ...obj,
-        [key]: this.getChild(key)?.getValue(),
-      }),
-      {},
-    );
+    const result: Partial<Record<GMLNodeName, GMLNodeValue>> = {};
+    for (const name of Object.keys(this.children) as GMLNodeName[]) {
+      const value = this.getChild(name)?.getValue();
+      if (value !== undefined) {
+        result[name] = value;
+      }
+    }
     return result;
   }
   getT() {
-    const { t } = this.values;
-    return typeof t === "number" ? t : undefined;
+    return this.getChild(GMLNodeName.POINT_T)?.getFloatValue();
   }
 }
 
@@ -69,7 +65,7 @@ export const GMLPointDefinition: GMLNodeDefinition = {
     { name: GMLNodeName.POINT_Y, required: true, initDefault: true },
     { name: GMLNodeName.POINT_Z, initDefault: true },
     GMLNodeName.POINT_T,
-    GMLNodeName.POINT_TIME,
+    { name: GMLNodeName.POINT_TIME, definition: GMLPointTimeDefinition },
     GMLNodeName.PRESSURE,
     GMLNodeName.ROTATION,
     GMLNodeName.UNIT,

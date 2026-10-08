@@ -2,7 +2,7 @@ import { describe, it, expect } from "vite-plus/test";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { GML } from "../src/index.ts";
+import { GML, GMLParseError } from "../src/index.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -30,21 +30,21 @@ describe("GML", () => {
     const items = new GML(gml001).getTags();
     expect(Array.isArray(items)).toBeTruthy();
     expect(items.length).toBe(1);
-    expect(items?.[0].toString()).toMatchSnapshot();
+    expect(items[0]?.toString()).toMatchSnapshot();
   });
 
   it("getDrawings() works", () => {
     const items = new GML(gml001).getDrawings(0);
     expect(Array.isArray(items)).toBeTruthy();
     expect(items?.length).toBe(1);
-    expect(items?.[0].toString()).toMatchSnapshot();
+    expect(items[0]?.toString()).toMatchSnapshot();
   });
 
   it("getStrokes() works", () => {
     const items = new GML(gml001).getStrokes(0, 0);
     expect(Array.isArray(items)).toBeTruthy();
     expect(items?.length).toBe(1);
-    expect(items?.[0].toString()).toMatchSnapshot();
+    expect(items[0]?.toString()).toMatchSnapshot();
   });
 
   it("getPoints() works", () => {
@@ -73,5 +73,54 @@ describe("GML", () => {
   it("getTitle() returns undefined when missing", () => {
     const gml = new GML();
     expect(gml.getTitle()).toBeUndefined();
+  });
+
+  it("getTitle() prefers username over the client application name", () => {
+    const gml = new GML(
+      "<gml><tag><header><client><name>Laser Tag</name><username>bob</username></client></header><drawing/></tag></gml>",
+    );
+    expect(gml.getTitle()).toBe("bob");
+  });
+
+  it("getClient() returns the client node", () => {
+    const gml = new GML(gml001);
+    expect(gml.getClient()?.getChildValue(["name"])).toBe("seen");
+    expect(new GML().getClient()).toBeUndefined();
+  });
+
+  it("parses <time> by parent: integer under <client>, float under <pt>", () => {
+    const gml = new GML(
+      "<gml><tag><header><client><time>1928372722</time></client></header><drawing><stroke><pt><x>0.0</x><y>0.0</y><time>1.12342</time></pt></stroke></drawing></tag></gml>",
+    );
+    expect(gml.getClient()?.getChildValue(["time"])).toBe(1928372722);
+    const point = gml.getPoint(0, 0, 0, 0);
+    expect(point?.getT()).toBe(1.12342);
+    expect(point?.getChild("time")).toBeUndefined();
+  });
+
+  it("getSize() returns the screen bounds", () => {
+    const gml = new GML(
+      "<gml><tag><header><environment><screenBounds><x>640</x><y>480</y></screenBounds></environment></header><drawing/></tag></gml>",
+    );
+    expect(gml.getSize()).toStrictEqual([640, 480]);
+    expect(new GML(gml001).getSize()).toBeUndefined();
+  });
+
+  it("collection getters return empty arrays when the parent is missing", () => {
+    const gml = new GML();
+    expect(gml.getDrawings(5)).toStrictEqual([]);
+    expect(gml.getStrokes(0, 5)).toStrictEqual([]);
+    expect(gml.getPoints(0, 0, 0)).toStrictEqual([]);
+    expect(gml.getPoint(0, 0, 0, 0)).toBeUndefined();
+  });
+
+  it("rejects input that is not a GML document", () => {
+    expect(() => new GML("<foo/>")).toThrow(GMLParseError);
+    expect(() => new GML("")).toThrow(GMLParseError);
+  });
+
+  it("round-trips its own output", () => {
+    const once = new GML(gml001).toString();
+    expect(new GML(once).toString()).toBe(once);
   });
 });

@@ -1,12 +1,7 @@
 import { GMLNode } from "../../node.ts";
-import { type GMLNodeDefinition, GMLNodeName, type GMLParsedNode } from "../../types.ts";
+import { type GMLNodeDefinition, GMLNodeName } from "../../types.ts";
 
-export class GMLClient extends GMLNode {
-  init(data?: GMLParsedNode) {
-    super.init(data);
-    // TODO: Add <version> if default <name> was created
-  }
-}
+export class GMLClient extends GMLNode {}
 
 export const GMLClientDefinition: GMLNodeDefinition = {
   name: GMLNodeName.CLIENT,
