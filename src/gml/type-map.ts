@@ -48,7 +48,7 @@ type NodeTypes = {
   b: GMLFloatNode;
   a: GMLFloatNode;
   dir: GML3DPoint;
-  _: GMLDocument;
+  "#document": GMLDocument;
   drawing: GMLDrawing;
   environment: GMLEnvironment;
   offset: GML3DPoint;

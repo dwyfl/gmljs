@@ -131,4 +131,10 @@ describe("GML", () => {
     expect(gml.getPoints(0, 0, 0)).toStrictEqual([]);
     expect(() => new GML(xml, { strict: true })).toThrow(GMLParseError);
   });
+
+  it("exposes the document read-only", () => {
+    const gml = new GML();
+    // @ts-expect-error doc has no setter
+    expect(() => (gml.doc = new GML().doc)).toThrow(TypeError);
+  });
 });

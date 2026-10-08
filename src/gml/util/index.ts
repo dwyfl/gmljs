@@ -27,7 +27,7 @@ export function createGmlNodeFromTagName<N extends GMLNodeName>(
 export function createGmlNodeFromXml(xml: string, options?: GMLParseOptions): GMLNode {
   const xmlElement = parseXml(xml).documentElement ?? undefined;
   const tagName = xmlElement?.nodeName.toLowerCase();
-  if (!xmlElement || !isGMLNodeName(tagName) || tagName === GMLNodeName.DOCUMENT) {
+  if (!xmlElement || !isGMLNodeName(tagName)) {
     throw new GMLParseError(`Invalid GML! "${xmlElement?.nodeName}" is not a valid GML tag.`);
   }
   return createGmlNodeFromTagName(tagName, xmlElement, options);

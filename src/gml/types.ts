@@ -36,7 +36,8 @@ export const GMLNodeName = {
   COLOR_B: "b",
   COLOR_A: "a",
   DIRECTION: "dir",
-  DOCUMENT: "_", // TODO: fix naming
+  // The node wrapping <gml>. Like the DOM's name for documents, it can never match an element.
+  DOCUMENT: "#document",
   DRAWING: "drawing",
   ENVIRONMENT: "environment",
   ENVIRONMENT_OFFSET: "offset",

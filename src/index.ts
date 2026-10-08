@@ -54,19 +54,22 @@ export { GMLColor, type GMLRGBA } from "./gml/nodes/point/color.ts";
 export { GMLBrush } from "./gml/nodes/brush/index.ts";
 
 export class GML {
-  doc: GMLDocument;
+  #doc: GMLDocument;
   /**
    * @throws {GMLParseError} if `str` is not well-formed XML with a `<gml>` root,
    * or, with `{ strict: true }`, if any element is invalid.
    */
   constructor(str?: string, options?: GMLParseOptions) {
-    this.doc =
+    this.#doc =
       typeof str === "string"
         ? parseGML(str, options)
         : createGmlNodeFromTagName(GMLNodeName.DOCUMENT);
   }
   init(str: string, options?: GMLParseOptions) {
-    this.doc = parseGML(str, options);
+    this.#doc = parseGML(str, options);
+  }
+  get doc(): GMLDocument {
+    return this.#doc;
   }
   /** Invalid elements that were kept as GMLUnknownNode while parsing. */
   get warnings(): readonly GMLParseError[] {
