@@ -108,7 +108,7 @@ describe("GMLNode", () => {
       // @ts-expect-error getChildren() returns a readonly array
       stroke.getChildren(GMLNodeName.POINT)?.pop();
       // @ts-expect-error definition is readonly
-      stroke.definition = stroke.definition;
+      stroke.definition = createGmlNodeFromTagName(GMLNodeName.POINT).definition;
     };
     expect(typeof mutations).toBe("function");
     expect(stroke.children.pt).toHaveLength(3);
