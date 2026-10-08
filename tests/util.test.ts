@@ -34,7 +34,7 @@ describe("parseGML()", () => {
 
   it("accepts an uppercase <GML> root", () => {
     expect(parseGML("<GML><tag><drawing/></tag></GML>").toString()).toBe(
-      '<gml spec="1.0"><tag><drawing></drawing></tag></gml>',
+      "<gml><tag><drawing></drawing></tag></gml>",
     );
   });
 

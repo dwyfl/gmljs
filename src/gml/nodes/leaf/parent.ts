@@ -10,8 +10,9 @@ import {
 export class GMLLeafNodeParent extends GMLNode {
   override init(data?: GMLParsedNode, context?: GMLParseContext) {
     super.init(data, context);
-    // When parsing, only fill in missing children; otherwise override the default children.
-    this.setValues(this.definition.defaultChildValues, !data);
+    if (!data) {
+      this.setValues(this.definition.defaultChildValues);
+    }
   }
 
   setValues(obj?: Partial<Record<GMLNodeName, GMLNodeValue>>, overwrite = true) {

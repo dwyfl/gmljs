@@ -89,16 +89,17 @@ export abstract class GMLNode {
   }
 
   init(data?: GMLParsedNode, context: GMLParseContext = createParseContext()) {
-    this.definition.attributes.forEach((item) => {
-      if (item.defaultValue !== undefined) {
-        this.setAttribute(item.name, item.defaultValue);
-      }
-    });
+    // Parsed nodes keep exactly what the input had; defaults only apply to new nodes.
     if (data) {
       this.parseValue(data);
       this.parseAttributes(data);
       this.parseChildNodes(data, context);
     } else {
+      this.definition.attributes.forEach((item) => {
+        if (item.defaultValue !== undefined) {
+          this.setAttribute(item.name, item.defaultValue);
+        }
+      });
       for (const { definition, initDefault } of getChildDefinitions(this.definition).values()) {
         if (initDefault) {
           this.addChild(definition.name, createGmlNode(definition));
@@ -111,7 +112,7 @@ export abstract class GMLNode {
     this.definition.attributes.forEach(({ name, required }) => {
       if (required && this.getAttribute(name) === undefined) {
         throw new GMLParseError(
-          `Invalid GML: A "${this.definition.name}" node requires a "${name}" attribute.`,
+          `Invalid GML: A "${toXmlName(this.definition.name)}" node requires a "${toXmlName(name)}" attribute.`,
         );
       }
     });
@@ -121,7 +122,7 @@ export abstract class GMLNode {
     for (const { definition, required } of getChildDefinitions(this.definition).values()) {
       if (required && !this.hasChild(definition.name)) {
         throw new GMLParseError(
-          `Invalid GML: A "${this.definition.name}" node requires a "${definition.name}" child node.`,
+          `Invalid GML: A "${toXmlName(this.definition.name)}" node requires a "${toXmlName(definition.name)}" child node.`,
         );
       }
     }
