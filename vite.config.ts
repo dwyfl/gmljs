@@ -8,7 +8,8 @@ export default defineConfig({
     dts: {
       generator: "tsgo",
     },
-    exports: true,
+    // package.json exports are maintained by hand (types condition, main/types fallbacks).
+    exports: false,
   },
   lint: {
     options: {
