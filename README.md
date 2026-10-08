@@ -10,8 +10,6 @@
 npm install gmljs
 ```
 
-In browsers, bundlers pick a build that parses with the built-in `DOMParser` (about 6 KB gzipped). Node and other runtimes without a DOM use [@xmldom/xmldom](https://github.com/xmldom/xmldom). Both reject XML that isn't well-formed.
-
 ## Example
 
 ```javascript
@@ -39,8 +37,8 @@ const gml = new GML(gmlDocumentStr);
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-// Iterate over all strokes in tag 0, drawing 0
-for (const stroke of gml.getStrokes(0, 0)) {
+// Iterate over all strokes in the document
+for (const stroke of gml.strokes()) {
   // Get points in stroke
   const [firstPoint, ...points] = stroke.getPoints();
   if (!firstPoint) continue;
@@ -60,13 +58,9 @@ for (const stroke of gml.getStrokes(0, 0)) {
 }
 ```
 
-To walk every stroke regardless of tag and drawing, or to get the whole document as plain JSON-serializable data:
+To get the whole document as plain JSON-serializable data:
 
 ```javascript
-for (const stroke of gml.strokes()) {
-  const color = stroke.getBrush()?.getColor(); // [r, g, b, a], 0–255
-}
-
 const { tags } = gml.toData();
 // tags[0].drawings[0].strokes[0].points → [{ x, y, z, t?, pressure?, rotation? }, …]
 ```
@@ -84,7 +78,7 @@ for (const warning of gml.warnings) {
 new GML(str, { strict: true }); // throws instead
 ```
 
-`toString()` writes the document back as GML, using the spec's tag casing (`screenBounds`, `isDrawing`, …) and escaping text and attribute values. Element order is kept, and elements or attributes gmljs doesn't know are written back verbatim (see `getUnknownChildren()` and `unknownAttributes`).
+`toString()` writes the document back as GML. Element order is kept, and unknown elements or attributes are written back verbatim (see `getUnknownChildren()` and `unknownAttributes`).
 
 ## Related
 
