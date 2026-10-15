@@ -10,8 +10,7 @@ npm install -g @gmljs/cli
 ```
 
 This installs the `gmljs` command. Rendering uses [`@gmljs/canvas`](../canvas), a
-pure-TypeScript rasterizer, so there are no native binaries to install. It writes PNG only for
-now.
+pure-TypeScript rasterizer, so there are no native binaries to install. It writes PNG and JPEG.
 
 ## Usage
 
@@ -29,7 +28,7 @@ Options:
   -w, --width <size>           force image width (default: 1024)
   -h, --height <size>          force image height (default: 768)
   -b, --background <hexcolor>  background color (default: "white")
-  -f, --format <format>        output format (choices: "png", default: "png")
+  -f, --format <format>        output format (choices: "png", "jpg", default: "png")
   --help                       print help text
 
 Effect options
@@ -40,6 +39,8 @@ Effect options
 ```
 $ gmljs ~/nyc/zephyr.gml
 ✅ Rendered 1024x768 png file: ~/nyc/zephyr.png
+$ gmljs ~/nyc/dondi.gml --format jpg
+✅ Rendered 1024x768 jpg file: ~/nyc/dondi.jpg
 $ gmljs ~/nyc/cope2.gml -w 1920 -h 1080 --background #aaddff
 ✅ Rendered 1920x1080 png file: ~/nyc/cope2.png
 ```

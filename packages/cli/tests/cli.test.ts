@@ -53,10 +53,17 @@ describe("CLI", () => {
     expect(existsSync(join(tmpDir, "tag.png"))).toBe(true);
   });
 
+  test("writes a JPEG", () => {
+    const out = join(tmpDir, "out.jpg");
+    const result = run([EXAMPLE, "--format", "jpg", "--out", out]);
+    expect(result.status).toBe(0);
+    expect(readFileSync(out).subarray(0, 3).toString("hex")).toBe("ffd8ff");
+  });
+
   test("rejects unsupported formats", () => {
-    const result = run([EXAMPLE, "--format", "jpg"]);
+    const result = run([EXAMPLE, "--format", "webp"]);
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain("Allowed choices are png");
+    expect(result.stderr).toContain("Allowed choices are png, jpg");
   });
 
   test("writes an image with the specified --width and --height", () => {

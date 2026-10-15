@@ -32,8 +32,7 @@ program
     ).hideHelp(),
   )
   .addOption(
-    // @gmljs/canvas encodes PNG only; add "jpg" back once it can encode JPEG.
-    new Option("-f, --format <format>", "output format").choices(["png"]).default("png"),
+    new Option("-f, --format <format>", "output format").choices(["png", "jpg"]).default("png"),
   )
   .optionsGroup("Effect options")
   .option("--drips", "enable drip effect (experimental)")
@@ -89,7 +88,7 @@ for (const file of files) {
       clearColor,
       drips: drips ?? false,
       dripFactor,
-      format,
+      format: format === "jpg" ? "jpeg" : "png",
     });
 
     fs.writeFileSync(outFile, Buffer.from(image));

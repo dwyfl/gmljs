@@ -8,9 +8,8 @@
 
 In Node.js, `@gmljs/render/server` renders with
 [@gmljs/canvas](../canvas), a pure-TypeScript rasterizer that comes with the package, so
-`npm install @gmljs/render` is all you need. It encodes PNG only (and images default to PNG);
-for JPEG, install one of the other backends. They are optional peer dependencies, so you only
-install what you use.
+`npm install @gmljs/render` is all you need. It encodes PNG and JPEG, and images default to PNG.
+Other backends are optional peer dependencies, so you only install what you use.
 
 | Environment                                                               | Install                                 |
 | ------------------------------------------------------------------------- | --------------------------------------- |

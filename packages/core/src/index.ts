@@ -112,16 +112,16 @@ export class GML {
   getTags(): readonly GMLTag[] {
     return this.getRoot()?.getTags() ?? [];
   }
-  getTag(index: number): GMLTag | undefined {
+  getTag(index: number = 0): GMLTag | undefined {
     return this.getTags()[index];
   }
-  getDrawings(tag: number): readonly GMLDrawing[] {
+  getDrawings(tag: number = 0): readonly GMLDrawing[] {
     return this.getTag(tag)?.getDrawings() ?? [];
   }
-  getDrawing(tag: number, index: number): GMLDrawing | undefined {
+  getDrawing(tag: number = 0, index: number = 0): GMLDrawing | undefined {
     return this.getDrawings(tag)[index];
   }
-  getStrokes(tag: number, drawing: number): readonly GMLStroke[] {
+  getStrokes(tag: number = 0, drawing: number = 0): readonly GMLStroke[] {
     return this.getDrawing(tag, drawing)?.getStrokes() ?? [];
   }
   getStroke(tag: number, drawing: number, index: number): GMLStroke | undefined {
