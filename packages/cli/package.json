@@ -1,7 +1,6 @@
 {
   "name": "@gmljs/cli",
-  "version": "1.0.0",
-  "private": true,
+  "version": "1.0.0-beta.0",
   "description": "Command line tool for rendering GML documents to images.",
   "homepage": "https://github.com/dwyfl/gmljs",
   "bugs": {
@@ -28,7 +27,7 @@
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
-    "@gmljs/render": "workspace:*",
+    "@gmljs/render": "workspace:^",
     "commander": "^15.0.0"
   },
   "devDependencies": {

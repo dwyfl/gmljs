@@ -1,6 +1,6 @@
 {
   "name": "@gmljs/render",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.0",
   "description": "Library for rendering GML documents.",
   "homepage": "https://github.com/dwyfl/gmljs",
   "bugs": {
@@ -41,8 +41,8 @@
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
-    "@gmljs/canvas": "workspace:*",
-    "@gmljs/core": "workspace:*",
+    "@gmljs/canvas": "workspace:^",
+    "@gmljs/core": "workspace:^",
     "gl-matrix": "^3.4.4"
   },
   "devDependencies": {
@@ -50,7 +50,7 @@
     "@types/pngjs": "^6.0.5",
     "bumpp": "^12.3.0",
     "canvas": "^3.2.3",
-    "mediabunny": "^1.61.3",
+    "mediabunny": "^1.61.5",
     "pixelmatch": "^8.0.0",
     "pngjs": "^7.0.0",
     "pureimage": "^0.4.20",

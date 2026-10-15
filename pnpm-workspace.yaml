@@ -20,3 +20,7 @@ peerDependencyRules:
     - vite
   allowedVersions:
     vite: "*"
+minimumReleaseAgeExclude:
+  - "@asamuzakjp/dom-selector@10.0.3"
+  - jsdom@30.1.3
+  - mediabunny@1.61.5
