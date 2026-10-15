@@ -6,13 +6,17 @@
 
 ## Installation
 
-Install `@gmljs/render` together with the rendering backend you use. The backends are optional
-peer dependencies, so you only install what you need.
+In Node.js, `@gmljs/render/server` renders with
+[@gmljs/canvas](../canvas), a pure-TypeScript rasterizer that comes with the package, so
+`npm install @gmljs/render` is all you need. It encodes PNG only (and images default to PNG);
+for JPEG, install one of the other backends. They are optional peer dependencies, so you only
+install what you use.
 
 | Environment                                                               | Install                                 |
 | ------------------------------------------------------------------------- | --------------------------------------- |
 | Browser                                                                   | `npm install @gmljs/render`             |
 | Browser, rendering video (`@gmljs/render/video`)                          | `npm install @gmljs/render mediabunny`  |
+| Node.js with @gmljs/canvas (the default)                                  | `npm install @gmljs/render`             |
 | Node.js with [node-canvas](https://github.com/Automattic/node-canvas)     | `npm install @gmljs/render canvas`      |
 | Node.js with [skia-canvas](https://github.com/samizdatco/skia-canvas)     | `npm install @gmljs/render skia-canvas` |
 | Node.js with [pureimage](https://github.com/joshmarinacci/node-pureimage) | `npm install @gmljs/render pureimage`   |
@@ -31,7 +35,7 @@ import { createGMLImage } from "@gmljs/render/server";
 
 const gml = readFileSync("tag.gml", "utf8");
 const image = await createGMLImage(gml, {
-  type: "node-canvas", // or "skia-canvas", "pureimage"
+  // type defaults to "gmljs-canvas"; or "node-canvas", "skia-canvas", "pureimage"
   width: 1024,
   height: 768,
   background: "#eee",

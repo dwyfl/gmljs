@@ -23,15 +23,12 @@
   "scripts": {
     "build": "vp pack",
     "bench": "node --experimental-strip-types scripts/bench.ts",
-    "bench:gml": "node --experimental-strip-types scripts/gml-bench.ts",
-    "examples:gml": "node --experimental-strip-types scripts/gml-examples.ts",
     "dev": "vp pack --watch",
     "test": "vp test",
     "check": "vp check",
     "prepublishOnly": "vp run build"
   },
   "devDependencies": {
-    "@gmljs/render": "workspace:*",
     "@types/node": "^26.6.5",
     "@types/pngjs": "^6.0.5",
     "bumpp": "^12.3.0",

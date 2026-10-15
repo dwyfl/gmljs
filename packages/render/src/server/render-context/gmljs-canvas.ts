@@ -1,0 +1,94 @@
+import { Canvas, type CanvasRenderingContext2D } from "@gmljs/canvas/node";
+import {
+  RenderContextBase,
+  type RenderImageFormat,
+  type RenderImageOptions,
+} from "../../render/context.ts";
+import { applyRenderProps, type RenderProps } from "../../render/props/index.ts";
+
+/**
+ * Renders with @gmljs/canvas, a pure-TypeScript rasterizer: no native binaries to install.
+ * It encodes PNG only, so images default to PNG.
+ */
+export class RenderContextGmljsCanvas extends RenderContextBase {
+  canvas: Canvas;
+  private ctx: CanvasRenderingContext2D;
+
+  constructor(width: number, height: number) {
+    super();
+    this.canvas = new Canvas(width, height);
+    this.ctx = this.canvas.getContext("2d");
+  }
+
+  get width() {
+    return this.canvas.width;
+  }
+
+  get height() {
+    return this.canvas.height;
+  }
+
+  set width(value) {
+    this.canvas.width = value;
+  }
+
+  set height(value) {
+    this.canvas.height = value;
+  }
+
+  beginPath() {
+    this.ctx.beginPath();
+  }
+
+  closePath() {
+    this.ctx.closePath();
+  }
+
+  moveTo(x: number, y: number) {
+    this.ctx.moveTo(x, y);
+  }
+
+  lineTo(x: number, y: number) {
+    this.ctx.lineTo(x, y);
+  }
+
+  fill() {
+    this.ctx.fill();
+  }
+
+  stroke() {
+    this.ctx.stroke();
+  }
+
+  clear(color?: string) {
+    // Always erase first: painting a (semi-)transparent color over the previous frame
+    // would leave it visible.
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (color !== undefined) {
+      this.ctx.fillStyle = color;
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+  }
+
+  setRenderProps(props: Partial<RenderProps>) {
+    applyRenderProps(this.ctx, props);
+  }
+
+  async renderToDataURL({ type = "png", quality }: RenderImageOptions = {}): Promise<string> {
+    return await this.canvas.toDataURL({ type: checkType(type), quality });
+  }
+
+  async renderToBlob({ type = "png", quality }: RenderImageOptions = {}): Promise<Blob> {
+    return await this.canvas.toBlob({ type: checkType(type), quality });
+  }
+}
+
+function checkType(type: RenderImageFormat): "png" {
+  if (type !== "png") {
+    throw new Error(
+      `The "gmljs-canvas" render context cannot encode ${type} yet; use format "png" ` +
+        `or another render context.`,
+    );
+  }
+  return type;
+}

@@ -181,9 +181,6 @@ importers:
 
   packages/canvas:
     devDependencies:
-      '@gmljs/render':
-        specifier: workspace:*
-        version: link:../render
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5
@@ -264,6 +261,9 @@ importers:
 
   packages/render:
     dependencies:
+      '@gmljs/canvas':
+        specifier: workspace:*
+        version: link:../canvas
       '@gmljs/core':
         specifier: workspace:*
         version: link:../core

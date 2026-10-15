@@ -55,28 +55,22 @@ invalidates an earlier pixel view.
 
 ## Development
 
-This package lives in the gmljs monorepo. Install and build from the repository root first,
-since the GML tests and benchmark import the built `@gmljs/render`:
-
-```bash
-vp install
-vp run -r build
-```
-
-Then, in `packages/canvas`:
+This package lives in the gmljs monorepo. Install from the repository root first
+(`vp install`), then, in `packages/canvas`:
 
 ```bash
 vp check
 vp test
 vp pack
 vp run bench
-vp run bench:gml
 ```
 
 Skia and image-diff packages are development-only dependencies used by the reference
 harness. Failed reference comparisons write `ours.png`, `skia.png`, and `diff.png` under
 `test-results/<scene>/`.
 
-The GML tests and the real-document benchmark render the documents in `tests/data/` through
-`@gmljs/render`, comparing this rasterizer with node-canvas, skia-canvas, and pureimage. See [PERFORMANCE.md](./PERFORMANCE.md)
+`@gmljs/render` uses this package as its default server render context. The GML tests and
+the real-document benchmark (`vp run bench:gml`) live there, in `packages/render`, comparing
+this rasterizer with node-canvas, skia-canvas, and pureimage on real GML documents. Build
+this package (`vp pack`) before running them, since they import the built `@gmljs/canvas`. See [PERFORMANCE.md](./PERFORMANCE.md)
 for the profile-guided optimization and measured results.

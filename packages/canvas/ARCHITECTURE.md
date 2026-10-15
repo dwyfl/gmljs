@@ -275,8 +275,8 @@ hashes, and distance from a 16× Skia render with exact box downsampling. Its re
 writes signed heatmaps and crops centered on the worst-error pixel. Expected-failure tests
 keep the new accuracy targets visible until the renderer satisfies them.
 
-The performance harness reuses `@gmljs/render`'s benchmark structure and renders the real
-GML documents in `tests/data/`. Each
+The GML harness and the performance harness live in `packages/render` (`tests/gmljs-canvas.test.ts`
+and `scripts/gml-bench.ts`) and render the real GML documents in its `tests/data/`. Each
 operation is warmed up, sampled independently, and reported as the median with
 runtime/version, dimensions, and run count. Optimization starts from a CPU profile.
 Claims are made only from the table comparing this library, node-canvas, skia-canvas, and

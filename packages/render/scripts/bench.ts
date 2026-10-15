@@ -15,7 +15,12 @@ import { GMLRenderer, GMLView } from "../src/index.ts";
 import { ServerRenderContext, type ServerRenderContextType } from "../src/server/index.ts";
 import type { RenderContextBase } from "../src/render/context.ts";
 
-const BACKENDS: ServerRenderContextType[] = ["node-canvas", "skia-canvas", "pureimage"];
+const BACKENDS: ServerRenderContextType[] = [
+  "gmljs-canvas",
+  "node-canvas",
+  "skia-canvas",
+  "pureimage",
+];
 const REFERENCE: ServerRenderContextType = "skia-canvas";
 
 const { values: options, positionals: files } = parseArgs({
@@ -136,8 +141,9 @@ async function time(fn: () => unknown) {
 interface Result {
   draw: number;
   png: number;
-  jpeg: number;
-  /** Median ms per animation frame (draw + JPEG encode), or undefined when skipped. */
+  /** Undefined for backends that cannot encode JPEG (gmljs-canvas). */
+  jpeg?: number;
+  /** Median ms per animation frame (draw + JPEG encode, else PNG), or undefined when skipped. */
   frame?: number;
   image: Buffer;
 }
@@ -159,7 +165,11 @@ async function benchmark(gml: string, type: ServerRenderContextType): Promise<Re
   // Warm up (JIT, lazily loaded modules, font and encoder setup).
   draw();
   const image = Buffer.from(await png());
-  await jpeg();
+  const hasJpeg = await jpeg().then(
+    () => true,
+    () => false,
+  );
+  const encodeFrame = hasJpeg ? jpeg : png;
 
   const samples = {
     draw: [] as number[],
@@ -171,8 +181,10 @@ async function benchmark(gml: string, type: ServerRenderContextType): Promise<Re
     samples.draw.push(await time(draw));
     samples.png.push(await time(png));
     // Draw again, so lazy backends (skia-canvas) rasterize inside the JPEG timing too.
-    draw();
-    samples.jpeg.push(await time(jpeg));
+    if (hasJpeg) {
+      draw();
+      samples.jpeg.push(await time(jpeg));
+    }
   }
 
   let frame: number | undefined;
@@ -184,7 +196,7 @@ async function benchmark(gml: string, type: ServerRenderContextType): Promise<Re
         await time(async () => {
           view.setPosition(frames === 1 ? 1 : i / (frames - 1));
           view.draw();
-          await jpeg();
+          await encodeFrame();
         }),
       );
     }
@@ -194,7 +206,7 @@ async function benchmark(gml: string, type: ServerRenderContextType): Promise<Re
   return {
     draw: median(samples.draw),
     png: median(samples.png),
-    jpeg: median(samples.jpeg),
+    jpeg: hasJpeg ? median(samples.jpeg) : undefined,
     frame,
     image,
   };
@@ -310,7 +322,7 @@ for (const file of documents) {
       { text: type, style: "bold" },
       { text: ms(result.draw) },
       { text: ms(result.png) },
-      { text: ms(result.jpeg) },
+      result.jpeg === undefined ? { text: "–", style: "dim" } : { text: ms(result.jpeg) },
       { text: ms(total), style: "bold" },
       {
         text: `${relative.toFixed(1)}×`,
@@ -332,7 +344,8 @@ console.log(
     `
 Draw: render the finished tag. PNG/JPEG: encode it (JPEG quality 0.9).
 skia-canvas rasterizes lazily, so its drawing cost shows up in the encode columns.
-Frame: draw + JPEG encode at evenly spaced animation positions, as when rendering video.
+Frame: draw + JPEG encode at evenly spaced animation positions, as when rendering video
+(PNG for backends without JPEG, such as gmljs-canvas).
 Diff: share of the reference's ink pixels that differ (pixelmatch, threshold 0.1).`,
   ),
 );

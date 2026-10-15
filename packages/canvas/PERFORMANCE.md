@@ -201,10 +201,10 @@ fixed-point conversion to the hot edge loop for differences far below one 8-bit 
 ## Commands
 
 ```bash
-# Microbenchmarks and canvas-size scaling
+# Microbenchmarks and canvas-size scaling (in packages/canvas)
 vp run bench
 
-# Full default corpus at 1024×768
+# The GML benchmarks run in packages/render. Full default corpus at 1024×768:
 vp run bench:gml
 
 # Both target resolutions and the 60-frame 414 animation
@@ -215,8 +215,9 @@ vp run bench:gml -- --runs 1 --frames 0 --ground-truth-scale 16 \
   --report-dir test-results/accuracy-baseline
 ```
 
-The GML benchmark requires a built `@gmljs/render` (`vp run -r build`). Generated reports
-are ignored by Git.
+The GML benchmark lives in `packages/render` and renders through its `gmljs-canvas` context,
+which imports the built `@gmljs/canvas`: run `vp pack` here after changing the rasterizer.
+Generated reports are ignored by Git.
 
 ## PNG encoding
 

@@ -2,7 +2,11 @@ import { PassThrough } from "node:stream";
 import { buffer } from "node:stream/consumers";
 import type { Bitmap, Context } from "pureimage";
 import { requireOptional } from "../require-optional.ts";
-import { RenderContextBase, type RenderImageOptions } from "../../render/context.ts";
+import {
+  RenderContextBase,
+  type RenderImageFormat,
+  type RenderImageOptions,
+} from "../../render/context.ts";
 import { applyRenderProps, type RenderProps } from "../../render/props/index.ts";
 
 type PureImage = typeof import("pureimage");
@@ -149,19 +153,19 @@ export class RenderContextPureImage extends RenderContextBase {
     applyRenderProps(this.ctx as unknown as Record<keyof RenderProps, unknown>, props);
   }
 
-  async renderToDataURL(options: RenderImageOptions = { type: "jpeg" }): Promise<string> {
-    const buffer = await this.encode(options);
-    return `data:image/${options.type};base64,${buffer.toString("base64")}`;
+  async renderToDataURL({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<string> {
+    const buffer = await this.encode(type, quality);
+    return `data:image/${type};base64,${buffer.toString("base64")}`;
   }
 
-  async renderToBlob(options: RenderImageOptions = { type: "jpeg" }): Promise<Blob> {
-    const buffer = await this.encode(options);
+  async renderToBlob({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<Blob> {
+    const buffer = await this.encode(type, quality);
     return new Blob([new Uint8Array(buffer)], {
-      type: `image/${options.type}`,
+      type: `image/${type}`,
     });
   }
 
-  private async encode({ type, quality }: RenderImageOptions): Promise<Buffer> {
+  private async encode(type: RenderImageFormat, quality?: number): Promise<Buffer> {
     const stream = new PassThrough();
     // Collect until the readable side ends: the encoders resolve on the writable side.
     const output = buffer(stream);

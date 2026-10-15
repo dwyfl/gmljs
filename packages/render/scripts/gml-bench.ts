@@ -1,15 +1,14 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import type { RenderContextBase } from "@gmljs/render";
-import { ServerRenderContext } from "@gmljs/render/server";
+import type { RenderContextBase } from "../src/render/context.ts";
+import { ServerRenderContext } from "../src/server/index.ts";
 import {
   createGmlView,
   GML_DATA,
   renderGml,
-  RenderContextSkiaRaw,
-  RenderContextTscanvas,
-} from "../tests/gmlrender-adapter.ts";
+  RenderContextSkiaReference,
+} from "../tests/helpers/gml-compare.ts";
 import {
   boxDownsample,
   compareImages,
@@ -20,9 +19,9 @@ import {
   pixelHash,
   rgbaImage,
   type DecodedImage,
-} from "../tests/image-metrics.ts";
+} from "../tests/helpers/image-metrics.ts";
 
-const BACKENDS = ["tscanvas", "node-canvas", "skia-canvas", "pureimage"] as const;
+const BACKENDS = ["gmljs-canvas", "node-canvas", "skia-canvas", "pureimage"] as const;
 type Backend = (typeof BACKENDS)[number];
 
 interface Size {
@@ -199,21 +198,18 @@ async function benchmarkBackend(
 }
 
 function renderGroundTruth(xml: string, size: Size, scale: number): DecodedImage {
-  // gmlrender projects both coordinates and brush widths from the context dimensions,
+  // @gmljs/render projects both coordinates and brush widths from the context dimensions,
   // so enlarging the target applies the same uniform transform to geometry and strokes.
-  const context = new RenderContextSkiaRaw(size.width * scale, size.height * scale);
+  const context = new RenderContextSkiaReference(size.width * scale, size.height * scale);
   renderGml(xml, context);
   const highResolution = rgbaImage(context.width, context.height, context.rawRgba());
   return boxDownsample(highResolution, scale);
 }
 
 function createContext(backend: Backend, size: Size): RenderContextBase {
-  if (backend === "tscanvas") {
-    return new RenderContextTscanvas(size.width, size.height);
-  }
   if (backend === "skia-canvas") {
     // Pinned to Skia's CPU rasterizer: it is the accuracy reference, and GPU output differs.
-    return new RenderContextSkiaRaw(size.width, size.height);
+    return new RenderContextSkiaReference(size.width, size.height);
   }
   return ServerRenderContext.createRenderContext({
     type: backend,

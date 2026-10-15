@@ -8,11 +8,13 @@ export interface RenderContextDimensions {
 }
 
 export interface RenderContextOptions extends RenderContextDimensions {
-  type: string;
+  /** The render context to create; omitted, the entry point's default is used. */
+  type?: string;
 }
 
 export interface RenderImageOptions {
-  type: RenderImageFormat;
+  /** Omitted, each render context uses its default format. */
+  type?: RenderImageFormat;
   quality?: number;
 }
 

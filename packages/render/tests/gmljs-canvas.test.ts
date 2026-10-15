@@ -3,27 +3,22 @@ import { basename, join } from "node:path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
 import { describe, expect, test } from "vite-plus/test";
-import { ServerRenderContext } from "@gmljs/render/server";
-import {
-  GML_DATA,
-  renderGml,
-  RenderContextSkiaRaw,
-  RenderContextTscanvas,
-} from "./gmlrender-adapter.ts";
-import { compareImages, decodePng, pixelHash } from "./image-metrics.ts";
+import { RenderContextGmljsCanvas, ServerRenderContext } from "../src/server/index.ts";
+import { GML_DATA, renderGml, RenderContextSkiaReference } from "./helpers/gml-compare.ts";
+import { compareImages, decodePng, pixelHash } from "./helpers/image-metrics.ts";
 
 const documents = readdirSync(GML_DATA)
   .filter((name) => name.endsWith(".xml"))
   .sort();
 
-describe("gmlrender adapter", () => {
+describe("gmljs-canvas compared with skia-canvas", () => {
   test.each(documents)("%s differs from skia-canvas by at most 1% of ink pixels", async (name) => {
     const xml = readFileSync(join(GML_DATA, name), "utf8");
-    const ours = new RenderContextTscanvas(1024, 768);
+    const ours = new RenderContextGmljsCanvas(1024, 768);
     renderGml(xml, ours);
     const oursPng = Buffer.from(await ours.renderToArrayBuffer({ type: "png" }));
 
-    const skia = new RenderContextSkiaRaw(1024, 768);
+    const skia = new RenderContextSkiaReference(1024, 768);
     renderGml(xml, skia);
     const skiaPng = Buffer.from(await skia.renderToArrayBuffer({ type: "png" }));
 
@@ -100,7 +95,7 @@ describe("gmlrender adapter", () => {
     ],
   ])("%s matches its round-geometry pixel hash", async (_name, path, hash) => {
     const xml = readFileSync(path, "utf8");
-    const context = new RenderContextTscanvas(1024, 768);
+    const context = new RenderContextGmljsCanvas(1024, 768);
     renderGml(xml, context);
     const image = decodePng(new Uint8Array(await context.renderToArrayBuffer({ type: "png" })));
     expect(pixelHash(image)).toBe(hash);
@@ -109,11 +104,11 @@ describe("gmlrender adapter", () => {
 
 async function expectStrictStrokeAccuracy(path: string): Promise<void> {
   const xml = readFileSync(path, "utf8");
-  const ours = new RenderContextTscanvas(1024, 768);
+  const ours = new RenderContextGmljsCanvas(1024, 768);
   renderGml(xml, ours);
   const oursImage = decodePng(new Uint8Array(await ours.renderToArrayBuffer({ type: "png" })));
 
-  const skia = new RenderContextSkiaRaw(1024, 768);
+  const skia = new RenderContextSkiaReference(1024, 768);
   renderGml(xml, skia);
   const skiaImage = decodePng(new Uint8Array(await skia.renderToArrayBuffer({ type: "png" })));
 
@@ -163,7 +158,7 @@ function comparePngs(
   }
 
   const ratio = different / Math.max(1, ink);
-  const directory = join(process.cwd(), "test-results/gmlrender", name);
+  const directory = join(process.cwd(), "test-results/gmljs-canvas", name);
   if (ratio > 0.01) {
     mkdirSync(directory, { recursive: true });
     writeFileSync(join(directory, "ours.png"), oursBytes);
@@ -181,9 +176,9 @@ function writeReviewImages(oursBytes: Buffer, skiaBytes: Buffer, name: string): 
   const diff = new PNG({ width: skia.width, height: skia.height });
   pixelmatch(skia.data, ours.data, diff.data, skia.width, skia.height, { threshold: 0.1 });
 
-  const directory = join(process.cwd(), "test-results/review/gmlrender");
+  const directory = join(process.cwd(), "test-results/review/gmljs-canvas");
   mkdirSync(directory, { recursive: true });
-  writeFileSync(join(directory, `${name}-tscanvas.png`), oursBytes);
+  writeFileSync(join(directory, `${name}-gmljs-canvas.png`), oursBytes);
   writeFileSync(join(directory, `${name}-skia.png`), skiaBytes);
   writeFileSync(join(directory, `${name}-diff.png`), PNG.sync.write(diff));
 }

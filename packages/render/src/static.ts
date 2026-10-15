@@ -17,7 +17,7 @@ export async function renderStatic(
   context: RenderContextBase,
   options: Partial<RenderStaticOptions> = {},
 ): Promise<ArrayBuffer> {
-  const { format = "jpeg", position = 1, quality } = options;
+  const { format, position = 1, quality } = options;
 
   const view = new GMLView(gml, new GMLRenderer(context));
   view.setRenderOptions(options);

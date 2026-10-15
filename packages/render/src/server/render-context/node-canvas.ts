@@ -71,7 +71,7 @@ export class RenderContextNodeCanvas extends RenderContextBase {
     applyRenderProps(this.ctx, props);
   }
 
-  renderToDataURL({ type, quality }: RenderImageOptions = { type: "jpeg" }): Promise<string> {
+  renderToDataURL({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<string> {
     const dataURL =
       type === "png"
         ? this.canvas.toDataURL("image/png")
@@ -79,7 +79,7 @@ export class RenderContextNodeCanvas extends RenderContextBase {
     return Promise.resolve(dataURL);
   }
 
-  renderToBlob({ type, quality }: RenderImageOptions = { type: "jpeg" }): Promise<Blob> {
+  renderToBlob({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<Blob> {
     const buffer =
       type === "png"
         ? this.canvas.toBuffer("image/png")

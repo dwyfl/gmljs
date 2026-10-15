@@ -2,10 +2,17 @@ import type { RenderContextBase, RenderContextDimensions } from "../../render/co
 import { RenderContextNodeCanvas } from "./node-canvas.ts";
 import { RenderContextSkiaCanvas } from "./skia-canvas.ts";
 import { RenderContextPureImage } from "./pureimage.ts";
+import { RenderContextGmljsCanvas } from "./gmljs-canvas.ts";
 
+export { RenderContextGmljsCanvas } from "./gmljs-canvas.ts";
 export { RenderContextNodeCanvas } from "./node-canvas.ts";
 export { RenderContextSkiaCanvas } from "./skia-canvas.ts";
 export { RenderContextPureImage } from "./pureimage.ts";
+
+export interface RenderContextGmljsCanvasOptions extends RenderContextDimensions {
+  /** The default render context, used when `type` is omitted. */
+  type?: "gmljs-canvas";
+}
 
 export interface RenderContextNodeCanvasOptions extends RenderContextDimensions {
   type: "node-canvas";
@@ -20,14 +27,18 @@ export interface RenderContextPureImageOptions extends RenderContextDimensions {
 }
 
 export type ServerRenderContextOptions =
+  | RenderContextGmljsCanvasOptions
   | RenderContextNodeCanvasOptions
   | RenderContextSkiaCanvasOptions
   | RenderContextPureImageOptions;
-export type ServerRenderContextType = ServerRenderContextOptions["type"];
+export type ServerRenderContextType = NonNullable<ServerRenderContextOptions["type"]>;
 
 export class ServerRenderContext {
   static createRenderContext(this: void, options: ServerRenderContextOptions): RenderContextBase {
     switch (options.type) {
+      case undefined:
+      case "gmljs-canvas":
+        return new RenderContextGmljsCanvas(options.width, options.height);
       case "node-canvas":
         return new RenderContextNodeCanvas(options.width, options.height);
       case "skia-canvas":
