@@ -2,8 +2,9 @@ import { mkdirSync, existsSync, unlinkSync, rmdirSync, writeFileSync } from "nod
 import { join } from "node:path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
-import { Canvas as SkiaCanvas, type CanvasRenderingContext2D as SkiaContext } from "skia-canvas";
+import type { CanvasRenderingContext2D as SkiaContext } from "skia-canvas";
 import { Canvas, type CanvasRenderingContext2D } from "../src/node.ts";
+import { createSkiaCanvas } from "./skia.ts";
 
 export interface ReferenceScene {
   readonly name: string;
@@ -30,7 +31,7 @@ export async function compareScene(
   scene.drawOurs(ours.getContext("2d"));
   const oursBytes = await ours.encode();
 
-  const skia = new SkiaCanvas(scene.width, scene.height);
+  const skia = createSkiaCanvas(scene.width, scene.height);
   scene.drawSkia(skia.getContext("2d"));
   const skiaBytes = skia.toBufferSync("png");
 

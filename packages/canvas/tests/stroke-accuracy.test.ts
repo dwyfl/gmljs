@@ -1,7 +1,7 @@
-import { Canvas as SkiaCanvas } from "skia-canvas";
 import { expect, test } from "vite-plus/test";
 import { Canvas } from "../src/node.ts";
 import { boxDownsample, compareImages, decodePng, rgbaImage } from "./image-metrics.ts";
+import { createSkiaCanvas } from "./skia.ts";
 
 test("a fractional collinear round join matches one uninterrupted segment", () => {
   const single = horizontalStroke(false);
@@ -13,7 +13,7 @@ test("a shallow fractional round join matches a 16x box-filtered reference", asy
   const ours = new Canvas(64, 32);
   drawShallowJoin(ours.getContext("2d"));
   const scale = 16;
-  const skia = new SkiaCanvas(64 * scale, 32 * scale);
+  const skia = createSkiaCanvas(64 * scale, 32 * scale);
   drawShallowJoin(skia.getContext("2d"), scale);
   const groundTruth = boxDownsample(
     rgbaImage(skia.width, skia.height, skia.toBufferSync("raw", { colorType: "rgba" })),
@@ -31,7 +31,7 @@ test("round caps and joins match their 16x box-filtered area", async () => {
   drawRoundGeometry(ours.getContext("2d"));
 
   const scale = 16;
-  const skia = new SkiaCanvas(width * scale, height * scale);
+  const skia = createSkiaCanvas(width * scale, height * scale);
   drawRoundGeometry(skia.getContext("2d"), scale);
   const groundTruth = boxDownsample(
     rgbaImage(skia.width, skia.height, skia.toBufferSync("raw", { colorType: "rgba" })),

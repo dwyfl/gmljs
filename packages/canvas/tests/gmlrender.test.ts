@@ -3,8 +3,13 @@ import { basename, join } from "node:path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
 import { describe, expect, test } from "vite-plus/test";
-import { RenderContextSkiaCanvas, ServerRenderContext } from "@gmljs/render/server";
-import { GML_DATA, renderGml, RenderContextTscanvas } from "./gmlrender-adapter.ts";
+import { ServerRenderContext } from "@gmljs/render/server";
+import {
+  GML_DATA,
+  renderGml,
+  RenderContextSkiaRaw,
+  RenderContextTscanvas,
+} from "./gmlrender-adapter.ts";
 import { compareImages, decodePng, pixelHash } from "./image-metrics.ts";
 
 const documents = readdirSync(GML_DATA)
@@ -18,7 +23,7 @@ describe("gmlrender adapter", () => {
     renderGml(xml, ours);
     const oursPng = Buffer.from(await ours.renderToArrayBuffer({ type: "png" }));
 
-    const skia = new RenderContextSkiaCanvas(1024, 768);
+    const skia = new RenderContextSkiaRaw(1024, 768);
     renderGml(xml, skia);
     const skiaPng = Buffer.from(await skia.renderToArrayBuffer({ type: "png" }));
 
@@ -108,11 +113,7 @@ async function expectStrictStrokeAccuracy(path: string): Promise<void> {
   renderGml(xml, ours);
   const oursImage = decodePng(new Uint8Array(await ours.renderToArrayBuffer({ type: "png" })));
 
-  const skia = ServerRenderContext.createRenderContext({
-    type: "skia-canvas",
-    width: 1024,
-    height: 768,
-  });
+  const skia = new RenderContextSkiaRaw(1024, 768);
   renderGml(xml, skia);
   const skiaImage = decodePng(new Uint8Array(await skia.renderToArrayBuffer({ type: "png" })));
 

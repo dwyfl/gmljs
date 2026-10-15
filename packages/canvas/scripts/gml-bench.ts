@@ -211,6 +211,10 @@ function createContext(backend: Backend, size: Size): RenderContextBase {
   if (backend === "tscanvas") {
     return new RenderContextTscanvas(size.width, size.height);
   }
+  if (backend === "skia-canvas") {
+    // Pinned to Skia's CPU rasterizer: it is the accuracy reference, and GPU output differs.
+    return new RenderContextSkiaRaw(size.width, size.height);
+  }
   return ServerRenderContext.createRenderContext({
     type: backend,
     width: size.width,

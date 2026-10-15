@@ -6,11 +6,12 @@ import {
   type RenderImageOptions,
   type RenderProps,
 } from "@gmljs/render";
-import {
+import type {
   Canvas as SkiaCanvas,
-  type CanvasRenderingContext2D as SkiaCanvasRenderingContext2D,
+  CanvasRenderingContext2D as SkiaCanvasRenderingContext2D,
 } from "skia-canvas";
 import { Canvas, type CanvasRenderingContext2D } from "../src/node.ts";
+import { createSkiaCanvas } from "./skia.ts";
 
 export class RenderContextTscanvas extends RenderContextBase {
   private readonly canvas: Canvas;
@@ -93,7 +94,7 @@ export class RenderContextSkiaRaw extends RenderContextBase {
 
   constructor(width: number, height: number) {
     super();
-    this.canvas = new SkiaCanvas(width, height);
+    this.canvas = createSkiaCanvas(width, height);
     this.context = this.canvas.getContext("2d");
   }
 

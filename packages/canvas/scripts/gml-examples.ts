@@ -2,8 +2,12 @@ import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "nod
 import { basename, join } from "node:path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
-import { RenderContextSkiaCanvas } from "@gmljs/render/server";
-import { GML_DATA, renderGml, RenderContextTscanvas } from "../tests/gmlrender-adapter.ts";
+import {
+  GML_DATA,
+  renderGml,
+  RenderContextSkiaRaw,
+  RenderContextTscanvas,
+} from "../tests/gmlrender-adapter.ts";
 
 const WIDTH = 1024;
 const HEIGHT = 768;
@@ -24,7 +28,7 @@ for (const document of documents) {
   renderGml(xml, ours);
   const oursBytes = Buffer.from(await ours.renderToArrayBuffer({ type: "png" }));
 
-  const skia = new RenderContextSkiaCanvas(WIDTH, HEIGHT);
+  const skia = new RenderContextSkiaRaw(WIDTH, HEIGHT);
   renderGml(xml, skia);
   const skiaBytes = Buffer.from(await skia.renderToArrayBuffer({ type: "png" }));
 
