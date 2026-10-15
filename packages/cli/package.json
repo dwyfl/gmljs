@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@gmljs/render": "workspace:*",
-    "canvas": "^3.2.3",
     "commander": "^15.0.0"
   },
   "devDependencies": {

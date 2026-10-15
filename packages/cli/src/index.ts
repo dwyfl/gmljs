@@ -32,7 +32,8 @@ program
     ).hideHelp(),
   )
   .addOption(
-    new Option("-f, --format <format>", "output format").choices(["png", "jpg"]).default("png"),
+    // @gmljs/canvas encodes PNG only; add "jpg" back once it can encode JPEG.
+    new Option("-f, --format <format>", "output format").choices(["png"]).default("png"),
   )
   .optionsGroup("Effect options")
   .option("--drips", "enable drip effect (experimental)")
@@ -82,14 +83,13 @@ for (const file of files) {
     const document = fs.readFileSync(file, "utf8");
 
     const image = await createGMLImage(document, {
-      type: "node-canvas",
       width,
       height,
       background,
       clearColor,
       drips: drips ?? false,
       dripFactor,
-      format: format === "jpg" ? "jpeg" : "png",
+      format,
     });
 
     fs.writeFileSync(outFile, Buffer.from(image));

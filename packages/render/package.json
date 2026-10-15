@@ -54,7 +54,7 @@
     "pixelmatch": "^8.0.0",
     "pngjs": "^7.0.0",
     "pureimage": "^0.4.20",
-    "skia-canvas": "^3.0.8",
+    "skia-canvas": "^4.0.0",
     "typescript": "^7.0.2",
     "vite-plus": "catalog:"
   },
@@ -62,7 +62,7 @@
     "canvas": "^3.2.3",
     "mediabunny": "^1.61.3",
     "pureimage": "^0.4.20",
-    "skia-canvas": "^3.0.8"
+    "skia-canvas": "^3.0.8 || ^4.0.0"
   },
   "peerDependenciesMeta": {
     "canvas": {

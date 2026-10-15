@@ -7,7 +7,6 @@ catalogMode: prefer
 
 allowBuilds:
   canvas: true
-  skia-canvas: true
 
 catalog:
   "@types/node": ^24

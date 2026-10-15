@@ -21,8 +21,9 @@ install what you use.
 | Node.js with [skia-canvas](https://github.com/samizdatco/skia-canvas)     | `npm install @gmljs/render skia-canvas` |
 | Node.js with [pureimage](https://github.com/joshmarinacci/node-pureimage) | `npm install @gmljs/render pureimage`   |
 
-`canvas` and `skia-canvas` download native binaries in an install script. With pnpm 10 or
-later, allow them to run with `pnpm approve-builds`. `pureimage` is plain JavaScript, so it
+`canvas` downloads a native binary in an install script. With pnpm 10 or later, allow it to
+run with `pnpm approve-builds`. `skia-canvas` 4 installs its binary as a platform-specific
+optional dependency instead, with no install script (3.x, also supported, uses one too). `pureimage` is plain JavaScript, so it
 installs anywhere, but it renders roughly 10× slower and with coarser anti-aliasing.
 
 ## Examples
