@@ -1,0 +1,38 @@
+import { describe, it, expect, vi } from "vite-plus/test";
+import pkg from "../package.json" with { type: "json" };
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { createGmlNodeFromTagName, createGmlNodeFromXml } from "../src/gml/util/index.ts";
+import { GMLNodeName } from "../src/gml/types.ts";
+import { GMLIntegerNode } from "../src/gml/nodes/leaf/integer.ts";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const testXml = readFileSync(join(__dirname, "data/client.xml"), "utf-8");
+
+describe("GMLClient", () => {
+  it("creates a default GMLClient node", () => {
+    vi.useFakeTimers({ now: new Date(0) });
+    try {
+      const gml = createGmlNodeFromTagName("client").toString();
+      expect(gml).toBe(
+        `<client><name>gmljs</name><version>${pkg.version}</version><time>0</time></client>`,
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+  it("creates a GMLClient node from spec XML", () => {
+    const gml = createGmlNodeFromXml(testXml).toString();
+    expect(gml).toMatchSnapshot();
+  });
+  it("parses <time> as an integer unix timestamp", () => {
+    const client = createGmlNodeFromXml("<client><time>1928372722</time></client>");
+    const time = client.getChild(GMLNodeName.CLIENT_TIME);
+    expect(time).toBeInstanceOf(GMLIntegerNode);
+    expect(time?.getValue()).toBe(1928372722);
+    expect(client.toString()).toContain("<time>1928372722</time>");
+  });
+});

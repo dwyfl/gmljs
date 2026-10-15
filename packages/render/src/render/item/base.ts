@@ -1,0 +1,127 @@
+import { vec3, mat3, vec2, type ReadonlyVec3 } from "gl-matrix";
+import { type ClientEnvironment, TagEnvironment } from "../../environment/index.ts";
+import { BaseRenderProps, applyRenderProps, type RenderProps } from "../props/index.ts";
+import { GML } from "@gmljs/core";
+import { RenderState } from "../state.ts";
+import { RenderContextBase } from "../context.ts";
+
+export abstract class RenderItem {
+  private static readonly GML_ORIGIN = vec3.fromValues(0.5, 0.5, 0);
+
+  gml: GML;
+  renderProps: BaseRenderProps;
+  tagEnvironments: TagEnvironment[];
+  tagEnvironment?: TagEnvironment;
+  clientEnvironment?: ClientEnvironment;
+  clientScreenBounds?: vec3;
+  contentScale: number = 1;
+
+  constructor(gml: GML) {
+    this.gml = gml;
+    this.renderProps = new BaseRenderProps();
+    this.tagEnvironments = gml.getTags().map((item) => new TagEnvironment(item));
+  }
+
+  get type() {
+    return "base";
+  }
+
+  abstract render(renderContext: RenderContextBase, renderState: RenderState): void;
+
+  getRenderProps() {
+    return this.renderProps.toObject();
+  }
+
+  setRenderProps(props: Partial<RenderProps>) {
+    applyRenderProps(this.renderProps, props);
+  }
+
+  getTagEnvironment(tagIndex: number): TagEnvironment {
+    const tagEnvironment = this.tagEnvironments[tagIndex];
+    if (!tagEnvironment) {
+      throw new RangeError(`No tag at index ${tagIndex}`);
+    }
+    return tagEnvironment;
+  }
+
+  initRenderEnvironments(
+    renderContext: RenderContextBase,
+    renderState: RenderState,
+    tagEnvironment: TagEnvironment,
+  ) {
+    const { clientEnvironment } = renderState;
+    const clientScreenBounds = vec3.create();
+    const screenRatioTransform = RenderItem.getScreenRatioTransform(
+      tagEnvironment.getScreenBounds(),
+      clientEnvironment.getScreenBounds(),
+    );
+    vec3.transformMat3(
+      clientScreenBounds,
+      clientEnvironment.getScreenBounds(),
+      screenRatioTransform,
+    );
+    this.clientScreenBounds = clientScreenBounds;
+    this.clientEnvironment = clientEnvironment;
+    this.tagEnvironment = tagEnvironment;
+    const gmlBounds = tagEnvironment.getScreenBounds();
+    this.contentScale = gmlBounds[0] > 0 ? clientScreenBounds[0] / gmlBounds[0] : 1;
+    this.initRenderProps(renderContext, renderState);
+  }
+
+  initRenderProps(renderContext: RenderContextBase, renderState: RenderState) {
+    const renderProps = this.getRenderProps();
+    renderContext.setRenderProps({
+      ...renderProps,
+      lineWidth: this.getLineWidth(renderProps.lineWidth, renderState),
+    });
+  }
+
+  /**
+   * Converts a line width in GML/brush units to a canvas line width.
+   */
+  protected getLineWidth(width: number, renderState: RenderState) {
+    return width * this.contentScale * renderState.clientEnvironment.scale;
+  }
+
+  projectPoint(p: vec3, point: ReadonlyVec3) {
+    if (!this.tagEnvironment || !this.clientEnvironment || !this.clientScreenBounds) {
+      throw new Error("Projection environments not initialized");
+    }
+    // Center on origin
+    vec3.sub(p, point, RenderItem.GML_ORIGIN);
+    // Apply tag transform
+    vec3.transformMat3(p, p, this.tagEnvironment.getTransform());
+    // Note: Tag environment offset describes physical position in world space,
+    // not rendering offset. It is not applied here.
+    // Transform to screen space (relative to the center)
+    vec3.mul(p, p, this.clientScreenBounds);
+    // Apply user transform (rotation and scale) in screen space, so it stays rigid. In
+    // document space, the non-uniform scale above would stretch rotated drawings.
+    vec3.transformMat3(p, p, this.clientEnvironment.getTransform());
+    // Offset to center in screen space
+    vec3.add(p, p, this.clientEnvironment.getScreenCenter());
+    // Apply client offset
+    vec3.add(p, p, this.clientEnvironment.getOffset());
+  }
+
+  private static getScreenRatioTransform(innerScreenBounds: vec2, outerScreenBounds: vec2) {
+    const m = mat3.create();
+    const [outerWidth = 0, outerHeight = 0] = outerScreenBounds;
+    let [boundsWidth = 0, boundsHeight = 0] = innerScreenBounds;
+    if (!Number.isFinite(boundsWidth) || boundsWidth <= 0) {
+      boundsWidth = outerWidth;
+    }
+    if (!Number.isFinite(boundsHeight) || boundsHeight <= 0) {
+      boundsHeight = outerHeight;
+    }
+    let dx = boundsWidth / outerWidth;
+    let dy = boundsHeight / outerHeight;
+    let s = 1;
+    if (dx > 1 || dy > 1 || (dx < 1 && dy < 1)) {
+      s = 1.0 / Math.max(dy, dx);
+    }
+    dx *= s;
+    dy *= s;
+    return mat3.fromScaling(m, [dx, dy]);
+  }
+}

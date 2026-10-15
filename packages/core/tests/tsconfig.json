@@ -1,0 +1,8 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    // Some tests run under jsdom.
+    "lib": ["es2023", "dom"]
+  },
+  "include": ["."]
+}

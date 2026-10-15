@@ -1,0 +1,55 @@
+{
+  "name": "@gmljs/core",
+  "version": "3.0.0-beta.5",
+  "description": "Library for parsing GML documents.",
+  "homepage": "https://github.com/dwyfl/gmljs",
+  "bugs": {
+    "url": "https://github.com/dwyfl/gmljs/issues"
+  },
+  "license": "MIT",
+  "author": "Gustav Peterz <gpeterz@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dwyfl/gmljs.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "browser": "./dist/index.browser.mjs",
+      "default": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "test": "vp test",
+    "check": "vp check",
+    "prepublishOnly": "vp run build"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.12"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^30.0.0",
+    "@types/node": "^26",
+    "bumpp": "^12.3.0",
+    "jsdom": "^30.1.2",
+    "typescript": "^7.0.2",
+    "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "packageManager": "pnpm@10.33.0"
+}

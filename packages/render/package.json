@@ -1,0 +1,82 @@
+{
+  "name": "@gmljs/render",
+  "version": "3.0.0-beta.16",
+  "description": "Library for rendering GML documents.",
+  "homepage": "https://github.com/dwyfl/gmlrender",
+  "bugs": {
+    "url": "https://github.com/dwyfl/gmlrender/issues"
+  },
+  "license": "MIT",
+  "author": "Gustav Peterz <gpeterz@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dwyfl/gmlrender.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./browser": "./dist/browser.mjs",
+    "./server": "./dist/server.mjs",
+    "./video": "./dist/video.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "test": "vp test",
+    "check": "vp check",
+    "bench": "node scripts/bench.ts",
+    "prepublishOnly": "vp run build"
+  },
+  "dependencies": {
+    "@gmljs/core": "workspace:*",
+    "gl-matrix": "^3.4.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26",
+    "@types/pngjs": "^6.0.5",
+    "bumpp": "^12.3.0",
+    "canvas": "^3.2.3",
+    "mediabunny": "^1.61.3",
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0",
+    "pureimage": "^0.4.20",
+    "skia-canvas": "^3.0.8",
+    "typescript": "^7.0.2",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "canvas": "^3.2.3",
+    "mediabunny": "^1.61.3",
+    "pureimage": "^0.4.20",
+    "skia-canvas": "^3.0.8"
+  },
+  "peerDependenciesMeta": {
+    "canvas": {
+      "optional": true
+    },
+    "mediabunny": {
+      "optional": true
+    },
+    "pureimage": {
+      "optional": true
+    },
+    "skia-canvas": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "packageManager": "pnpm@10.33.0"
+}

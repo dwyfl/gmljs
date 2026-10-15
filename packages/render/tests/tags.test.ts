@@ -1,0 +1,179 @@
+import { describe, test, expect } from "vite-plus/test";
+import { GML } from "@gmljs/core";
+import { RenderItemTags } from "../src/render/item/tags.ts";
+import { RenderState } from "../src/render/state.ts";
+import { ClientEnvironment } from "../src/environment/client.ts";
+import { GMLTimeline } from "../src/animation/timeline.ts";
+import { MockContext } from "./helpers/mock-context.ts";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import type { GMLAnimationState } from "../src/animation/animation.ts";
+import type { GMLTagTimelineFrame } from "../src/animation/timeline.ts";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const example001 = readFileSync(join(__dirname, "data/example001.xml"), "utf8");
+const exampleBrush = readFileSync(join(__dirname, "data/example-brush.xml"), "utf8");
+
+function makeStateAtFrame(
+  gml: GML,
+  frame: GMLTagTimelineFrame | undefined,
+  width = 320,
+  height = 240,
+) {
+  const { timelines } = new GMLTimeline(gml);
+  const timeline = timelines[0] ?? [];
+  const last = timeline[timeline.length - 1];
+  const animState: GMLAnimationState = {
+    timeline,
+    frame,
+    frameIndex: frame ? timeline.indexOf(frame) : 0,
+    time: frame?.t ?? 0,
+    totalFrames: timeline.length,
+    totalTime: last?.t ?? 0,
+  };
+  return new RenderState(new ClientEnvironment(width, height), animState);
+}
+
+describe("RenderItemTags", () => {
+  test("draws moveTo + lineTo for every point in the stroke", () => {
+    const gml = new GML(example001);
+    const ctx = new MockContext();
+    const { timelines } = new GMLTimeline(gml);
+    const lastFrame = timelines[0]?.at(-1);
+
+    new RenderItemTags(gml).render(ctx, makeStateAtFrame(gml, lastFrame));
+
+    // example001 has a single 155-point stroke → 1 moveTo + 154 lineTo
+    expect(ctx.only("moveTo")).toHaveLength(1);
+    expect(ctx.only("lineTo")).toHaveLength(154);
+  });
+
+  test("emits stroke() once per drawn stroke", () => {
+    const gml = new GML(example001);
+    const ctx = new MockContext();
+    const { timelines } = new GMLTimeline(gml);
+    const lastFrame = timelines[0]?.at(-1);
+
+    new RenderItemTags(gml).render(ctx, makeStateAtFrame(gml, lastFrame));
+
+    expect(ctx.only("stroke")).toHaveLength(1);
+  });
+
+  test("renders only moveTo (no lineTo) when limited to the first point", () => {
+    const gml = new GML(example001);
+    const ctx = new MockContext();
+    const { timelines } = new GMLTimeline(gml);
+    // First frame already has point:0; time=0 suppresses the partial-segment interpolation
+    const firstFrame = timelines[0]?.[0];
+
+    new RenderItemTags(gml).render(ctx, makeStateAtFrame(gml, firstFrame));
+
+    expect(ctx.only("moveTo")).toHaveLength(1);
+    expect(ctx.only("lineTo")).toHaveLength(0);
+  });
+
+  test("uses black (#000) as the stroke style", () => {
+    const gml = new GML(example001);
+    const tags = new RenderItemTags(gml);
+    expect(tags.getRenderProps().strokeStyle).toBe("#000");
+  });
+
+  test("uses brush>width as lineWidth when stroke has a brush tag", () => {
+    const gml = new GML(exampleBrush);
+    const ctx = new MockContext();
+    const { timelines } = new GMLTimeline(gml);
+    const lastFrame = timelines[0]?.at(-1);
+
+    new RenderItemTags(gml).render(ctx, makeStateAtFrame(gml, lastFrame));
+
+    const setProps = ctx.only("setRenderProps");
+    // First stroke has brush width=4.0, scale=1 → lineWidth 4
+    expect(setProps[1]?.props.lineWidth).toBe(4);
+  });
+
+  test("stroke without a brush tag inherits the width from the preceding stroke", () => {
+    // Brush width 10 differs from the default line width (4), so inheritance is observable.
+    const gml =
+      new GML(`<gml><tag><environment><screenbounds><x>320</x><y>240</y></screenbounds></environment><drawing>
+      <stroke><brush><width>10</width></brush><pt><x>0.1</x><y>0.1</y><t>0</t></pt><pt><x>0.9</x><y>0.9</y><t>1</t></pt></stroke>
+      <stroke><pt><x>0.2</x><y>0.2</y><t>2</t></pt><pt><x>0.8</x><y>0.8</y><t>3</t></pt></stroke>
+    </drawing></tag></gml>`);
+    const ctx = new MockContext();
+    const { timelines } = new GMLTimeline(gml);
+    const lastFrame = timelines[0]?.at(-1);
+
+    new RenderItemTags(gml).render(ctx, makeStateAtFrame(gml, lastFrame));
+
+    // Find the line width in effect when the second stroke starts (its moveTo).
+    const secondMoveTo = ctx.calls.findLastIndex((c) => c.type === "moveTo");
+    const lineWidthAtSecondStroke = ctx.calls
+      .slice(0, secondMoveTo)
+      .findLast((c) => c.type === "setRenderProps" && c.props.lineWidth !== undefined);
+    expect(ctx.only("moveTo")).toHaveLength(2);
+    expect(
+      lineWidthAtSecondStroke?.type === "setRenderProps" && lineWidthAtSecondStroke.props.lineWidth,
+    ).toBe(10);
+  });
+
+  test("falls back to DEFAULT_LINE_WIDTH (4) when no brush has been declared", () => {
+    // example001 has no brush tags; use 1024×768 canvas to match its implicit screenbounds (contentScale=1)
+    const gml = new GML(example001);
+    const ctx = new MockContext();
+    const { timelines } = new GMLTimeline(gml);
+    const lastFrame = timelines[0]?.at(-1);
+
+    new RenderItemTags(gml).render(ctx, makeStateAtFrame(gml, lastFrame, 1024, 768));
+
+    const setProps = ctx.only("setRenderProps");
+    expect(setProps[0]?.props.lineWidth).toBe(4);
+  });
+
+  test("brush>width is scaled by clientEnvironment.scale", () => {
+    const gml = new GML(exampleBrush);
+    const ctx = new MockContext();
+    const { timelines } = new GMLTimeline(gml);
+    const lastFrame = timelines[0]?.at(-1);
+    // Use scale=2 (e.g. retina display)
+    const state = makeStateAtFrame(gml, lastFrame);
+    state.clientEnvironment.setScale(2);
+
+    new RenderItemTags(gml).render(ctx, state);
+
+    const setProps = ctx.only("setRenderProps");
+    // brush width=4.0, scale=2 → lineWidth 8
+    expect(setProps[1]?.props.lineWidth).toBe(8);
+  });
+});
+
+describe("RenderItemTags — partial segments", () => {
+  test("interpolates the current segment for documents without timestamps", () => {
+    const gml = new GML(
+      "<gml><tag><drawing><stroke><pt><x>0.1</x><y>0.5</y></pt><pt><x>0.9</x><y>0.5</y></pt></stroke></drawing></tag></gml>",
+    );
+    const { timelines } = new GMLTimeline(gml);
+    const timeline = timelines[0] ?? [];
+    const [first, second] = timeline;
+    const state = new RenderState(new ClientEnvironment(320, 240), {
+      timeline,
+      frame: first,
+      frameIndex: 0,
+      // Halfway between the first and second point (1/60 s apart).
+      time: ((first?.t ?? 0) + (second?.t ?? 0)) / 2,
+      totalFrames: timeline.length,
+      totalTime: second?.t ?? 0,
+    });
+
+    const ctx = new MockContext();
+    new RenderItemTags(gml).render(ctx, state);
+
+    const [start] = ctx.only("moveTo");
+    const [partial] = ctx.only("lineTo");
+    expect(partial).toBeDefined();
+    expect(partial!.x).toBeGreaterThan(start!.x);
+    // The full segment would end at x ≈ 0.9 × 320 = 288; halfway is ≈ 160.
+    expect(partial!.x).toBeCloseTo(160, 0);
+  });
+});

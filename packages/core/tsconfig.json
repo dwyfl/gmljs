@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // The parser runs in Node and the browser, so keep it free of runtime-specific types.
+    "types": []
+  },
+  "include": ["src"]
+}

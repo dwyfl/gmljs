@@ -1,0 +1,14 @@
+<client>                                                   <!-- how, who, what and where -->
+  <name>Laser Tag</name>                                   <!-- application name -->
+  <version>2.0</version>                                   <!-- application version -->
+  <username>MyUserName</username>                          <!-- user name on 000000book.com, optional -->
+  <permalink>http://000000book.com/data/156/</permalink>   <!-- URL to .gml data on 000000book.com, optional -->
+  <keywords>katsu,paris,2010</keywords>                    <!-- comma-separated -->
+  <uniqueKey>28sks922ks992</uniqueKey>                     <!-- iPhone uuid, MAC address, etc -->
+  <ip>192.168.1.1</ip>
+  <time>1928372722</time>                                  <!-- unixtime -->
+  <location>
+    <lon>-39.392922</lon>
+    <lat>53.29292</lat>
+  </location>
+</client>

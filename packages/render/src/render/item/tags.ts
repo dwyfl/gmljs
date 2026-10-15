@@ -1,0 +1,136 @@
+import { GML } from "@gmljs/core";
+import { vec3 } from "gl-matrix";
+import { RenderItem } from "./base.ts";
+import { ForegroundRenderProps } from "../props/foreground.ts";
+import { RenderState } from "../state.ts";
+import { RenderContextBase } from "../context.ts";
+
+export interface TagsOptions {
+  brushSizeMultiplier: number;
+}
+
+export class RenderItemTags extends RenderItem {
+  private options: TagsOptions = { brushSizeMultiplier: 1 };
+  private p1: vec3;
+  private p2: vec3;
+
+  constructor(gml: GML) {
+    super(gml);
+    this.p1 = vec3.create();
+    this.p2 = vec3.create();
+    this.renderProps = new ForegroundRenderProps();
+  }
+
+  override get type() {
+    return "tags";
+  }
+
+  getOptions(): TagsOptions {
+    return { ...this.options };
+  }
+
+  setOptions(options: Partial<TagsOptions>) {
+    const { brushSizeMultiplier } = options;
+    if (
+      brushSizeMultiplier !== undefined &&
+      Number.isFinite(brushSizeMultiplier) &&
+      brushSizeMultiplier > 0
+    ) {
+      this.options.brushSizeMultiplier = brushSizeMultiplier;
+    }
+  }
+
+  protected override getLineWidth(width: number, renderState: RenderState) {
+    return super.getLineWidth(width, renderState) * this.options.brushSizeMultiplier;
+  }
+
+  override render(renderContext: RenderContextBase, renderState: RenderState) {
+    const tags = this.gml.getTags();
+    const tagLimit = renderState.getTagRenderLimit() ?? tags.length - 1;
+    for (let i = 0; i <= tagLimit; i += 1) {
+      this.initRenderEnvironments(renderContext, renderState, this.getTagEnvironment(i));
+      this.renderTag(renderContext, renderState, i);
+    }
+  }
+
+  private renderTag(renderContext: RenderContextBase, renderState: RenderState, tagIndex: number) {
+    const drawings = this.gml.getDrawings(tagIndex);
+    const drawingLimit = renderState.getDrawingRenderLimit(tagIndex) ?? drawings.length - 1;
+    for (let i = 0; i <= drawingLimit; i += 1) {
+      this.renderDrawing(renderContext, renderState, tagIndex, i);
+    }
+  }
+
+  private renderDrawing(
+    renderContext: RenderContextBase,
+    renderState: RenderState,
+    tagIndex: number,
+    drawingIndex: number,
+  ) {
+    const strokes = this.gml.getStrokes(tagIndex, drawingIndex);
+    const strokeLimit =
+      renderState.getStrokeRenderLimit(tagIndex, drawingIndex) ?? strokes.length - 1;
+    for (let i = 0; i <= strokeLimit; i += 1) {
+      this.renderStroke(renderContext, renderState, tagIndex, drawingIndex, i);
+    }
+  }
+
+  private renderStroke(
+    renderContext: RenderContextBase,
+    renderState: RenderState,
+    tagIndex: number,
+    drawingIndex: number,
+    strokeIndex: number,
+  ) {
+    const points = this.gml.getPoints(tagIndex, drawingIndex, strokeIndex);
+    const pointLimit =
+      renderState.getPointRenderLimit(tagIndex, drawingIndex, strokeIndex) ?? points.length - 1;
+
+    const stroke = this.gml.getStroke(tagIndex, drawingIndex, strokeIndex);
+    const brushWidth = stroke?.getBrush()?.getWidth();
+
+    if (typeof brushWidth === "number") {
+      renderContext.setRenderProps({
+        lineWidth: this.getLineWidth(brushWidth, renderState),
+      });
+    }
+
+    if (points.length === 0 || pointLimit < 0 || !stroke || !stroke.isDrawing()) {
+      return;
+    }
+
+    renderContext.beginPath();
+
+    const { p1, p2 } = this;
+    const { time } = renderState;
+
+    for (const [i, point] of points.entries()) {
+      if (i > pointLimit) {
+        break;
+      }
+      this.projectPoint(p1, point.getXYZ());
+      if (i == 0) {
+        renderContext.moveTo(p1[0], p1[1]);
+      } else {
+        renderContext.lineTo(p1[0], p1[1]);
+      }
+      const nextPoint = points[i + 1];
+      if (i == pointLimit && nextPoint && time > 0) {
+        // Use timeline times rather than the points' <t> values, so documents without
+        // timestamps (or with a custom fps timeline) interpolate too.
+        const segment = renderState.getCurrentSegmentTimes();
+        if (!segment || segment[1] <= segment[0]) {
+          continue;
+        }
+        const [t1, t2] = segment;
+        this.projectPoint(p2, nextPoint.getXYZ());
+        const tt = Math.min(Math.max(time, t1), t2);
+        const dt = t1 >= t2 ? 0 : (tt - t1) / (t2 - t1);
+        const dx = p1[0] + (p2[0] - p1[0]) * dt;
+        const dy = p1[1] + (p2[1] - p1[1]) * dt;
+        renderContext.lineTo(dx, dy);
+      }
+    }
+    renderContext.stroke();
+  }
+}

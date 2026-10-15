@@ -1,0 +1,44 @@
+{
+  "name": "@gmljs/cli",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Command line tool for rendering GML documents to images.",
+  "license": "MIT",
+  "author": "Gustav Peterz <gpeterz@gmail.com>",
+  "bin": {
+    "gmljs": "./dist/index.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "test": "vp test",
+    "check": "vp check",
+    "prepublishOnly": "vp run build"
+  },
+  "dependencies": {
+    "@gmljs/render": "workspace:*",
+    "canvas": "^3.2.3",
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26",
+    "@types/pngjs": "^6.0.5",
+    "pngjs": "^7.0.0",
+    "typescript": "^7.0.2",
+    "vite-plus": "catalog:"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.10.1",
+      "onFail": "download"
+    }
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}
