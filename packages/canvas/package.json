@@ -2,7 +2,16 @@
   "name": "@gmljs/canvas",
   "version": "1.0.0",
   "description": "A fast, portable, pure-TypeScript Canvas 2D rasterizer.",
+  "homepage": "https://github.com/dwyfl/gmljs",
+  "bugs": {
+    "url": "https://github.com/dwyfl/gmljs/issues"
+  },
   "license": "MIT",
+  "author": "Gustav Peterz <gpeterz@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dwyfl/gmljs.git"
+  },
   "files": [
     "dist"
   ],
@@ -23,15 +32,17 @@
   "scripts": {
     "build": "vp pack",
     "bench": "node --experimental-strip-types scripts/bench.ts",
+    "bench:jpeg": "node --experimental-strip-types scripts/jpeg-bench.ts",
     "dev": "vp pack --watch",
     "test": "vp test",
     "check": "vp check",
     "prepublishOnly": "vp run build"
   },
   "devDependencies": {
-    "@types/node": "^26.6.5",
+    "@types/node": "^26",
     "@types/pngjs": "^6.0.5",
     "bumpp": "^12.3.0",
+    "jpeg-js": "^0.4.4",
     "pixelmatch": "^8.0.0",
     "pngjs": "^7.0.0",
     "skia-canvas": "^4.0.0",

@@ -260,3 +260,80 @@ The three encoder loops fall from 87 to 49 self samples, a 43.7% reduction. Whol
 sample counts are flat because startup, native encoders, comparison work, and idle time
 are included; the independently timed tscanvas PNG result falls from 24.42 to 16.59 ms.
 All nine decoded-pixel hashes remain identical to the sparse-raster step.
+
+## JPEG encoding
+
+The baseline JPEG benchmark uses a GML-like 1920×1080 scene with 36 thick, round-capped
+strokes on a dark background, quality 0.92, and 15 timed runs. Skia is explicitly asked
+for 4:2:0 output so its time and size are comparable with the default tscanvas mode.
+
+| Encoder           |   Median |      Size |   Y-PSNR | RGB-PSNR |
+| ----------------- | -------: | --------: | -------: | -------: |
+| tscanvas 4:2:0    | 24.68 ms | 650.6 KiB | 42.72 dB | 29.66 dB |
+| tscanvas 4:4:4    | 36.51 ms | 919.5 KiB | 42.72 dB | 37.73 dB |
+| jpeg-js 4:4:4     | 85.16 ms | 919.5 KiB | 42.72 dB | 37.73 dB |
+| skia-canvas 4:2:0 | 12.18 ms | 622.3 KiB | 42.71 dB | 29.66 dB |
+
+The 4:2:0 encoder is 3.45× faster than jpeg-js and meets the required 3× target. It is
+2.03× the Skia time, narrowly missing the within-2× stretch target. Its output is 4.5%
+larger than Skia's and remains within the ±10% size target. The 4:4:4 bytes remain
+identical to the pre-optimization encoder.
+
+The 1024×768 real-document results are medians of seven runs. PNG is included to retain
+the end-to-end context, while the three JPEG columns compare encoders directly.
+
+| Document      | Gmljs PNG | Gmljs JPEG | Skia JPEG | Node JPEG |
+| ------------- | --------: | ---------: | --------: | --------: |
+| example-brush |  14.18 ms |    1.02 ms |   2.78 ms |   0.81 ms |
+| example000    |  13.24 ms |    0.74 ms |   2.71 ms |   0.82 ms |
+| example001    |  14.74 ms |    1.12 ms |   3.06 ms |   0.87 ms |
+| example002    |  17.32 ms |    2.96 ms |   4.40 ms |   1.02 ms |
+| 414           |  18.52 ms |    6.22 ms |   5.38 ms |   1.31 ms |
+| 409           |  15.51 ms |    1.27 ms |   3.48 ms |   0.89 ms |
+| 158           |  16.09 ms |    1.82 ms |   3.57 ms |   0.93 ms |
+| 20312         |  20.55 ms |    3.82 ms |   4.94 ms |   1.15 ms |
+| 19938         |  18.22 ms |    3.02 ms |   5.70 ms |   1.10 ms |
+| 18476         |  13.54 ms |    0.64 ms |   2.95 ms |   0.83 ms |
+
+Optimization log:
+
+- A temporary SHA-256 guard covered 21 deterministic sources at four qualities in both
+  subsampling modes (168 encodes). Moving uniform detection to the source MCU changed no
+  hashes. It removes conversion, DCT, and quantization entirely for uniform 16×16 or 8×8
+  regions, including partial edge MCUs. The focused flat 1024×768 case measured 0.705 ms,
+  although the non-uniform line-art scene initially moved from 31.63 to 33.23 ms.
+- Fusing 4:2:0 conversion and 2×2 chroma averaging moved line art from 33.23 to 29.92 ms.
+  This deliberately changed 41 of the 84 guarded 4:2:0 hashes and none of the 84 4:4:4
+  hashes. The changed 4:2:0 set was rebaselined once after verifying the fidelity and size
+  bounds below.
+- Replacing the layered byte/bit writers with one fixed-shape writer moved the same scene
+  from 29.92 to 27.36 ms. It reserves a conservative worst-case capacity once per MCU,
+  writes byte stuffing directly, and returns a zero-copy subarray for normal outputs. Only
+  unusually compressible output is copied, so it does not retain a much larger estimate.
+  This step changed no guarded hash.
+- Caching quality tables and reusing synchronous module-level MCU, DCT, coefficient, and
+  offset scratch removed per-call allocation churn. `Int16Array` sample planes were kept:
+  hashes stayed unchanged, the flat case moved from 0.705 to 0.629 ms, and the texture
+  scene improved from its 64.43 ms baseline to 54.73 ms. Together with the finalized
+  writer hot path, line art reached 24.68 ms.
+- Two measured experiments were reverted. Combining Huffman and coefficient bits through
+  a single-shift branch moved representative line-art runs from 25.01 to 25.70 ms. Reducing
+  the initial output estimate from 0.5 to 0.35 bytes per pixel moved one matched run from
+  24.68 to 25.53 ms. The earlier Float32-plane and last-nonzero experiments also remain
+  reverted because both regressed the realistic scene.
+
+The fused 4:2:0 path stayed inside the requested 0.05 dB and 0.5% limits on every scene:
+
+| Scene       | Y-PSNR before → after | RGB-PSNR before → after |   Size before → after |
+| ----------- | --------------------: | ----------------------: | --------------------: |
+| line art    |      42.71 → 42.72 dB |        29.66 → 29.66 dB |     650.6 → 650.6 KiB |
+| gradient    |      52.18 → 52.17 dB |        49.66 → 49.68 dB |     100.1 → 100.3 KiB |
+| texture     |      37.78 → 37.78 dB |        13.06 → 13.06 dB | 1,970.6 → 1,970.7 KiB |
+| transparent |      40.00 → 40.00 dB |        30.79 → 30.79 dB |     675.8 → 675.9 KiB |
+
+A matched final CPU profile attributed the largest encoder self-sample counts to
+`encodeBlock` (452), entropy writes (122), MCU conversion (75), the one-dimensional DCT
+transform (43), and source uniform detection (23). The pre-pass profile recorded 525,
+141, 460, and 98 samples respectively for block encoding, entropy writes, strip conversion,
+and transform. Conversion is no longer the dominant fixed per-pixel cost; block entropy
+coding is now the clearest remaining pure-TypeScript limit.

@@ -1,16 +1,16 @@
 {
   "name": "@gmljs/render",
-  "version": "3.0.0-beta.16",
+  "version": "1.0.0",
   "description": "Library for rendering GML documents.",
-  "homepage": "https://github.com/dwyfl/gmlrender",
+  "homepage": "https://github.com/dwyfl/gmljs",
   "bugs": {
-    "url": "https://github.com/dwyfl/gmlrender/issues"
+    "url": "https://github.com/dwyfl/gmljs/issues"
   },
   "license": "MIT",
   "author": "Gustav Peterz <gpeterz@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dwyfl/gmlrender.git"
+    "url": "git+https://github.com/dwyfl/gmljs.git"
   },
   "files": [
     "dist"

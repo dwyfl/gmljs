@@ -11,6 +11,7 @@ interface Measurements {
   pathFill: number;
   stroke: number;
   png: number;
+  jpeg: number;
 }
 
 const ours = await benchmarkOurs();
@@ -18,7 +19,7 @@ const skia = await benchmarkSkia();
 
 console.log(`Milestone 4 · ${WIDTH}×${HEIGHT} · median · Node ${process.version}`);
 printTable([
-  ["backend", "clear", "opaque fill", "alpha fill", "path fill", "GML-like stroke", "PNG"],
+  ["backend", "clear", "opaque fill", "alpha fill", "path fill", "GML-like stroke", "PNG", "JPEG"],
   [
     "tscanvas",
     ms(ours.clear),
@@ -27,6 +28,7 @@ printTable([
     ms(ours.pathFill),
     ms(ours.stroke),
     ms(ours.png),
+    ms(ours.jpeg),
   ],
   [
     "skia-canvas",
@@ -36,6 +38,7 @@ printTable([
     ms(skia.pathFill),
     ms(skia.stroke),
     ms(skia.png),
+    ms(skia.jpeg),
   ],
 ]);
 console.log("Drawing cells are API-call time; skia-canvas may defer raster work until encode.");
@@ -70,7 +73,8 @@ async function benchmarkOurs(): Promise<Measurements> {
   context.lineJoin = "round";
   const stroke = measureSync(() => context.stroke(), 20);
   const png = await measureAsync(() => canvas.encode(), 5);
-  return { clear, fill, translucentFill, pathFill, stroke, png };
+  const jpeg = await measureAsync(() => canvas.encode({ type: "jpeg", quality: 0.92 }), 5);
+  return { clear, fill, translucentFill, pathFill, stroke, png, jpeg };
 }
 
 async function benchmarkSkia(): Promise<Measurements> {
@@ -93,7 +97,11 @@ async function benchmarkSkia(): Promise<Measurements> {
   context.lineJoin = "round";
   const stroke = measureSync(() => context.stroke(), 20);
   const png = await measureAsync(() => Promise.resolve(canvas.toBufferSync("png")), 5);
-  return { clear, fill, translucentFill, pathFill, stroke, png };
+  const jpeg = await measureAsync(
+    () => Promise.resolve(canvas.toBufferSync("jpeg", { quality: 0.92 })),
+    5,
+  );
+  return { clear, fill, translucentFill, pathFill, stroke, png, jpeg };
 }
 
 interface PathFillContext {

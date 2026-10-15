@@ -10,9 +10,9 @@ Current features include:
 - paths with lines, rectangles, arcs, quadratic curves, and cubic curves
 - analytic anti-aliased filling with non-zero and even-odd rules
 - anti-aliased strokes with butt, round, and square caps; bevel, miter, and round joins
-- asynchronous PNG encoding in Node and browsers
+- asynchronous PNG and baseline JPEG encoding in Node and browsers
 
-Transforms, ImageData, and JPEG are in the roadmap. See
+Transforms and ImageData are in the roadmap. See
 [ARCHITECTURE.md](./ARCHITECTURE.md) for the complete design.
 
 ## Install
@@ -43,14 +43,21 @@ context.lineTo(300, 260);
 context.stroke();
 
 const png = await canvas.encode({ type: "png" });
+const jpeg = await canvas.encode({
+  type: "jpeg",
+  quality: 0.92,
+  chromaSubsampling: "4:2:0", // default; "4:4:4" is also available
+});
 ```
 
 The root export selects `node:zlib` in Node and `CompressionStream` in other runtimes.
 Explicit `@gmljs/canvas/node`, `@gmljs/canvas/browser`, and `@gmljs/canvas/core` entry
-points are also available. The core entry accepts a Deflate adapter and imports no platform APIs.
+points are also available. The core entry accepts a Deflate adapter for PNG and imports no
+platform APIs; JPEG works from the core entry without an adapter.
 
 Pixels in `canvas.pixels` are premultiplied RGBA8. PNG output converts them to straight
-alpha. Assigning either canvas dimension clears the image, resets context state, and
+alpha; JPEG encodes them over black. JPEG `quality` follows the HTML Canvas 0–1 range and
+defaults to 0.92. Assigning either canvas dimension clears the image, resets context state, and
 invalidates an earlier pixel view.
 
 ## Development

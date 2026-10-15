@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vite-plus/test";
 import { PNG } from "pngjs";
 import { Canvas as BrowserCanvas } from "../src/browser.ts";
+import { Canvas as CoreCanvas } from "../src/core.ts";
 import { Canvas } from "../src/node.ts";
 import { PixelBuffer } from "../src/pixels/pixel-buffer.ts";
 
@@ -156,7 +157,7 @@ function divide255ForTest(value: number): number {
   return (biased + (biased >> 8)) >> 8;
 }
 
-describe("PNG encoding", () => {
+describe("Encoding", () => {
   test("writes a standards-compatible straight-alpha RGBA PNG", async () => {
     const canvas = new Canvas(2, 1);
     const context = canvas.getContext("2d");
@@ -188,8 +189,78 @@ describe("PNG encoding", () => {
     expect([...png.data]).toEqual([0, 0, 0, 255]);
   });
 
-  test("rejects zero-sized images and deferred JPEG", async () => {
+  test("rejects zero-sized images", async () => {
     await expect(new Canvas(0, 1).encode()).rejects.toThrow(RangeError);
-    await expect(new Canvas(1, 1).encode({ type: "jpeg" })).rejects.toThrow("milestone 5");
+    await expect(new Canvas(1, 0).encode({ type: "jpeg" })).rejects.toThrow(RangeError);
+  });
+
+  test("encodes JPEG without a Deflate adapter and labels conveniences", async () => {
+    const canvas = new CoreCanvas(2, 2);
+    canvas.getContext("2d").fillRect(0, 0, 2, 2);
+    const bytes = await canvas.encode({ type: "jpeg" });
+    const blob = await canvas.toBlob({ type: "jpeg" });
+    const url = await canvas.toDataURL({ type: "jpeg" });
+    expect([...bytes.subarray(0, 3)]).toEqual([0xff, 0xd8, 0xff]);
+    expect(blob.type).toBe("image/jpeg");
+    expect(url).toMatch(/^data:image\/jpeg;base64,\/9j\//);
+  });
+
+  test("maps JPEG quality like the HTML Canvas API", async () => {
+    const canvas = new Canvas(32, 24);
+    const context = canvas.getContext("2d");
+    context.fillStyle = "#c23a72";
+    context.fillRect(0, 0, 17, 13);
+    const defaults = await canvas.encode({ type: "jpeg" });
+    expect(await canvas.encode({ type: "jpeg", quality: 0.92 })).toEqual(defaults);
+    for (const quality of [Number.NaN, -1, 2, "0.5"] as unknown[]) {
+      expect(await canvas.encode({ type: "jpeg", quality: quality as number })).toEqual(defaults);
+    }
+    await expect(canvas.encode({ type: "jpeg", quality: 0 })).resolves.toBeInstanceOf(Uint8Array);
+  });
+
+  test("increases JPEG size monotonically with quality", async () => {
+    const canvas = new Canvas(96, 64);
+    for (let offset = 0; offset < canvas.pixels.length; offset += 4) {
+      const pixel = offset >> 2;
+      canvas.pixels[offset] = (pixel * 73) & 0xff;
+      canvas.pixels[offset + 1] = (pixel * 151) & 0xff;
+      canvas.pixels[offset + 2] = (pixel * 199) & 0xff;
+      canvas.pixels[offset + 3] = 255;
+    }
+    const sizes: number[] = [];
+    for (const quality of [0.1, 0.3, 0.5, 0.7, 0.9, 1]) {
+      sizes.push((await canvas.encode({ type: "jpeg", quality })).length);
+    }
+    expect(sizes).toEqual([...sizes].sort((a, b) => a - b));
+  });
+
+  test("encodes premultiplied alpha as compositing over black", async () => {
+    const transparent = new Canvas(8, 8);
+    const red = new Canvas(8, 8);
+    red.getContext("2d").fillStyle = "rgba(255, 0, 0, 0.5)";
+    red.getContext("2d").fillRect(0, 0, 8, 8);
+    const { default: jpeg } = await import("jpeg-js");
+    const transparentJpeg = jpeg.decode(await transparent.encode({ type: "jpeg" }), {
+      useTArray: true,
+    });
+    const redBytes = await red.encode({ type: "jpeg", chromaSubsampling: "4:4:4" });
+    const redDecoded = jpeg.decode(redBytes, { useTArray: true });
+    expect([...transparentJpeg.data.subarray(0, 3)]).toEqual([0, 0, 0]);
+    expect(redDecoded.data[0]).toBeGreaterThanOrEqual(126);
+    expect(redDecoded.data[0]).toBeLessThanOrEqual(129);
+    expect(redDecoded.data[1]).toBeLessThanOrEqual(2);
+    expect(redDecoded.data[2]).toBeLessThanOrEqual(2);
+
+    const transparentScene = new Canvas(16, 16);
+    const blackScene = new Canvas(16, 16);
+    blackScene.getContext("2d").fillStyle = "black";
+    blackScene.getContext("2d").fillRect(0, 0, 16, 16);
+    for (const scene of [transparentScene, blackScene]) {
+      scene.getContext("2d").fillStyle = "white";
+      scene.getContext("2d").fillRect(4, 4, 8, 8);
+    }
+    expect(await transparentScene.encode({ type: "jpeg" })).toEqual(
+      await blackScene.encode({ type: "jpeg" }),
+    );
   });
 });

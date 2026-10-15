@@ -248,12 +248,25 @@ specification](https://www.w3.org/TR/png-3/). Browser `CompressionStream("deflat
 produces the required zlib-wrapped stream, as specified by the [Compression Streams
 standard](https://compression.spec.whatwg.org/).
 
-For JPEG in milestone 5, the recommendation is `jpeg-js` behind the same encoder
-interface rather than writing and maintaining a new DCT, quantizer, and Huffman encoder.
-It is pure JavaScript but synchronous and slower than native code, so it must be measured
-against the end-to-end target. This is a proposal only: no runtime dependency will be
-added without explicit approval. If it misses the target, the interface allows replacing
-it without touching Canvas or raster code.
+The JPEG writer is an in-house, pure-TypeScript baseline sequential JFIF encoder. It uses
+the standard Annex K quantization and Huffman tables, an AAN floating-point DCT, and either
+4:2:0 (the default) or 4:4:4 chroma sampling. Quality uses the HTML Canvas 0–1 contract at
+the API boundary and IJG's 1–100 table scaling internally. Because pixels are premultiplied,
+encoding RGB directly produces the required result composited over opaque black.
+
+Encoding works one MCU at a time. Before color conversion, the encoder compares real source
+pixels through an aligned 32-bit view; a uniform MCU converts one pixel and emits only DC
+plus EOB for all of its blocks. Other 4:2:0 MCUs convert 2×2 quads directly into four Y
+samples and one averaged chroma sample, avoiding full-resolution chroma planes and a second
+downsampling pass. The 4:4:4 path retains one sample of every component per source pixel.
+
+Small typed MCU, block, coefficient, and offset scratch buffers are shared across calls;
+the synchronous encoder invokes no user code and therefore cannot observe reentrancy. The
+entropy writer owns its typed output buffer and bit accumulator, reserves a worst-case
+amount once per MCU, and performs byte stuffing inline. Normal outputs return a zero-copy
+subarray; unusually compressible outputs get an exact copy rather than retaining a much
+larger estimated buffer. JPEG needs no injected platform codec, while the public Canvas
+facade remains asynchronous.
 
 ## Verification and performance discipline
 
@@ -268,6 +281,10 @@ background/ink predicate so mismatch is divided by reference ink rather than all
 On failure it writes `ours.png`, `skia.png`, and an amplified `diff.png` under
 `test-results/<scene>/`; passing tests leave no artifacts. `skia-canvas`, `pixelmatch`,
 and the test PNG decoder are development-only dependencies.
+
+JPEG conformance tests parse marker structure and tables, exercise odd and high-entropy
+dimensions in both sampling modes, and decode every case with both `jpeg-js` and
+Skia/libjpeg-turbo. Fidelity and size are also compared with jpeg-js's baseline encoder.
 
 The stricter GML harness also reports ink-mass bias, mean/maximum luminance error, the
 share of touched pixels above an error of 16, signed over/under coverage, decoded-pixel
@@ -288,7 +305,8 @@ compressed-size tradeoff are recorded in `PERFORMANCE.md`.
 
 ## Decisions requiring review
 
-1. Confirm or reject `jpeg-js` when milestone 5 begins. It is not needed before then.
+1. Resolved: use the in-house encoder. jpeg-js remains development-only as an independent
+   decoder and 4:4:4 baseline; its lack of chroma subsampling made it unsuitable at runtime.
 2. The initial curve tolerance is 1/8 pixel and subpixel grid is 24.8; Skia diff results
    may justify tightening either constant without changing public behavior.
 

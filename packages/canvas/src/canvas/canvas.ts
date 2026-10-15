@@ -1,4 +1,5 @@
 import { CanvasRenderingContext2D } from "./context-2d.ts";
+import { encodeJpeg, type ChromaSubsampling } from "../encode/jpeg.ts";
 import { encodePng, type Deflate } from "../encode/png.ts";
 import { PixelBuffer } from "../pixels/pixel-buffer.ts";
 
@@ -9,6 +10,7 @@ export interface CanvasOptions {
 export interface EncodeOptions {
   readonly type?: "png" | "jpeg";
   readonly quality?: number;
+  readonly chromaSubsampling?: ChromaSubsampling;
 }
 
 export class Canvas {
@@ -54,8 +56,11 @@ export class Canvas {
 
   async encode(options: EncodeOptions = {}): Promise<Uint8Array> {
     const type = options.type ?? "png";
-    if (type !== "png") {
-      throw new Error("JPEG encoding is planned for milestone 5");
+    if (type === "jpeg") {
+      return encodeJpeg(this.bitmap, {
+        quality: jpegQuality(options.quality),
+        subsampling: options.chromaSubsampling ?? "4:2:0",
+      });
     }
     if (!this.deflate) {
       throw new Error(
@@ -84,6 +89,12 @@ export class Canvas {
     this.bitmap = new PixelBuffer(width, height);
     this.context.reset(this.bitmap);
   }
+}
+
+function jpegQuality(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1
+    ? Math.max(1, Math.round(value * 100))
+    : 92;
 }
 
 function validateDimension(value: number, name: string): void {

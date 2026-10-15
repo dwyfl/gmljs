@@ -12,6 +12,7 @@ import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { loadImage } from "skia-canvas";
 
 describe("applyRenderProps", () => {
   test("ignores unknown keys, invalid values and __proto__", () => {
@@ -60,29 +61,31 @@ describe("RenderContextGmljsCanvas", () => {
     );
   });
 
-  test("renderToBlob encodes png by default", async () => {
+  test("renderToBlob encodes jpeg by default", async () => {
     const blob = await new RenderContextGmljsCanvas(10, 10).renderToBlob();
     const bytes = Buffer.from(await blob.arrayBuffer());
-    expect(bytes.toString("hex").startsWith("89504e47")).toBe(true);
-    expect(blob.type).toBe("image/png");
+    expect(bytes.toString("hex").startsWith("ffd8ff")).toBe(true);
+    expect(blob.type).toBe("image/jpeg");
   });
 
-  test("renderToDataURL encodes png", async () => {
+  test("renderToDataURL encodes jpeg", async () => {
     const dataURL = await new RenderContextGmljsCanvas(10, 10).renderToDataURL();
-    expect(dataURL).toMatch(/^data:image\/png;base64,iVBORw0KGgo/);
+    expect(dataURL).toMatch(/^data:image\/jpeg;base64,\/9j\//);
   });
 
-  test("rejects jpeg", async () => {
-    await expect(
-      new RenderContextGmljsCanvas(10, 10).renderToBlob({ type: "jpeg" }),
-    ).rejects.toThrow('The "gmljs-canvas" render context cannot encode jpeg');
+  test("round-trips jpeg", async () => {
+    const context = new RenderContextGmljsCanvas(13, 17);
+    context.clear("#315ca8");
+    const blob = await context.renderToBlob({ type: "jpeg", quality: 0.92 });
+    const image = await loadImage(Buffer.from(await blob.arrayBuffer()));
+    expect([image.width, image.height]).toEqual([13, 17]);
   });
 
   test("resizing replaces the bitmap", async () => {
     const context = new RenderContextGmljsCanvas(10, 10);
     context.width = 20;
     context.height = 5;
-    const pixels = await pixelReaderfromDataURL(await context.renderToBlob());
+    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ type: "png" }));
     expect([pixels.width, pixels.height]).toEqual([20, 5]);
   });
 
@@ -94,7 +97,7 @@ describe("RenderContextGmljsCanvas", () => {
     context.moveTo(10, 10);
     context.lineTo(30, 10);
     context.stroke();
-    const pixels = await pixelReaderfromDataURL(await context.renderToBlob());
+    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ type: "png" }));
     // Past the ends on the center line: inside the round cap.
     expect(pixels.at(7, 10).r).toBeLessThan(64);
     expect(pixels.at(32, 10).r).toBeLessThan(64);
@@ -133,9 +136,9 @@ describe("RenderContextGmljsCanvas", () => {
     expect(mismatched / ink).toBeLessThan(0.01);
   });
 
-  test("createGMLImage defaults to png", async () => {
+  test("createGMLImage defaults to jpeg", async () => {
     const image = await createGMLImage("<gml></gml>", { width: 10, height: 10 });
-    expect(Buffer.from(image).toString("hex").startsWith("89504e47")).toBe(true);
+    expect(Buffer.from(image).toString("hex").startsWith("ffd8ff")).toBe(true);
   });
 });
 

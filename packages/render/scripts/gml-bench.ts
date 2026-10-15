@@ -39,8 +39,11 @@ interface Result {
   readonly draw: number;
   readonly png: number;
   readonly endToEnd: number;
+  readonly jpeg: number;
+  readonly jpegEndToEnd: number;
   readonly animationFrame?: number;
   readonly pngBytes: Buffer;
+  readonly jpegBytes: Buffer;
   readonly image: DecodedImage;
 }
 
@@ -100,6 +103,8 @@ async function benchmarkDocument(document: DocumentInput, size: Size): Promise<v
       "draw",
       "PNG",
       "draw + PNG",
+      "JPEG",
+      "draw + JPEG",
       "anim/frame",
       "ink bias",
       "mean |Δ|",
@@ -118,6 +123,8 @@ async function benchmarkDocument(document: DocumentInput, size: Size): Promise<v
         milliseconds(result.draw),
         milliseconds(result.png),
         milliseconds(result.endToEnd),
+        milliseconds(result.jpeg),
+        milliseconds(result.jpegEndToEnd),
         result.animationFrame === undefined ? "—" : milliseconds(result.animationFrame),
         percentage(metrics.inkMassBias),
         metrics.meanAbsoluteDifference.toFixed(2),
@@ -130,7 +137,7 @@ async function benchmarkDocument(document: DocumentInput, size: Size): Promise<v
   for (const backend of backends) {
     const result = results.get(backend)!;
     console.log(
-      `${backend}: ${(result.pngBytes.length / 1024).toFixed(1)} KiB, pixels ${pixelHash(result.image).slice(0, 16)}`,
+      `${backend}: PNG ${(result.pngBytes.length / 1024).toFixed(1)} KiB, JPEG ${(result.jpegBytes.length / 1024).toFixed(1)} KiB, pixels ${pixelHash(result.image).slice(0, 16)}`,
     );
   }
   console.log("Red heatmap pixels mean over-coverage; blue pixels mean under-coverage.\n");
@@ -151,19 +158,27 @@ async function benchmarkBackend(
   view.setPosition(1);
   const draw = () => view.draw();
   const png = () => context.renderToArrayBuffer({ type: "png" });
+  const jpeg = () => context.renderToArrayBuffer({ type: "jpeg", quality: 0.92 });
 
   draw();
   await png();
+  await jpeg();
 
   const drawSamples: number[] = [];
   const pngSamples: number[] = [];
   const endToEndSamples: number[] = [];
+  const jpegSamples: number[] = [];
+  const jpegEndToEndSamples: number[] = [];
   let pngBytes = Buffer.alloc(0);
+  let jpegBytes = Buffer.alloc(0);
   for (let run = 0; run < runs; run += 1) {
     drawSamples.push(timeSync(draw));
     draw();
     const encoded = await timeAsync(png);
     pngSamples.push(encoded.elapsed);
+    draw();
+    const jpegEncoded = await timeAsync(jpeg);
+    jpegSamples.push(jpegEncoded.elapsed);
 
     const complete = await timeAsync(async () => {
       draw();
@@ -171,6 +186,13 @@ async function benchmarkBackend(
     });
     endToEndSamples.push(complete.elapsed);
     pngBytes = Buffer.from(complete.value);
+
+    const jpegComplete = await timeAsync(async () => {
+      draw();
+      return jpeg();
+    });
+    jpegEndToEndSamples.push(jpegComplete.elapsed);
+    jpegBytes = Buffer.from(jpegComplete.value);
   }
 
   let animationFrame: number | undefined;
@@ -191,8 +213,11 @@ async function benchmarkBackend(
     draw: median(drawSamples),
     png: median(pngSamples),
     endToEnd: median(endToEndSamples),
+    jpeg: median(jpegSamples),
+    jpegEndToEnd: median(jpegEndToEndSamples),
     animationFrame,
     pngBytes,
+    jpegBytes,
     image: decodePng(pngBytes),
   };
 }

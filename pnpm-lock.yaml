@@ -182,7 +182,7 @@ importers:
   packages/canvas:
     devDependencies:
       '@types/node':
-        specifier: ^26.6.5
+        specifier: ^26
         version: 26.6.5
       '@types/pngjs':
         specifier: ^6.0.5
@@ -190,6 +190,9 @@ importers:
       bumpp:
         specifier: ^12.3.0
         version: 12.3.0
+      jpeg-js:
+        specifier: ^0.4.4
+        version: 0.4.4
       pixelmatch:
         specifier: ^8.0.0
         version: 8.0.0

@@ -1,14 +1,10 @@
 import { Canvas, type CanvasRenderingContext2D } from "@gmljs/canvas/node";
-import {
-  RenderContextBase,
-  type RenderImageFormat,
-  type RenderImageOptions,
-} from "../../render/context.ts";
+import { RenderContextBase, type RenderImageOptions } from "../../render/context.ts";
 import { applyRenderProps, type RenderProps } from "../../render/props/index.ts";
 
 /**
  * Renders with @gmljs/canvas, a pure-TypeScript rasterizer: no native binaries to install.
- * It encodes PNG only, so images default to PNG.
+ * It encodes JPEG by default and also supports lossless PNG.
  */
 export class RenderContextGmljsCanvas extends RenderContextBase {
   canvas: Canvas;
@@ -74,21 +70,11 @@ export class RenderContextGmljsCanvas extends RenderContextBase {
     applyRenderProps(this.ctx, props);
   }
 
-  async renderToDataURL({ type = "png", quality }: RenderImageOptions = {}): Promise<string> {
-    return await this.canvas.toDataURL({ type: checkType(type), quality });
+  async renderToDataURL({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<string> {
+    return await this.canvas.toDataURL({ type, quality });
   }
 
-  async renderToBlob({ type = "png", quality }: RenderImageOptions = {}): Promise<Blob> {
-    return await this.canvas.toBlob({ type: checkType(type), quality });
+  async renderToBlob({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<Blob> {
+    return await this.canvas.toBlob({ type, quality });
   }
-}
-
-function checkType(type: RenderImageFormat): "png" {
-  if (type !== "png") {
-    throw new Error(
-      `The "gmljs-canvas" render context cannot encode ${type} yet; use format "png" ` +
-        `or another render context.`,
-    );
-  }
-  return type;
 }
