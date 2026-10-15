@@ -9,9 +9,6 @@ documents to images, built on the [`@gmljs/render`](https://www.npmjs.com/packag
 npm install -g @gmljs/cli
 ```
 
-This installs the `gmljs` command. Rendering uses [`@gmljs/canvas`](https://www.npmjs.com/package/@gmljs/canvas), a
-pure-TypeScript rasterizer, so there are no native binaries to install. It writes PNG and JPEG.
-
 ## Usage
 
 ```
@@ -36,7 +33,7 @@ Effect options
   --drip-factor <value>        drip factor 0-1 (default 0.2)
 ```
 
-Input files larger than 32 MB are rejected.
+## Examples
 
 ```
 $ gmljs ~/nyc/zephyr.gml
@@ -46,3 +43,7 @@ $ gmljs ~/nyc/dondi.gml --format jpeg
 $ gmljs ~/nyc/cope2.gml -w 1920 -h 1080 --background '#aaddff'
 ✅ Rendered 1920x1080 png file: ~/nyc/cope2.png
 ```
+
+## Notes
+
+Input files larger than 32 MB are rejected.

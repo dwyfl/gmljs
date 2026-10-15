@@ -6,26 +6,21 @@
 
 ## Installation
 
-In Node.js, `@gmljs/render/server` renders with
-[@gmljs/canvas](https://www.npmjs.com/package/@gmljs/canvas), a pure-TypeScript rasterizer that comes with the package, so
-`npm install @gmljs/render` is all you need. It encodes PNG and JPEG, and images default to PNG.
-Other backends are optional peer dependencies, so you only install what you use.
+```
+npm install @gmljs/render
+```
+
+By default `@gmljs/render` relies on pure TypeScript or native browser APIs for rasterizing.
+But other backends are also supported as optional peer dependencies, so you only install what you use.
 
 | Environment                                                               | Install                                 |
 | ------------------------------------------------------------------------- | --------------------------------------- |
-| Browser                                                                   | `npm install @gmljs/render`             |
 | Browser, rendering video (`@gmljs/render/video`)                          | `npm install @gmljs/render mediabunny`  |
-| Node.js with @gmljs/canvas (the default)                                  | `npm install @gmljs/render`             |
 | Node.js with [node-canvas](https://github.com/Automattic/node-canvas)     | `npm install @gmljs/render canvas`      |
 | Node.js with [skia-canvas](https://github.com/samizdatco/skia-canvas)     | `npm install @gmljs/render skia-canvas` |
 | Node.js with [pureimage](https://github.com/joshmarinacci/node-pureimage) | `npm install @gmljs/render pureimage`   |
 
-`canvas` downloads a native binary in an install script. With pnpm 10 or later, allow it to
-run with `pnpm approve-builds`. `skia-canvas` 4 installs its binary as a platform-specific
-optional dependency instead, with no install script (3.x, also supported, uses one too). `pureimage` is plain JavaScript, so it
-installs anywhere, but it renders roughly 10× slower, with coarser anti-aliasing, and it
-doesn't match the other backends exactly: it always draws round line caps and joins, and
-overlapping translucent strokes come out darker.
+`canvas` downloads a native binary in an install script. With pnpm 10 or later, allow it to run with `pnpm approve-builds`. `skia-canvas` 4 installs its binary as a platform-specific optional dependency instead. `pureimage` is plain JavaScript, so it installs anywhere, but it renders roughly 10× slower, with coarser anti-aliasing, and it doesn't match the other backends exactly: it always draws round line caps and joins, and overlapping translucent strokes come out darker.
 
 ## Examples
 
