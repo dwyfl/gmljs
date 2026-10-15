@@ -103,4 +103,4 @@ Rendering documents from untrusted sources, such as uploads on a server? See
 
 ## Made with @gmljs/render
 
-![KATSU tag rendered with @gmljs/render](https://raw.githubusercontent.com/dwyfl/gmlrender/3.0.0/docs/katsu.webp)
+![KATSU tag rendered with @gmljs/render](https://raw.githubusercontent.com/dwyfl/gmljs/main/packages/render/docs/katsu.webp)
