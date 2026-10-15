@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
 import { Canvas } from "../src/node.ts";
+import { arcSegmentCount } from "../src/path/path.ts";
 
 describe("path construction", () => {
   test("implicitly closes open subpaths when filling", () => {
@@ -182,3 +183,31 @@ function alpha(canvas: Canvas): number[] {
   }
   return values;
 }
+
+describe("arc work limits", () => {
+  test("counts segments without cancelling to zero at huge radii", () => {
+    for (const radius of [1e12, 1e16, Number.MAX_VALUE]) {
+      const count = arcSegmentCount(radius, Math.PI * 2);
+      expect(Number.isFinite(count)).toBe(true);
+      expect(count).toBeLessThanOrEqual(8192);
+    }
+    expect(arcSegmentCount(50, Math.PI * 2)).toBeGreaterThan(16);
+    expect(arcSegmentCount(50, Math.PI * 2)).toBeLessThan(100);
+  });
+
+  test("fills and strokes huge arcs in bounded time", () => {
+    const context = new Canvas(16, 16).getContext("2d");
+    context.beginPath();
+    context.arc(8, 8, Number.MAX_VALUE, 0, Math.PI * 2);
+    context.fill();
+
+    context.lineWidth = 1e16;
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(16, 16);
+    context.lineTo(0, 16);
+    context.stroke();
+  }, 5000);
+});

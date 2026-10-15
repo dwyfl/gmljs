@@ -1,4 +1,4 @@
-import { CanvasRenderingContext2D } from "./context-2d.ts";
+import { CanvasContext2D } from "./context-2d.ts";
 import { encodeJpeg, type ChromaSubsampling } from "../encode/jpeg.ts";
 import { encodePng, type Deflate } from "../encode/png.ts";
 import { PixelBuffer } from "../pixels/pixel-buffer.ts";
@@ -7,15 +7,19 @@ export interface CanvasOptions {
   readonly deflate?: Deflate;
 }
 
+export type ImageFormat = "png" | "jpeg";
+
 export interface EncodeOptions {
-  readonly type?: "png" | "jpeg";
+  /** Defaults to `"png"`. */
+  readonly format?: ImageFormat;
+  /** JPEG quality from 0 to 1. Defaults to 0.92. */
   readonly quality?: number;
   readonly chromaSubsampling?: ChromaSubsampling;
 }
 
 export class Canvas {
   private bitmap: PixelBuffer;
-  private readonly context: CanvasRenderingContext2D;
+  private readonly context: CanvasContext2D;
   private readonly deflate: Deflate | undefined;
 
   constructor(width: number, height: number, options: CanvasOptions = {}) {
@@ -23,7 +27,7 @@ export class Canvas {
     validateDimension(height, "height");
     validateByteLength(width, height);
     this.bitmap = new PixelBuffer(width, height);
-    this.context = new CanvasRenderingContext2D(this.bitmap);
+    this.context = new CanvasContext2D(this.bitmap);
     this.deflate = options.deflate;
   }
 
@@ -48,15 +52,14 @@ export class Canvas {
     return this.bitmap.data;
   }
 
-  getContext(contextId: "2d"): CanvasRenderingContext2D;
-  getContext(contextId: string): CanvasRenderingContext2D | null;
-  getContext(contextId: string): CanvasRenderingContext2D | null {
+  getContext(contextId: "2d"): CanvasContext2D;
+  getContext(contextId: string): CanvasContext2D | null;
+  getContext(contextId: string): CanvasContext2D | null {
     return contextId === "2d" ? this.context : null;
   }
 
   async encode(options: EncodeOptions = {}): Promise<Uint8Array> {
-    const type = options.type ?? "png";
-    if (type === "jpeg") {
+    if (imageFormat(options.format) === "jpeg") {
       return encodeJpeg(this.bitmap, {
         quality: jpegQuality(options.quality),
         subsampling: options.chromaSubsampling ?? "4:2:0",
@@ -71,15 +74,15 @@ export class Canvas {
   }
 
   async toBlob(options: EncodeOptions = {}): Promise<Blob> {
-    const type = options.type ?? "png";
+    const format = imageFormat(options.format);
     const bytes = await this.encode(options);
-    return new Blob([ownedBuffer(bytes)], { type: `image/${type}` });
+    return new Blob([ownedBuffer(bytes)], { type: `image/${format}` });
   }
 
   async toDataURL(options: EncodeOptions = {}): Promise<string> {
-    const type = options.type ?? "png";
+    const format = imageFormat(options.format);
     const bytes = await this.encode(options);
-    return `data:image/${type};base64,${base64(bytes)}`;
+    return `data:image/${format};base64,${base64(bytes)}`;
   }
 
   private resize(width: number, height: number): void {
@@ -89,6 +92,18 @@ export class Canvas {
     this.bitmap = new PixelBuffer(width, height);
     this.context.reset(this.bitmap);
   }
+}
+
+function imageFormat(value: unknown): ImageFormat {
+  if (value === undefined) {
+    return "png";
+  }
+  if (value === "png" || value === "jpeg") {
+    return value;
+  }
+  throw new TypeError(
+    `Unsupported image format ${JSON.stringify(value)}; expected "png" or "jpeg"`,
+  );
 }
 
 function jpegQuality(value: unknown): number {

@@ -122,6 +122,12 @@ describe("renderToVideo", () => {
     await expect(renderToVideo(GML_1S, { fps: 0 })).rejects.toThrow(RangeError);
   });
 
+  test("rejects invalid dimensions and unknown formats", async () => {
+    await expect(renderToVideo(GML_1S, { width: Number.NaN })).rejects.toThrow(RangeError);
+    await expect(renderToVideo(GML_1S, { height: 0 })).rejects.toThrow(RangeError);
+    await expect(renderToVideo(GML_1S, { format: "avi" as "mp4" })).rejects.toThrow(TypeError);
+  });
+
   test("cancels the output when encoding fails", async () => {
     mocks.failAtFrame = 3;
     await expect(renderToVideo(GML_1S, { fps: 10 })).rejects.toThrow("encoder failed");

@@ -5,7 +5,8 @@ import { describe, it, expect, vi } from "vite-plus/test";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { GML, GMLParseError, createGmlNodeFromXml } from "../src/index.ts";
+import { GML, GMLParseError } from "../src/index.ts";
+import { createGmlNodeFromXml } from "../src/gml/util/index.ts";
 
 vi.mock("../src/util/xml-backend.ts", () => import("../src/util/xml-backend.browser.ts"));
 
@@ -64,6 +65,9 @@ describe("browser XML backend", () => {
     ["<gml spec=1.0></gml>", "unquoted attribute"],
     ["<gml>&nbsp;</gml>", "unknown entity"],
     ["text<gml/>", "text outside the root"],
+    ['<!DOCTYPE gml [<!ENTITY a "EXPANDED">]><gml>&a;</gml>', "internal entity"],
+    ['<?xml version="1.0"?>\n<!-- c --><!DOCTYPE gml SYSTEM "gml.dtd"><gml/>', "external DTD"],
+    ["<!DOCTYPE gml><gml/>", "empty DOCTYPE"],
   ])("throws GMLParseError for %j (%s)", (xml) => {
     expect(() => new GML(xml)).toThrow(GMLParseError);
   });

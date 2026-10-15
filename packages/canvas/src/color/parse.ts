@@ -16,9 +16,8 @@ export function parseCssColor(input: string): RgbaColor | undefined {
     return { r: 0, g: 0, b: 0, a: 0 };
   }
 
-  const named = NAMED_COLORS[value];
-  if (named !== undefined) {
-    return unpack(named, 255);
+  if (Object.hasOwn(NAMED_COLORS, value)) {
+    return unpack(NAMED_COLORS[value]!, 255);
   }
 
   if (value.startsWith("#")) {

@@ -28,7 +28,7 @@ describe("GMLTimeline", () => {
     expect(timeline[0]?.t).toBe(0);
     expect(timeline[1]?.t).toBe(2);
     expect(timeline[0]?.speed).toBe(0);
-    assertClose(timeline[1]?.speed ?? 0, 2500);
+    assertClose(timeline[1]?.speed ?? 0, 2.5);
     assertClose(timeline[1]?.direction.x ?? 0, -0.6);
     assertClose(timeline[1]?.direction.y ?? 0, -0.8);
   });

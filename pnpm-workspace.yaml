@@ -9,7 +9,8 @@ allowBuilds:
   canvas: true
 
 catalog:
-  "@types/node": ^24
+  "@changesets/cli": ^3.0.3
+  "@types/node": ^22
   typescript: ^7.0.2
   vite: npm:@voidzero-dev/vite-plus-core@1.1.0
   vite-plus: 1.1.0

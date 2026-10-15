@@ -56,6 +56,19 @@ export async function renderToVideo(
   if (!Number.isFinite(fps) || fps <= 0) {
     throw new RangeError(`fps must be a positive number, got ${fps}`);
   }
+  for (const [name, value] of [
+    ["width", width],
+    ["height", height],
+  ] as const) {
+    if (!Number.isSafeInteger(value) || value <= 0) {
+      throw new RangeError(`${name} must be a positive integer, got ${value}`);
+    }
+  }
+  if (format !== "mp4" && format !== "webm" && format !== "mkv") {
+    throw new TypeError(
+      `Unsupported video format "${String(format)}"; expected "mp4", "webm" or "mkv"`,
+    );
+  }
   signal?.throwIfAborted();
 
   const ctx = new RenderContextOffscreenCanvas(width, height);

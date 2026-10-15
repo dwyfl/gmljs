@@ -4,6 +4,7 @@ import type { Bitmap, Context } from "pureimage";
 import { requireOptional } from "../require-optional.ts";
 import {
   RenderContextBase,
+  resolveImageOptions,
   type RenderImageFormat,
   type RenderImageOptions,
 } from "../../render/context.ts";
@@ -153,23 +154,25 @@ export class RenderContextPureImage extends RenderContextBase {
     applyRenderProps(this.ctx as unknown as Record<keyof RenderProps, unknown>, props);
   }
 
-  async renderToDataURL({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<string> {
-    const buffer = await this.encode(type, quality);
-    return `data:image/${type};base64,${buffer.toString("base64")}`;
+  async renderToDataURL(options?: RenderImageOptions): Promise<string> {
+    const { format, quality } = resolveImageOptions(options);
+    const buffer = await this.encode(format, quality);
+    return `data:image/${format};base64,${buffer.toString("base64")}`;
   }
 
-  async renderToBlob({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<Blob> {
-    const buffer = await this.encode(type, quality);
+  async renderToBlob(options?: RenderImageOptions): Promise<Blob> {
+    const { format, quality } = resolveImageOptions(options);
+    const buffer = await this.encode(format, quality);
     return new Blob([new Uint8Array(buffer)], {
-      type: `image/${type}`,
+      type: `image/${format}`,
     });
   }
 
-  private async encode(type: RenderImageFormat, quality?: number): Promise<Buffer> {
+  private async encode(format: RenderImageFormat, quality?: number): Promise<Buffer> {
     const stream = new PassThrough();
     // Collect until the readable side ends: the encoders resolve on the writable side.
     const output = buffer(stream);
-    if (type === "png") {
+    if (format === "png") {
       await this.pureimage.encodePNGToStream(this.bitmap, stream);
     } else {
       // Canvas APIs take quality as 0–1; pureimage takes 0–100.

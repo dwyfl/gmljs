@@ -16,11 +16,11 @@ describe("gmljs-canvas compared with skia-canvas", () => {
     const xml = readFileSync(join(GML_DATA, name), "utf8");
     const ours = new RenderContextGmljsCanvas(1024, 768);
     renderGml(xml, ours);
-    const oursPng = Buffer.from(await ours.renderToArrayBuffer({ type: "png" }));
+    const oursPng = Buffer.from(await ours.renderToArrayBuffer({ format: "png" }));
 
     const skia = new RenderContextSkiaReference(1024, 768);
     renderGml(xml, skia);
-    const skiaPng = Buffer.from(await skia.renderToArrayBuffer({ type: "png" }));
+    const skiaPng = Buffer.from(await skia.renderToArrayBuffer({ format: "png" }));
 
     if (process.env.GML_REVIEW_OUTPUT === "1") {
       writeReviewImages(oursPng, skiaPng, basename(name, ".xml"));
@@ -97,7 +97,7 @@ describe("gmljs-canvas compared with skia-canvas", () => {
     const xml = readFileSync(path, "utf8");
     const context = new RenderContextGmljsCanvas(1024, 768);
     renderGml(xml, context);
-    const image = decodePng(new Uint8Array(await context.renderToArrayBuffer({ type: "png" })));
+    const image = decodePng(new Uint8Array(await context.renderToArrayBuffer({ format: "png" })));
     expect(pixelHash(image)).toBe(hash);
   });
 });
@@ -106,11 +106,11 @@ async function expectStrictStrokeAccuracy(path: string): Promise<void> {
   const xml = readFileSync(path, "utf8");
   const ours = new RenderContextGmljsCanvas(1024, 768);
   renderGml(xml, ours);
-  const oursImage = decodePng(new Uint8Array(await ours.renderToArrayBuffer({ type: "png" })));
+  const oursImage = decodePng(new Uint8Array(await ours.renderToArrayBuffer({ format: "png" })));
 
   const skia = new RenderContextSkiaReference(1024, 768);
   renderGml(xml, skia);
-  const skiaImage = decodePng(new Uint8Array(await skia.renderToArrayBuffer({ type: "png" })));
+  const skiaImage = decodePng(new Uint8Array(await skia.renderToArrayBuffer({ format: "png" })));
 
   const nodeCanvas = ServerRenderContext.createRenderContext({
     type: "node-canvas",
@@ -119,7 +119,7 @@ async function expectStrictStrokeAccuracy(path: string): Promise<void> {
   });
   renderGml(xml, nodeCanvas);
   const nodeImage = decodePng(
-    new Uint8Array(await nodeCanvas.renderToArrayBuffer({ type: "png" })),
+    new Uint8Array(await nodeCanvas.renderToArrayBuffer({ format: "png" })),
   );
 
   const oursMetrics = compareImages(oursImage, skiaImage);

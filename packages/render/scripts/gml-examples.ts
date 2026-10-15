@@ -22,11 +22,11 @@ for (const document of documents) {
 
   const ours = new RenderContextGmljsCanvas(WIDTH, HEIGHT);
   renderGml(xml, ours);
-  const oursBytes = Buffer.from(await ours.renderToArrayBuffer({ type: "png" }));
+  const oursBytes = Buffer.from(await ours.renderToArrayBuffer({ format: "png" }));
 
   const skia = new RenderContextSkiaReference(WIDTH, HEIGHT);
   renderGml(xml, skia);
-  const skiaBytes = Buffer.from(await skia.renderToArrayBuffer({ type: "png" }));
+  const skiaBytes = Buffer.from(await skia.renderToArrayBuffer({ format: "png" }));
 
   const oursPng = PNG.sync.read(oursBytes);
   const skiaPng = PNG.sync.read(skiaBytes);

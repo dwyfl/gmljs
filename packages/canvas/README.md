@@ -12,8 +12,9 @@ Current features include:
 - anti-aliased strokes with butt, round, and square caps; bevel, miter, and round joins
 - asynchronous PNG and baseline JPEG encoding in Node and browsers
 
-Transforms and ImageData are in the roadmap. See
-[ARCHITECTURE.md](./ARCHITECTURE.md) for the complete design.
+It implements a subset of the browser Canvas 2D API, not all of it. See
+[Compatibility](#compatibility) for the details, and
+[ARCHITECTURE.md](https://github.com/dwyfl/gmljs/blob/main/packages/canvas/ARCHITECTURE.md) for the design.
 
 ## Install
 
@@ -42,9 +43,9 @@ context.lineTo(180, 170);
 context.lineTo(300, 260);
 context.stroke();
 
-const png = await canvas.encode({ type: "png" });
+const png = await canvas.encode({ format: "png" });
 const jpeg = await canvas.encode({
-  type: "jpeg",
+  format: "jpeg",
   quality: 0.92,
   chromaSubsampling: "4:2:0", // default; "4:4:4" is also available
 });
@@ -59,6 +60,23 @@ Pixels in `canvas.pixels` are premultiplied RGBA8. PNG output converts them to s
 alpha; JPEG encodes them over black. JPEG `quality` follows the HTML Canvas 0–1 range and
 defaults to 0.92. Assigning either canvas dimension clears the image, resets context state, and
 invalidates an earlier pixel view.
+
+## Compatibility
+
+`CanvasContext2D` follows the browser's `CanvasRenderingContext2D` for the members it has,
+but it is not a drop-in replacement.
+
+| Area          | Supported                                                                                                                              |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Styles        | `fillStyle` and `strokeStyle` as CSS color strings. No gradients or patterns.                                                          |
+| Lines         | `lineWidth`, `lineCap`, `lineJoin`, `miterLimit`. No line dashes.                                                                      |
+| Rectangles    | `fillRect()`, `clearRect()`, `strokeRect()`                                                                                            |
+| Paths         | `beginPath()`, `closePath()`, `moveTo()`, `lineTo()`, `rect()`, `arc()`, `quadraticCurveTo()`, `bezierCurveTo()`, `fill()`, `stroke()` |
+| Not supported | transforms, `save()`/`restore()`, clipping, `globalAlpha` and compositing modes, `drawImage()`, text, `ImageData`, shadows, filters    |
+
+Encoding differs from the browser API too. `encode()`, `toBlob()` and `toDataURL()` all return
+promises and take an options object (`{ format, quality, chromaSubsampling }`), rather than
+the browser's callback and positional arguments. Unknown formats throw a `TypeError`.
 
 ## Development
 
@@ -79,5 +97,5 @@ harness. Failed reference comparisons write `ours.png`, `skia.png`, and `diff.pn
 `@gmljs/render` uses this package as its default server render context. The GML tests and
 the real-document benchmark (`vp run bench:gml`) live there, in `packages/render`, comparing
 this rasterizer with node-canvas, skia-canvas, and pureimage on real GML documents. Build
-this package (`vp pack`) before running them, since they import the built `@gmljs/canvas`. See [PERFORMANCE.md](./PERFORMANCE.md)
+this package (`vp pack`) before running them, since they import the built `@gmljs/canvas`. See [PERFORMANCE.md](https://github.com/dwyfl/gmljs/blob/main/packages/canvas/PERFORMANCE.md)
 for the profile-guided optimization and measured results.

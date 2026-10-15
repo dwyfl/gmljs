@@ -1,6 +1,10 @@
 import type { Canvas, CanvasRenderingContext2D } from "skia-canvas";
 import { requireOptional } from "../require-optional.ts";
-import { RenderContextBase, type RenderImageOptions } from "../../render/context.ts";
+import {
+  RenderContextBase,
+  resolveImageOptions,
+  type RenderImageOptions,
+} from "../../render/context.ts";
 import { applyRenderProps, type RenderProps } from "../../render/props/index.ts";
 
 export class RenderContextSkiaCanvas extends RenderContextBase {
@@ -71,12 +75,14 @@ export class RenderContextSkiaCanvas extends RenderContextBase {
     applyRenderProps(this.ctx, props);
   }
 
-  renderToDataURL({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<string> {
-    return Promise.resolve(this.canvas.toDataURL(type, quality));
+  async renderToDataURL(options?: RenderImageOptions): Promise<string> {
+    const { format, quality } = resolveImageOptions(options);
+    return this.canvas.toDataURL(format, quality);
   }
 
-  renderToBlob({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<Blob> {
-    const buffer = this.canvas.toBufferSync(type, { quality });
-    return Promise.resolve(new Blob([new Uint8Array(buffer)], { type: `image/${type}` }));
+  async renderToBlob(options?: RenderImageOptions): Promise<Blob> {
+    const { format, quality } = resolveImageOptions(options);
+    const buffer = this.canvas.toBufferSync(format, { quality });
+    return new Blob([new Uint8Array(buffer)], { type: `image/${format}` });
   }
 }

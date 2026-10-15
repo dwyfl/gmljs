@@ -385,7 +385,7 @@ describe("GMLView.setRenderOptions", () => {
     view.setPosition(1);
     view.draw();
     const pixels = await pixelReaderfromDataURL(
-      await view.renderContext.renderToArrayBuffer({ type: "png" }),
+      await view.renderContext.renderToArrayBuffer({ format: "png" }),
     );
     expect(pixels.count(isRed)).toBeGreaterThan(100);
     expect(pixels.count(isDark)).toBe(0);
@@ -443,7 +443,7 @@ describe("clearColor", () => {
     view.setRenderItemVisible("background", false);
     view.draw();
     const pixels = await pixelReaderfromDataURL(
-      await view.renderContext.renderToArrayBuffer({ type: "png" }),
+      await view.renderContext.renderToArrayBuffer({ format: "png" }),
     );
     expect(pixels.at(...BAR).a).toBe(0);
     expect(pixels.at(...DOCUMENT).a).toBe(0);
@@ -458,7 +458,7 @@ describe("clearColor", () => {
     view.draw();
     view.draw();
     const pixels = await pixelReaderfromDataURL(
-      await view.renderContext.renderToArrayBuffer({ type: "png" }),
+      await view.renderContext.renderToArrayBuffer({ format: "png" }),
     );
     expect(pixels.at(...BAR).a).toBeGreaterThan(120);
     expect(pixels.at(...BAR).a).toBeLessThan(135);

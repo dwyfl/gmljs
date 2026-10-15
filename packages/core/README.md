@@ -67,7 +67,8 @@ const { tags } = gml.toData();
 
 Collection getters (`getTags()`, `getStrokes()`, `getPoints()`, …) always return an array.
 
-Parsing is lenient by default: an invalid element (say, a point without a `<y>`) is skipped by the getters, kept verbatim in the output, and reported in `gml.warnings` as a `GMLParseError` whose `path` points at it. Pass `{ strict: true }` to throw on the first invalid element instead. Input that isn't well-formed XML with a `<gml>` root always throws.
+Parsing is lenient by default: an invalid element (say, a point without a `<y>`) is skipped by the getters, kept verbatim in the output, and reported in `gml.warnings` as a `GMLParseError` whose `path` points at it. Pass `{ strict: true }` to throw on the first invalid element instead. Input that isn't well-formed XML with a `<gml>` root always throws, and so does a
+document with a DOCTYPE (GML doesn't use DTDs).
 
 ```javascript
 const gml = new GML(str);
@@ -76,6 +77,23 @@ for (const warning of gml.warnings) {
 }
 
 new GML(str, { strict: true }); // throws instead
+```
+
+To create a document from points instead, use `GML.fromPoints()`. Each array of points
+becomes a stroke, and `t` is the time in seconds:
+
+```javascript
+const gml = GML.fromPoints(
+  [
+    [
+      { x: 0, y: 0, t: 0 },
+      { x: 1, y: 1, t: 0.5 },
+    ],
+  ],
+  {
+    screenBounds: { x: 640, y: 480 },
+  },
+);
 ```
 
 `toString()` writes the document back as GML. Element order is kept, and unknown elements or attributes are written back verbatim (see `getUnknownChildren()` and `unknownAttributes`).

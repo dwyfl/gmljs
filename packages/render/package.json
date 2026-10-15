@@ -10,7 +10,8 @@
   "author": "Gustav Peterz <gpeterz@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dwyfl/gmljs.git"
+    "url": "git+https://github.com/dwyfl/gmljs.git",
+    "directory": "packages/render"
   },
   "files": [
     "dist"
@@ -21,10 +22,22 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./browser": "./dist/browser.mjs",
-    "./server": "./dist/server.mjs",
-    "./video": "./dist/video.mjs",
+    ".": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.mts",
+      "default": "./dist/browser.mjs"
+    },
+    "./server": {
+      "types": "./dist/server.d.mts",
+      "default": "./dist/server.mjs"
+    },
+    "./video": {
+      "types": "./dist/video.d.mts",
+      "default": "./dist/video.mjs"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -46,16 +59,15 @@
     "gl-matrix": "^3.4.4"
   },
   "devDependencies": {
-    "@types/node": "^26",
+    "@types/node": "catalog:",
     "@types/pngjs": "^6.0.5",
-    "bumpp": "^12.3.0",
     "canvas": "^3.2.3",
     "mediabunny": "^1.61.5",
     "pixelmatch": "^8.0.0",
     "pngjs": "^7.0.0",
     "pureimage": "^0.4.20",
     "skia-canvas": "^4.0.0",
-    "typescript": "^7.0.2",
+    "typescript": "catalog:",
     "vite-plus": "catalog:"
   },
   "peerDependencies": {
@@ -79,7 +91,6 @@
     }
   },
   "engines": {
-    "node": ">=20.19"
-  },
-  "packageManager": "pnpm@10.33.0"
+    "node": ">=22"
+  }
 }

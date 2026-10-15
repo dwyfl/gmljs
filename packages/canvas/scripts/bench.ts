@@ -73,7 +73,7 @@ async function benchmarkOurs(): Promise<Measurements> {
   context.lineJoin = "round";
   const stroke = measureSync(() => context.stroke(), 20);
   const png = await measureAsync(() => canvas.encode(), 5);
-  const jpeg = await measureAsync(() => canvas.encode({ type: "jpeg", quality: 0.92 }), 5);
+  const jpeg = await measureAsync(() => canvas.encode({ format: "jpeg", quality: 0.92 }), 5);
   return { clear, fill, translucentFill, pathFill, stroke, png, jpeg };
 }
 

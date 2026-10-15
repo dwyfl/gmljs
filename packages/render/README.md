@@ -7,7 +7,7 @@
 ## Installation
 
 In Node.js, `@gmljs/render/server` renders with
-[@gmljs/canvas](../canvas), a pure-TypeScript rasterizer that comes with the package, so
+[@gmljs/canvas](https://www.npmjs.com/package/@gmljs/canvas), a pure-TypeScript rasterizer that comes with the package, so
 `npm install @gmljs/render` is all you need. It encodes PNG and JPEG, and images default to PNG.
 Other backends are optional peer dependencies, so you only install what you use.
 
@@ -23,7 +23,9 @@ Other backends are optional peer dependencies, so you only install what you use.
 `canvas` downloads a native binary in an install script. With pnpm 10 or later, allow it to
 run with `pnpm approve-builds`. `skia-canvas` 4 installs its binary as a platform-specific
 optional dependency instead, with no install script (3.x, also supported, uses one too). `pureimage` is plain JavaScript, so it
-installs anywhere, but it renders roughly 10× slower and with coarser anti-aliasing.
+installs anywhere, but it renders roughly 10× slower, with coarser anti-aliasing, and it
+doesn't match the other backends exactly: it always draws round line caps and joins, and
+overlapping translucent strokes come out darker.
 
 ## Examples
 
@@ -52,12 +54,14 @@ import { createGMLView } from "@gmljs/render/browser";
 
 const view = createGMLView(gml, {
   type: "html-canvas",
-  canvas: document.querySelector("canvas")!,
+  canvas: document.querySelector("canvas")!, // resized to width × height
   width: 800,
   height: 600,
 });
 view.start();
 ```
+
+Leave out `canvas` to draw into a new one, or use `type: "offscreen-canvas"`.
 
 ### Video (browser)
 
@@ -93,6 +97,9 @@ const view = createGMLView(gml, {
 });
 for (const warning of view.gml.warnings) console.warn(warning.message);
 ```
+
+Rendering documents from untrusted sources, such as uploads on a server? See
+[SECURITY.md](https://github.com/dwyfl/gmljs/blob/main/SECURITY.md) for the limits to set.
 
 ## Made with @gmljs/render
 

@@ -18,9 +18,7 @@ export default defineConfig({
     dts: {
       generator: "tsgo",
     },
-    exports: {
-      // main/types fallbacks for consumers on moduleResolution "node10".
-      legacy: true,
-    },
+    // package.json exports are maintained by hand, with explicit types conditions.
+    exports: false,
   },
 });

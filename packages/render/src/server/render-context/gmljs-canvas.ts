@@ -1,5 +1,9 @@
-import { Canvas, type CanvasRenderingContext2D } from "@gmljs/canvas/node";
-import { RenderContextBase, type RenderImageOptions } from "../../render/context.ts";
+import { Canvas, type CanvasContext2D } from "@gmljs/canvas/node";
+import {
+  RenderContextBase,
+  resolveImageOptions,
+  type RenderImageOptions,
+} from "../../render/context.ts";
 import { applyRenderProps, type RenderProps } from "../../render/props/index.ts";
 
 /**
@@ -8,7 +12,7 @@ import { applyRenderProps, type RenderProps } from "../../render/props/index.ts"
  */
 export class RenderContextGmljsCanvas extends RenderContextBase {
   canvas: Canvas;
-  private ctx: CanvasRenderingContext2D;
+  private ctx: CanvasContext2D;
 
   constructor(width: number, height: number) {
     super();
@@ -70,11 +74,11 @@ export class RenderContextGmljsCanvas extends RenderContextBase {
     applyRenderProps(this.ctx, props);
   }
 
-  async renderToDataURL({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<string> {
-    return await this.canvas.toDataURL({ type, quality });
+  async renderToDataURL(options?: RenderImageOptions): Promise<string> {
+    return await this.canvas.toDataURL(resolveImageOptions(options));
   }
 
-  async renderToBlob({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<Blob> {
-    return await this.canvas.toBlob({ type, quality });
+  async renderToBlob(options?: RenderImageOptions): Promise<Blob> {
+    return await this.canvas.toBlob(resolveImageOptions(options));
   }
 }

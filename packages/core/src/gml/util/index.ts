@@ -66,7 +66,7 @@ const createPoint = (values: GMLPointValues): GMLPoint => {
   return point;
 };
 
-const createStroke = (points: GMLPointValues[]): GMLStroke => {
+const createStroke = (points: readonly GMLPointValues[]): GMLStroke => {
   const stroke = createGmlNodeFromTagName(GMLNodeName.STROKE);
   points.forEach((point) => stroke.addChild(GMLNodeName.POINT, createPoint(point)));
   return stroke;
@@ -74,7 +74,7 @@ const createStroke = (points: GMLPointValues[]): GMLStroke => {
 
 /** Builds a single-tag, single-drawing document with one stroke per point array. */
 export const createGMLDocumentFromPointArrays = (
-  strokes: GMLPointValues[][] = [],
+  strokes: readonly (readonly GMLPointValues[])[] = [],
   options: { screenBounds?: { x: number; y: number } } = {},
 ): GMLDocument => {
   const doc = createGmlNodeFromTagName(GMLNodeName.DOCUMENT);

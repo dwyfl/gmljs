@@ -201,6 +201,7 @@ export class GMLView extends EventTarget {
     };
   }
 
+  /** @internal */
   setRenderer(renderer: GMLRenderer) {
     const settings = this._getRenderItemSettings();
     this._renderer = renderer;
@@ -216,6 +217,7 @@ export class GMLView extends EventTarget {
     return this._gml;
   }
 
+  /** @internal */
   get renderer() {
     return this._renderer;
   }
@@ -224,17 +226,20 @@ export class GMLView extends EventTarget {
     return this._renderer.context;
   }
 
+  /** @internal */
   get renderItems() {
     return this._renderer.items;
   }
 
   /**
+   * @internal
    * Returns the render item entry of the given type. The built-in types ("background",
    * "tags", "drips") return their concrete item class, e.g. RenderItemDrips for "drips".
    */
   getRenderItem<K extends RenderItemTypeKey>(
     type: K,
   ): RenderItemEntry<RenderItemOfType<K>> | undefined;
+  /** @internal */
   getRenderItem(type: string): RenderItemEntry | undefined;
   getRenderItem(type: string): RenderItemEntry | undefined {
     const entry = this._renderer.getRenderItemType(type);

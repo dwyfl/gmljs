@@ -9,6 +9,7 @@ export interface RenderStaticOptions extends RenderOptions {
   position: number;
   /** Encoder quality for lossy formats, 0–1. */
   quality: number;
+  /** Defaults to `"png"`. */
   format: RenderImageFormat;
 }
 
@@ -24,5 +25,5 @@ export async function renderStatic(
   view.setPosition(position);
   view.draw();
 
-  return context.renderToArrayBuffer({ type: format, quality });
+  return context.renderToArrayBuffer({ format, quality });
 }

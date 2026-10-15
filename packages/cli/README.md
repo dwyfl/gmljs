@@ -9,7 +9,7 @@ documents to images, built on the [`@gmljs/render`](https://www.npmjs.com/packag
 npm install -g @gmljs/cli
 ```
 
-This installs the `gmljs` command. Rendering uses [`@gmljs/canvas`](../canvas), a
+This installs the `gmljs` command. Rendering uses [`@gmljs/canvas`](https://www.npmjs.com/package/@gmljs/canvas), a
 pure-TypeScript rasterizer, so there are no native binaries to install. It writes PNG and JPEG.
 
 ## Usage
@@ -28,7 +28,7 @@ Options:
   -w, --width <size>           force image width (default: 1024)
   -h, --height <size>          force image height (default: 768)
   -b, --background <hexcolor>  background color (default: "white")
-  -f, --format <format>        output format (choices: "png", "jpg", default: "png")
+  -f, --format <format>        output format (choices: "png", "jpeg", default: "png")
   --help                       print help text
 
 Effect options
@@ -36,11 +36,13 @@ Effect options
   --drip-factor <value>        drip factor 0-1 (default 0.2)
 ```
 
+Input files larger than 32 MB are rejected.
+
 ```
 $ gmljs ~/nyc/zephyr.gml
 ✅ Rendered 1024x768 png file: ~/nyc/zephyr.png
-$ gmljs ~/nyc/dondi.gml --format jpg
-✅ Rendered 1024x768 jpg file: ~/nyc/dondi.jpg
-$ gmljs ~/nyc/cope2.gml -w 1920 -h 1080 --background #aaddff
+$ gmljs ~/nyc/dondi.gml --format jpeg
+✅ Rendered 1024x768 jpeg file: ~/nyc/dondi.jpg
+$ gmljs ~/nyc/cope2.gml -w 1920 -h 1080 --background '#aaddff'
 ✅ Rendered 1920x1080 png file: ~/nyc/cope2.png
 ```

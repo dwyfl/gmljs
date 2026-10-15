@@ -13,9 +13,25 @@ export interface RenderContextOptions extends RenderContextDimensions {
 }
 
 export interface RenderImageOptions {
-  /** Omitted, each render context uses its default format. */
-  type?: RenderImageFormat;
+  /** Defaults to `"png"`. */
+  format?: RenderImageFormat;
+  /** Encoder quality for lossy formats, 0–1. */
   quality?: number;
+}
+
+/** Applies the defaults, and rejects formats that would otherwise be mislabeled. */
+export function resolveImageOptions(options: RenderImageOptions = {}): {
+  format: RenderImageFormat;
+  quality: number | undefined;
+} {
+  const { format = "png", quality } = options;
+  if (format !== "png" && format !== "jpeg") {
+    throw new TypeError(`Unsupported image format "${String(format)}"; expected "png" or "jpeg"`);
+  }
+  if (quality !== undefined && !(Number.isFinite(quality) && quality >= 0 && quality <= 1)) {
+    throw new RangeError(`Image quality must be a number from 0 to 1, got ${String(quality)}`);
+  }
+  return { format, quality };
 }
 
 export abstract class RenderContextBase {

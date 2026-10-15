@@ -1,4 +1,4 @@
-import type { FlattenedSubpath } from "../path/path.ts";
+import { arcSegmentCount, type FlattenedSubpath } from "../path/path.ts";
 
 export type LineCap = "butt" | "round" | "square";
 export type LineJoin = "bevel" | "miter" | "round";
@@ -25,7 +25,6 @@ interface Segment {
   readonly ny: number;
 }
 
-const FLATNESS = 0.125;
 const MINIMUM_CIRCLE_SEGMENTS = 16;
 const EPSILON = 1e-12;
 
@@ -370,12 +369,9 @@ function areaMatchedRadius(radius: number, angleStep: number): number {
 }
 
 function arcSegments(radius: number, sweep: number): number {
-  const maximumAngle =
-    radius <= FLATNESS ? Math.PI / 2 : Math.min(Math.PI / 2, 2 * Math.acos(1 - FLATNESS / radius));
   return Math.max(
-    1,
     Math.ceil((MINIMUM_CIRCLE_SEGMENTS * sweep) / (Math.PI * 2)),
-    Math.ceil(sweep / maximumAngle),
+    arcSegmentCount(radius, sweep),
   );
 }
 

@@ -1,43 +1,33 @@
 import { describe, it, expect } from "vite-plus/test";
 import * as gmljs from "../src/index.ts";
-import GML, { GMLNodeName, GMLPoint } from "../src/index.ts";
+import GML from "../src/index.ts";
+import { GMLNodeName } from "../src/gml/types.ts";
+import { GMLPoint } from "../src/gml/nodes/point/index.ts";
 
 describe("public entry", () => {
   it("exports the documented API", () => {
-    expect(Object.keys(gmljs).sort()).toStrictEqual(
+    // The node classes are exported as types only.
+    expect(Object.keys(gmljs).sort()).toStrictEqual(["GML", "GMLParseError", "default"]);
+  });
+
+  it("creates documents from points", () => {
+    const gml = GML.fromPoints(
       [
-        "GML",
-        "GML3DPoint",
-        "GMLBrush",
-        "GMLClient",
-        "GMLColor",
-        "GMLDocument",
-        "GMLDrawing",
-        "GMLEnvironment",
-        "GMLFloatNode",
-        "GMLHeader",
-        "GMLIntegerNode",
-        "GMLLeafNode",
-        "GMLLeafNodeParent",
-        "GMLNode",
-        "GMLNodeAttribute",
-        "GMLNodeName",
-        "GMLParseError",
-        "GMLPoint",
-        "GMLRoot",
-        "GMLStroke",
-        "GMLTag",
-        "GMLUnknownNode",
-        "createGMLDocumentFromPointArrays",
-        "createGmlNode",
-        "createGmlNodeFromTagName",
-        "createGmlNodeFromXml",
-        "default",
-        "isGMLNodeAttribute",
-        "isGMLNodeName",
-        "parseGML",
-      ].sort(),
+        [
+          { x: 0, y: 0 },
+          { x: 1, y: 0.5, t: 0.1 },
+        ],
+        [{ x: 0.2, y: 0.2 }],
+      ],
+      {
+        screenBounds: { x: 640, y: 480 },
+      },
     );
+    expect(
+      gml.toData().tags[0]?.drawings[0]?.strokes.map((stroke) => stroke.points.length),
+    ).toStrictEqual([2, 1]);
+    expect(gml.getSize()).toStrictEqual([640, 480]);
+    expect(new GML(gml.toString()).toString()).toBe(gml.toString());
   });
 
   it("runs the README example", () => {

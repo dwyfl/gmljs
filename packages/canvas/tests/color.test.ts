@@ -23,6 +23,9 @@ describe("CSS colors", () => {
 
   test.each([
     "",
+    "constructor",
+    "__proto__",
+    "toString",
     "#12",
     "rgb(10%, 20, 30%)",
     "rgb(1 2)",

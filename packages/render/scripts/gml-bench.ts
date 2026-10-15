@@ -157,8 +157,8 @@ async function benchmarkBackend(
   const view = createGmlView(xml, context);
   view.setPosition(1);
   const draw = () => view.draw();
-  const png = () => context.renderToArrayBuffer({ type: "png" });
-  const jpeg = () => context.renderToArrayBuffer({ type: "jpeg", quality: 0.92 });
+  const png = () => context.renderToArrayBuffer({ format: "png" });
+  const jpeg = () => context.renderToArrayBuffer({ format: "jpeg", quality: 0.92 });
 
   draw();
   await png();

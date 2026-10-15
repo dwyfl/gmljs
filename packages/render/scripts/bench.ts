@@ -11,7 +11,8 @@ import { fileURLToPath } from "node:url";
 import { parseArgs, styleText } from "node:util";
 import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
-import { GMLRenderer, GMLView } from "../src/index.ts";
+import { GMLRenderer } from "../src/render/index.ts";
+import { GMLView } from "../src/view.ts";
 import { ServerRenderContext, type ServerRenderContextType } from "../src/server/index.ts";
 import type { RenderContextBase } from "../src/render/context.ts";
 
@@ -159,8 +160,8 @@ async function benchmark(gml: string, type: ServerRenderContextType): Promise<Re
     view.setPosition(1);
     view.draw();
   };
-  const png = () => context.renderToArrayBuffer({ type: "png" });
-  const jpeg = () => context.renderToArrayBuffer({ type: "jpeg", quality: 0.9 });
+  const png = () => context.renderToArrayBuffer({ format: "png" });
+  const jpeg = () => context.renderToArrayBuffer({ format: "jpeg", quality: 0.9 });
 
   // Warm up (JIT, lazily loaded modules, font and encoder setup).
   draw();

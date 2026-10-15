@@ -75,13 +75,13 @@ export class RenderContextSkiaReference extends RenderContextBase {
     applyRenderProps(this.ctx, props);
   }
 
-  renderToBlob({ type = "png", quality }: RenderImageOptions = {}): Promise<Blob> {
-    const bytes = this.canvas.toBufferSync(type, { quality });
-    return Promise.resolve(new Blob([new Uint8Array(bytes)], { type: `image/${type}` }));
+  renderToBlob({ format = "png", quality }: RenderImageOptions = {}): Promise<Blob> {
+    const bytes = this.canvas.toBufferSync(format, { quality });
+    return Promise.resolve(new Blob([new Uint8Array(bytes)], { type: `image/${format}` }));
   }
 
-  renderToDataURL({ type = "png", quality }: RenderImageOptions = {}): Promise<string> {
-    return Promise.resolve(this.canvas.toDataURL(type, quality));
+  renderToDataURL({ format = "png", quality }: RenderImageOptions = {}): Promise<string> {
+    return Promise.resolve(this.canvas.toDataURL(format, quality));
   }
 
   rawRgba(): Uint8Array {

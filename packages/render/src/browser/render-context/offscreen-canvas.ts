@@ -1,4 +1,4 @@
-import type { RenderImageOptions } from "../../render/context.ts";
+import { resolveImageOptions, type RenderImageOptions } from "../../render/context.ts";
 import { RenderContextCanvas2D } from "./base.ts";
 
 export class RenderContextOffscreenCanvas extends RenderContextCanvas2D<OffscreenCanvas> {
@@ -31,7 +31,8 @@ export class RenderContextOffscreenCanvas extends RenderContextCanvas2D<Offscree
     return `data:${blob.type};base64,${btoa(binary)}`;
   }
 
-  renderToBlob({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<Blob> {
-    return this.canvas.convertToBlob({ type: `image/${type}`, quality });
+  async renderToBlob(options?: RenderImageOptions): Promise<Blob> {
+    const { format, quality } = resolveImageOptions(options);
+    return await this.canvas.convertToBlob({ type: `image/${format}`, quality });
   }
 }

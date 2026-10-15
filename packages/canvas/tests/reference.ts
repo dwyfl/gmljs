@@ -3,14 +3,14 @@ import { join } from "node:path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
 import type { CanvasRenderingContext2D as SkiaContext } from "skia-canvas";
-import { Canvas, type CanvasRenderingContext2D } from "../src/node.ts";
+import { Canvas, type CanvasContext2D } from "../src/node.ts";
 import { createSkiaCanvas } from "./skia.ts";
 
 export interface ReferenceScene {
   readonly name: string;
   readonly width: number;
   readonly height: number;
-  readonly drawOurs: (context: CanvasRenderingContext2D) => void;
+  readonly drawOurs: (context: CanvasContext2D) => void;
   readonly drawSkia: (context: SkiaContext) => void;
 }
 

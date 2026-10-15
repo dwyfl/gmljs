@@ -1,4 +1,4 @@
-import type { RenderImageOptions } from "../../render/context.ts";
+import { resolveImageOptions, type RenderImageOptions } from "../../render/context.ts";
 import { RenderContextCanvas2D } from "./base.ts";
 
 export class RenderContextHtmlCanvas extends RenderContextCanvas2D<HTMLCanvasElement> {
@@ -27,15 +27,17 @@ export class RenderContextHtmlCanvas extends RenderContextCanvas2D<HTMLCanvasEle
     super(canvas, ctx);
   }
 
-  renderToDataURL({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<string> {
-    return Promise.resolve(this.canvas.toDataURL(`image/${type}`, quality));
+  async renderToDataURL(options?: RenderImageOptions): Promise<string> {
+    const { format, quality } = resolveImageOptions(options);
+    return this.canvas.toDataURL(`image/${format}`, quality);
   }
 
-  renderToBlob({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<Blob> {
+  async renderToBlob(options?: RenderImageOptions): Promise<Blob> {
+    const { format, quality } = resolveImageOptions(options);
     return new Promise((resolve, reject) => {
       this.canvas.toBlob(
         (blob) => (blob ? resolve(blob) : reject(new Error("Failed to create blob."))),
-        `image/${type}`,
+        `image/${format}`,
         quality,
       );
     });

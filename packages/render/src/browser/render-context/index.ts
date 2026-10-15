@@ -11,6 +11,7 @@ export interface RenderContextOffscreenCanvasOptions extends RenderContextDimens
 
 export interface RenderContextHtmlCanvasOptions extends RenderContextDimensions {
   type: "html-canvas";
+  /** Draw into this canvas, resized to `width` × `height`. Omitted, a new canvas is created. */
   canvas?: HTMLCanvasElement;
 }
 
@@ -23,9 +24,13 @@ export class BrowserRenderContext {
   static createRenderContext(this: void, options: BrowserRenderContextOptions): RenderContextBase {
     switch (options.type) {
       case "html-canvas":
-        return options.canvas
-          ? new RenderContextHtmlCanvas(options.canvas)
-          : new RenderContextHtmlCanvas(options.width, options.height);
+        if (options.canvas) {
+          const context = new RenderContextHtmlCanvas(options.canvas);
+          context.width = options.width;
+          context.height = options.height;
+          return context;
+        }
+        return new RenderContextHtmlCanvas(options.width, options.height);
       case "offscreen-canvas":
         return new RenderContextOffscreenCanvas(options.width, options.height);
       default:

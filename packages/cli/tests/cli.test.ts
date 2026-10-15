@@ -1,6 +1,14 @@
 import { describe, test, expect, beforeEach, afterEach } from "vite-plus/test";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import {
+  mkdtempSync,
+  rmSync,
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  symlinkSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -55,7 +63,7 @@ describe("CLI", () => {
 
   test("writes a JPEG", () => {
     const out = join(tmpDir, "out.jpg");
-    const result = run([EXAMPLE, "--format", "jpg", "--out", out]);
+    const result = run([EXAMPLE, "--format", "jpeg", "--out", out]);
     expect(result.status).toBe(0);
     expect(readFileSync(out).subarray(0, 3).toString("hex")).toBe("ffd8ff");
   });
@@ -63,7 +71,7 @@ describe("CLI", () => {
   test("rejects unsupported formats", () => {
     const result = run([EXAMPLE, "--format", "webp"]);
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain("Allowed choices are png, jpg");
+    expect(result.stderr).toContain("Allowed choices are png, jpeg");
   });
 
   test("writes an image with the specified --width and --height", () => {
@@ -116,6 +124,45 @@ describe("CLI", () => {
     expect(result.status).toBe(0);
     expect(existsSync(join(outDir, "a.png"))).toBe(true);
     expect(existsSync(join(outDir, "b.png"))).toBe(true);
+  });
+
+  test("follows a symlink to an input file", () => {
+    const link = join(tmpDir, "link.xml");
+    symlinkSync(EXAMPLE, link);
+    const result = run([link]);
+    expect(result.status).toBe(0);
+    expect(existsSync(join(tmpDir, "link.png"))).toBe(true);
+  });
+
+  test.each(["nope", "1junk", "", "-0.1", "1.5", "Infinity"])(
+    "rejects --drip-factor %j",
+    (value) => {
+      const result = run([EXAMPLE, "--drips", "--drip-factor", value, "-o", tmpDir]);
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain("Must be a number from 0 to 1.");
+    },
+  );
+
+  test("accepts --drip-factor at its bounds", () => {
+    for (const value of ["0", "1"]) {
+      const result = run([EXAMPLE, "--drips", "--drip-factor", value, "-o", tmpDir]);
+      expect(result.status).toBe(0);
+    }
+  });
+
+  test("refuses to write two inputs to the same output file", () => {
+    const inputs = ["one", "two"].map((dir) => {
+      mkdirSync(join(tmpDir, dir));
+      const input = join(tmpDir, dir, "tag.gml");
+      writeFileSync(input, EXAMPLE_XML);
+      return input;
+    });
+    const outDir = join(tmpDir, "out");
+    mkdirSync(outDir);
+    const result = run([...inputs, "-o", outDir]);
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain('would both be written to "tag.png"');
+    expect(existsSync(join(outDir, "tag.png"))).toBe(false);
   });
 
   test("exits with non-zero when the input file does not exist", () => {

@@ -3,15 +3,16 @@
 This document fixes the v1 boundaries and the implementation direction. It was written
 before the code and still describes features planned for later milestones: transforms,
 `save()`/`restore()`, `globalAlpha`, `ImageData`, and JPEG. The
-[README](./README.md) lists what is implemented today.
+[README](./README.md#compatibility) lists what is implemented today.
 
 The first optimization target is `@gmljs/render`: long, self-crossing polylines with
 round caps and joins, plus a four-edge background polygon. Correctness against Skia is
 the gate; performance work follows measurement.
 
 The package is published as `@gmljs/canvas`. The public classes use the neutral names
-`Canvas` and `CanvasRenderingContext2D`, so the package name does not leak into
-application code.
+`Canvas` and `CanvasContext2D`, so the package name does not leak into
+application code. The context is deliberately not called `CanvasRenderingContext2D`: it
+implements a subset of that API, and the name would also clash with the DOM's global type.
 
 ## Layers and portability
 
@@ -51,7 +52,7 @@ context.moveTo(10, 10);
 context.lineTo(100, 100);
 context.stroke();
 
-const bytes = await canvas.encode({ type: "png" });
+const bytes = await canvas.encode({ format: "png" });
 ```
 
 `Canvas` has settable `width` and `height`. Resizing reallocates a transparent-black
@@ -60,14 +61,15 @@ matching the useful browser behavior. Dimensions must be finite, non-negative sa
 integers whose byte size can be represented safely; invalid or unallocatable dimensions
 throw rather than relying on platform-specific typed-array errors.
 
-`CanvasRenderingContext2D` exposes only the v1 methods and properties in the project
+`CanvasContext2D` exposes only the v1 methods and properties in the project
 brief. Its declarations are structurally compatible with the corresponding DOM members
 where practical, without requiring the DOM type library. `Matrix2D` and `ImageData` are
 small portable value types shaped like the relevant browser objects.
 
 Encoding is deliberately asynchronous and explicit:
 
-- `encode({ type, quality? }): Promise<Uint8Array>` is the canonical method.
+- `encode({ format, quality?, chromaSubsampling? }): Promise<Uint8Array>` is the canonical
+  method. `format` is validated at runtime, and unknown values throw.
 - `toBlob(...)` and `toDataURL(...)` are async conveniences for the `@gmljs/render` adapter.
 - Unsupported encoders fail with a descriptive error; drawing never depends on them.
 
@@ -302,6 +304,15 @@ first profile-guided pass fused PNG filter scoring into one row traversal and sp
 the winning-filter write loop. The second uses native row copies and bounded filter
 sampling while continuing to consider all five standard filters. Measurements and the
 compressed-size tradeoff are recorded in `PERFORMANCE.md`.
+
+## Provenance
+
+All code in this package was written for it, with AI coding assistants, from the
+published descriptions of the algorithms referenced in this document (Anti-Grain
+Geometry's and `stb_truetype`'s cell accumulators, PNG, and baseline JPEG). No source code
+was copied or translated from those projects, so they need no third-party notices. The
+JPEG quantization tables are the example tables from the JPEG standard (ITU-T T.81,
+Annex K).
 
 ## Decisions requiring review
 

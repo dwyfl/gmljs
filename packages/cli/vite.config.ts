@@ -5,5 +5,7 @@ export default defineConfig({
     entry: {
       index: "src/index.ts",
     },
+    // The package is only a command; there is no API to import, so no type declarations.
+    dts: false,
   },
 });

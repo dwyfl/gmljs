@@ -1,6 +1,6 @@
 import { mat3, vec3 } from "gl-matrix";
 import { Environment } from "./base.ts";
-import { GMLTag } from "@gmljs/core";
+import type { GMLTag } from "@gmljs/core";
 
 type Vector3 = [x: number, y: number, z: number];
 

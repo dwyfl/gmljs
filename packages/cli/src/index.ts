@@ -5,12 +5,23 @@ import path from "node:path";
 import packageJson from "../package.json" with { type: "json" };
 import { createGMLImage } from "@gmljs/render/server";
 
+// GML files are rarely more than a few megabytes; this guards against parsing something else.
+const MAX_FILE_SIZE = 32 * 1024 * 1024;
+
 function parseSize(value: string): number {
   const size = Number(value);
   if (!Number.isInteger(size) || size <= 0) {
     throw new InvalidArgumentError("Must be a positive integer.");
   }
   return size;
+}
+
+function parseDripFactor(value: string): number {
+  const factor = value.trim() === "" ? Number.NaN : Number(value);
+  if (!(factor >= 0 && factor <= 1)) {
+    throw new InvalidArgumentError("Must be a number from 0 to 1.");
+  }
+  return factor;
 }
 
 program
@@ -32,11 +43,11 @@ program
     ).hideHelp(),
   )
   .addOption(
-    new Option("-f, --format <format>", "output format").choices(["png", "jpg"]).default("png"),
+    new Option("-f, --format <format>", "output format").choices(["png", "jpeg"]).default("png"),
   )
   .optionsGroup("Effect options")
   .option("--drips", "enable drip effect (experimental)")
-  .option("--drip-factor <value>", "drip factor 0-1 (default 0.2)", (v) => parseFloat(v))
+  .option("--drip-factor <value>", "drip factor 0-1 (default 0.2)", parseDripFactor)
   .parse(process.argv);
 
 const options = program.opts();
@@ -48,12 +59,34 @@ if (out && !fs.existsSync(out) && files.length > 1) {
   process.exit(1);
 }
 
+const outputName = (file: string) =>
+  `${path.basename(file).replace(/\.(?:gml|xml)$/i, "")}.${format}`;
+
+if (out && files.length > 1) {
+  // Files with the same name from different directories would overwrite each other.
+  const seen = new Map<string, string>();
+  for (const file of files) {
+    const name = outputName(file);
+    const other = seen.get(name);
+    if (other !== undefined && path.resolve(other) !== path.resolve(file)) {
+      console.error(`❌ "${other}" and "${file}" would both be written to "${name}".`);
+      process.exit(1);
+    }
+    seen.set(name, file);
+  }
+}
+
 let hasError = false;
 
 for (const file of files) {
   try {
-    if (!fs.existsSync(file) || !fs.lstatSync(file).isFile()) {
+    // statSync follows symlinks, so a link to a file is accepted.
+    const stats = fs.existsSync(file) ? fs.statSync(file) : undefined;
+    if (!stats?.isFile()) {
       throw new Error(`"${file}" is not a file.`);
+    }
+    if (stats.size > MAX_FILE_SIZE) {
+      throw new Error(`"${file}" is larger than ${MAX_FILE_SIZE / 1024 / 1024} MB.`);
     }
     if (out && !fs.existsSync(out) && files.length > 1) {
       throw new Error(`"${out}" is not a directory.`);
@@ -62,14 +95,14 @@ for (const file of files) {
     let outFile = `${file.replace(/\.(?:gml|xml)$/i, "")}.${format}`;
 
     if (out) {
-      const gmlFileExt = `${path.basename(file).replace(/\.(?:gml|xml)$/i, "")}.${format}`;
+      const gmlFileExt = outputName(file);
       if (files.length > 1) {
         // out is a directory
         outFile = path.join(out, gmlFileExt);
       } else {
         // out can be both file/directory
         if (fs.existsSync(out)) {
-          outFile = fs.lstatSync(out).isDirectory() ? path.join(out, gmlFileExt) : out;
+          outFile = fs.statSync(out).isDirectory() ? path.join(out, gmlFileExt) : out;
         } else {
           if (!fs.existsSync(path.dirname(out))) {
             throw new Error(`Cannot write "${out}", directory does not exist.`);
@@ -88,7 +121,7 @@ for (const file of files) {
       clearColor,
       drips: drips ?? false,
       dripFactor,
-      format: format === "jpg" ? "jpeg" : "png",
+      format: format === "jpeg" ? "jpeg" : "png",
     });
 
     fs.writeFileSync(outFile, Buffer.from(image));

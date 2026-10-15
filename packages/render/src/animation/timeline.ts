@@ -1,4 +1,4 @@
-import { GML, GMLTag, GMLStroke, GMLDrawing, GMLPoint } from "@gmljs/core";
+import type { GML, GMLTag, GMLStroke, GMLDrawing, GMLPoint } from "@gmljs/core";
 
 /**
  * A GMLTagTimelineFrame is a precalculated set of values such as timestamp, direction and speed for a point in a GML tag.
@@ -8,8 +8,8 @@ export type GMLTagTimelineFrame = {
   drawing: number; // Index of the drawing
   stroke: number; // Index of the stroke
   point: number; // Index of the point in the stroke
-  t: number; // Timestamp of the frame
-  speed: number; // Speed at this point in "virtual" pixels per second
+  t: number; // Timestamp of the frame, in seconds
+  speed: number; // Speed at this point, in GML coordinate units (usually 0–1) per second
   direction: { x: number; y: number; z: number }; // Direction vector of the stroke at this point
 };
 
@@ -168,7 +168,7 @@ export class GMLTimeline {
         y: len > 0 ? dy / len : 0,
         z: dz,
       },
-      speed: dt > 0 ? (len * 1000) / dt : 0,
+      speed: dt > 0 ? len / dt : 0,
     };
   }
 }

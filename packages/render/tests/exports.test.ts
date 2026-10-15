@@ -16,13 +16,8 @@ describe("Root exports", () => {
   });
 
   test("exports the runtime API", () => {
-    expect(Object.keys(root).sort()).toEqual([
-      "GML",
-      "GMLParseError",
-      "GMLRenderer",
-      "GMLView",
-      "RenderContextBase",
-    ]);
+    // Everything else is type-only: views come from createGMLView.
+    expect(Object.keys(root).sort()).toEqual(["GML", "GMLParseError"]);
   });
 });
 

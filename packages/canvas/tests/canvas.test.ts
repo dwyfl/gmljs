@@ -189,17 +189,27 @@ describe("Encoding", () => {
     expect([...png.data]).toEqual([0, 0, 0, 255]);
   });
 
+  test("rejects unsupported formats instead of mislabeling PNG bytes", async () => {
+    const canvas = new Canvas(1, 1);
+    for (const format of ["gif", "jpg", "image/png", ""] as unknown[]) {
+      const options = { format: format as "png" };
+      await expect(canvas.encode(options)).rejects.toThrow(TypeError);
+      await expect(canvas.toBlob(options)).rejects.toThrow(TypeError);
+      await expect(canvas.toDataURL(options)).rejects.toThrow(TypeError);
+    }
+  });
+
   test("rejects zero-sized images", async () => {
     await expect(new Canvas(0, 1).encode()).rejects.toThrow(RangeError);
-    await expect(new Canvas(1, 0).encode({ type: "jpeg" })).rejects.toThrow(RangeError);
+    await expect(new Canvas(1, 0).encode({ format: "jpeg" })).rejects.toThrow(RangeError);
   });
 
   test("encodes JPEG without a Deflate adapter and labels conveniences", async () => {
     const canvas = new CoreCanvas(2, 2);
     canvas.getContext("2d").fillRect(0, 0, 2, 2);
-    const bytes = await canvas.encode({ type: "jpeg" });
-    const blob = await canvas.toBlob({ type: "jpeg" });
-    const url = await canvas.toDataURL({ type: "jpeg" });
+    const bytes = await canvas.encode({ format: "jpeg" });
+    const blob = await canvas.toBlob({ format: "jpeg" });
+    const url = await canvas.toDataURL({ format: "jpeg" });
     expect([...bytes.subarray(0, 3)]).toEqual([0xff, 0xd8, 0xff]);
     expect(blob.type).toBe("image/jpeg");
     expect(url).toMatch(/^data:image\/jpeg;base64,\/9j\//);
@@ -210,12 +220,12 @@ describe("Encoding", () => {
     const context = canvas.getContext("2d");
     context.fillStyle = "#c23a72";
     context.fillRect(0, 0, 17, 13);
-    const defaults = await canvas.encode({ type: "jpeg" });
-    expect(await canvas.encode({ type: "jpeg", quality: 0.92 })).toEqual(defaults);
+    const defaults = await canvas.encode({ format: "jpeg" });
+    expect(await canvas.encode({ format: "jpeg", quality: 0.92 })).toEqual(defaults);
     for (const quality of [Number.NaN, -1, 2, "0.5"] as unknown[]) {
-      expect(await canvas.encode({ type: "jpeg", quality: quality as number })).toEqual(defaults);
+      expect(await canvas.encode({ format: "jpeg", quality: quality as number })).toEqual(defaults);
     }
-    await expect(canvas.encode({ type: "jpeg", quality: 0 })).resolves.toBeInstanceOf(Uint8Array);
+    await expect(canvas.encode({ format: "jpeg", quality: 0 })).resolves.toBeInstanceOf(Uint8Array);
   });
 
   test("increases JPEG size monotonically with quality", async () => {
@@ -229,7 +239,7 @@ describe("Encoding", () => {
     }
     const sizes: number[] = [];
     for (const quality of [0.1, 0.3, 0.5, 0.7, 0.9, 1]) {
-      sizes.push((await canvas.encode({ type: "jpeg", quality })).length);
+      sizes.push((await canvas.encode({ format: "jpeg", quality })).length);
     }
     expect(sizes).toEqual([...sizes].sort((a, b) => a - b));
   });
@@ -240,10 +250,10 @@ describe("Encoding", () => {
     red.getContext("2d").fillStyle = "rgba(255, 0, 0, 0.5)";
     red.getContext("2d").fillRect(0, 0, 8, 8);
     const { default: jpeg } = await import("jpeg-js");
-    const transparentJpeg = jpeg.decode(await transparent.encode({ type: "jpeg" }), {
+    const transparentJpeg = jpeg.decode(await transparent.encode({ format: "jpeg" }), {
       useTArray: true,
     });
-    const redBytes = await red.encode({ type: "jpeg", chromaSubsampling: "4:4:4" });
+    const redBytes = await red.encode({ format: "jpeg", chromaSubsampling: "4:4:4" });
     const redDecoded = jpeg.decode(redBytes, { useTArray: true });
     expect([...transparentJpeg.data.subarray(0, 3)]).toEqual([0, 0, 0]);
     expect(redDecoded.data[0]).toBeGreaterThanOrEqual(126);
@@ -259,8 +269,8 @@ describe("Encoding", () => {
       scene.getContext("2d").fillStyle = "white";
       scene.getContext("2d").fillRect(4, 4, 8, 8);
     }
-    expect(await transparentScene.encode({ type: "jpeg" })).toEqual(
-      await blackScene.encode({ type: "jpeg" }),
+    expect(await transparentScene.encode({ format: "jpeg" })).toEqual(
+      await blackScene.encode({ format: "jpeg" }),
     );
   });
 });

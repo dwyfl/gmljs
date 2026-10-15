@@ -15,6 +15,7 @@
     "noUncheckedIndexedAccess": true,
     "erasableSyntaxOnly": true,
     "declaration": true,
+    "stripInternal": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "esModuleInterop": true,

@@ -50,6 +50,21 @@ describe("parseXml()", () => {
     expect(() => parseXml(xml)).toThrow(GMLParseError);
   });
 
+  it.each([
+    ['<!DOCTYPE root [<!ENTITY a "EXPANDED">]><root>&a;</root>', "internal entity"],
+    [
+      '\uFEFF<?xml version="1.0"?>\n<!-- c --><!DOCTYPE root SYSTEM "x.dtd"><root/>',
+      "external DTD",
+    ],
+    ["<!DOCTYPE root><root/>", "empty DOCTYPE"],
+  ])("rejects DOCTYPE declarations: %j (%s)", (xml) => {
+    expect(() => parseXml(xml)).toThrow("DOCTYPE declarations are not supported");
+  });
+
+  it("allows DOCTYPE-like text inside the document", () => {
+    expect(parseXml("<root><!-- <!DOCTYPE x> --></root>").documentElement?.tagName).toBe("root");
+  });
+
   it("describes the problem in the message", () => {
     expect(() => parseXml("<root x=1/>")).toThrow(/^Invalid XML: attribute "1" missed quot/);
   });

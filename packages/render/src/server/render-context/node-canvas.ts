@@ -1,6 +1,10 @@
 import type { Canvas, CanvasRenderingContext2D } from "canvas";
 import { requireOptional } from "../require-optional.ts";
-import { RenderContextBase, type RenderImageOptions } from "../../render/context.ts";
+import {
+  RenderContextBase,
+  resolveImageOptions,
+  type RenderImageOptions,
+} from "../../render/context.ts";
 import { applyRenderProps, type RenderProps } from "../../render/props/index.ts";
 
 export class RenderContextNodeCanvas extends RenderContextBase {
@@ -71,19 +75,19 @@ export class RenderContextNodeCanvas extends RenderContextBase {
     applyRenderProps(this.ctx, props);
   }
 
-  renderToDataURL({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<string> {
-    const dataURL =
-      type === "png"
-        ? this.canvas.toDataURL("image/png")
-        : this.canvas.toDataURL("image/jpeg", quality);
-    return Promise.resolve(dataURL);
+  async renderToDataURL(options?: RenderImageOptions): Promise<string> {
+    const { format, quality } = resolveImageOptions(options);
+    return format === "png"
+      ? this.canvas.toDataURL("image/png")
+      : this.canvas.toDataURL("image/jpeg", quality);
   }
 
-  renderToBlob({ type = "jpeg", quality }: RenderImageOptions = {}): Promise<Blob> {
+  async renderToBlob(options?: RenderImageOptions): Promise<Blob> {
+    const { format, quality } = resolveImageOptions(options);
     const buffer =
-      type === "png"
+      format === "png"
         ? this.canvas.toBuffer("image/png")
         : this.canvas.toBuffer("image/jpeg", { quality });
-    return Promise.resolve(new Blob([new Uint8Array(buffer)], { type: `image/${type}` }));
+    return new Blob([new Uint8Array(buffer)], { type: `image/${format}` });
   }
 }

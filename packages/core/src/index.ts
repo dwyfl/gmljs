@@ -7,7 +7,12 @@ import type { GMLTag } from "./gml/nodes/tag/index.ts";
 import { GMLNodeName, type GMLParseOptions } from "./gml/types.ts";
 import type { GMLParseError } from "./errors.ts";
 import type { GMLData } from "./gml/data.ts";
-import { createGmlNodeFromTagName, parseGML } from "./gml/util/index.ts";
+import {
+  createGMLDocumentFromPointArrays,
+  createGmlNodeFromTagName,
+  parseGML,
+  type GMLPointValues,
+} from "./gml/util/index.ts";
 
 export { GMLParseError } from "./errors.ts";
 export type {
@@ -20,49 +25,25 @@ export type {
   GMLStrokeData,
   GMLTagData,
 } from "./gml/data.ts";
-export {
-  GMLNodeAttribute,
-  GMLNodeName,
-  isGMLNodeAttribute,
-  isGMLNodeName,
-  type GMLAttributeDefinition,
-  type GMLChildNodeDefinition,
-  type GMLNodeAttributeValue,
-  type GMLNodeChildPath,
-  type GMLNodeDefinition,
-  type GMLNodeValue,
-  type GMLObjectRepresentation,
-  type GMLParseContext,
-  type GMLParseOptions,
-} from "./gml/types.ts";
-export type { GMLNodeAtPath, GMLNodeTypeMap } from "./gml/type-map.ts";
-export {
-  createGMLDocumentFromPointArrays,
-  createGmlNode,
-  createGmlNodeFromTagName,
-  createGmlNodeFromXml,
-  parseGML,
-  type GMLPointValues,
-} from "./gml/util/index.ts";
+export type { GMLParseOptions } from "./gml/types.ts";
+export type { GMLPointValues } from "./gml/util/index.ts";
+export type { GMLRGBA } from "./gml/nodes/point/color.ts";
 
-export { GMLNode } from "./gml/node.ts";
-export { GMLUnknownNode } from "./gml/unknown.ts";
-export { GMLLeafNode } from "./gml/nodes/leaf/index.ts";
-export { GMLLeafNodeParent } from "./gml/nodes/leaf/parent.ts";
-export { GMLFloatNode } from "./gml/nodes/leaf/float.ts";
-export { GMLIntegerNode } from "./gml/nodes/leaf/integer.ts";
-export { GMLDocument } from "./gml/nodes/document/index.ts";
-export { GMLRoot } from "./gml/nodes/root/index.ts";
-export { GMLTag } from "./gml/nodes/tag/index.ts";
-export { GMLHeader } from "./gml/nodes/header/index.ts";
-export { GMLClient } from "./gml/nodes/client/index.ts";
-export { GMLEnvironment } from "./gml/nodes/environment/index.ts";
-export { GMLDrawing } from "./gml/nodes/drawing/index.ts";
-export { GMLStroke } from "./gml/nodes/stroke/index.ts";
-export { GML3DPoint } from "./gml/nodes/point/base.ts";
-export { GMLPoint } from "./gml/nodes/point/index.ts";
-export { GMLColor, type GMLRGBA } from "./gml/nodes/point/color.ts";
-export { GMLBrush } from "./gml/nodes/brush/index.ts";
+// The document tree that GML's getters return. Nodes are created by parsing, so the
+// classes are exported as types only.
+export type { GMLNode } from "./gml/node.ts";
+export type { GMLUnknownNode } from "./gml/unknown.ts";
+export type { GMLDocument } from "./gml/nodes/document/index.ts";
+export type { GMLRoot } from "./gml/nodes/root/index.ts";
+export type { GMLTag } from "./gml/nodes/tag/index.ts";
+export type { GMLHeader } from "./gml/nodes/header/index.ts";
+export type { GMLClient } from "./gml/nodes/client/index.ts";
+export type { GMLEnvironment } from "./gml/nodes/environment/index.ts";
+export type { GMLDrawing } from "./gml/nodes/drawing/index.ts";
+export type { GMLStroke } from "./gml/nodes/stroke/index.ts";
+export type { GMLPoint } from "./gml/nodes/point/index.ts";
+export type { GMLColor } from "./gml/nodes/point/color.ts";
+export type { GMLBrush } from "./gml/nodes/brush/index.ts";
 
 export class GML {
   #doc: GMLDocument;
@@ -75,6 +56,18 @@ export class GML {
       typeof str === "string"
         ? parseGML(str, options)
         : createGmlNodeFromTagName(GMLNodeName.DOCUMENT);
+  }
+  /**
+   * Creates a document with one tag and one drawing, holding one stroke per array of points.
+   * Pass `screenBounds` to record the coordinate space the points were drawn in.
+   */
+  static fromPoints(
+    strokes: readonly (readonly GMLPointValues[])[],
+    options: { screenBounds?: { x: number; y: number } } = {},
+  ): GML {
+    const gml = new GML();
+    gml.#doc = createGMLDocumentFromPointArrays(strokes, options);
+    return gml;
   }
   init(str: string, options?: GMLParseOptions) {
     this.#doc = parseGML(str, options);

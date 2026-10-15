@@ -6,7 +6,7 @@ import { Stroker, type LineCap, type LineJoin } from "../stroke/stroker.ts";
 
 const DEFAULT_COLOR: RgbaColor = { r: 0, g: 0, b: 0, a: 255 };
 
-export class CanvasRenderingContext2D {
+export class CanvasContext2D {
   private buffer: PixelBuffer;
   private fillColor: RgbaColor = DEFAULT_COLOR;
   private fillStyleValue = "#000000";

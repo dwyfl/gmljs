@@ -44,13 +44,13 @@ describe("RenderContextSkiaCanvas", () => {
   test.each([
     ["png", "89504e47"],
     ["jpeg", "ffd8ff"],
-  ] as const)("renderToBlob encodes %s", async (type, magic) => {
+  ] as const)("renderToBlob encodes %s", async (format, magic) => {
     const blob = await new RenderContextSkiaCanvas(10, 10).renderToBlob({
-      type,
+      format,
     });
     const bytes = Buffer.from(await blob.arrayBuffer());
     expect(bytes.toString("hex").startsWith(magic)).toBe(true);
-    expect(blob.type).toBe(`image/${type}`);
+    expect(blob.type).toBe(`image/${format}`);
   });
 });
 
@@ -61,22 +61,34 @@ describe("RenderContextGmljsCanvas", () => {
     );
   });
 
-  test("renderToBlob encodes jpeg by default", async () => {
+  test("renderToBlob encodes png by default", async () => {
     const blob = await new RenderContextGmljsCanvas(10, 10).renderToBlob();
     const bytes = Buffer.from(await blob.arrayBuffer());
-    expect(bytes.toString("hex").startsWith("ffd8ff")).toBe(true);
-    expect(blob.type).toBe("image/jpeg");
+    expect(bytes.toString("hex").startsWith("89504e47")).toBe(true);
+    expect(blob.type).toBe("image/png");
+  });
+
+  test("rejects unsupported formats and qualities", async () => {
+    const context = new RenderContextGmljsCanvas(10, 10);
+    await expect(context.renderToBlob({ format: "gif" as "png" })).rejects.toThrow(TypeError);
+    await expect(context.renderToDataURL({ format: "jpg" as "jpeg" })).rejects.toThrow(TypeError);
+    await expect(context.renderToBlob({ format: "jpeg", quality: Number.NaN })).rejects.toThrow(
+      RangeError,
+    );
+    await expect(context.renderToBlob({ format: "jpeg", quality: 2 })).rejects.toThrow(RangeError);
   });
 
   test("renderToDataURL encodes jpeg", async () => {
-    const dataURL = await new RenderContextGmljsCanvas(10, 10).renderToDataURL();
+    const dataURL = await new RenderContextGmljsCanvas(10, 10).renderToDataURL({
+      format: "jpeg",
+    });
     expect(dataURL).toMatch(/^data:image\/jpeg;base64,\/9j\//);
   });
 
   test("round-trips jpeg", async () => {
     const context = new RenderContextGmljsCanvas(13, 17);
     context.clear("#315ca8");
-    const blob = await context.renderToBlob({ type: "jpeg", quality: 0.92 });
+    const blob = await context.renderToBlob({ format: "jpeg", quality: 0.92 });
     const image = await loadImage(Buffer.from(await blob.arrayBuffer()));
     expect([image.width, image.height]).toEqual([13, 17]);
   });
@@ -85,7 +97,7 @@ describe("RenderContextGmljsCanvas", () => {
     const context = new RenderContextGmljsCanvas(10, 10);
     context.width = 20;
     context.height = 5;
-    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ type: "png" }));
+    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ format: "png" }));
     expect([pixels.width, pixels.height]).toEqual([20, 5]);
   });
 
@@ -97,7 +109,7 @@ describe("RenderContextGmljsCanvas", () => {
     context.moveTo(10, 10);
     context.lineTo(30, 10);
     context.stroke();
-    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ type: "png" }));
+    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ format: "png" }));
     // Past the ends on the center line: inside the round cap.
     expect(pixels.at(7, 10).r).toBeLessThan(64);
     expect(pixels.at(32, 10).r).toBeLessThan(64);
@@ -136,9 +148,9 @@ describe("RenderContextGmljsCanvas", () => {
     expect(mismatched / ink).toBeLessThan(0.01);
   });
 
-  test("createGMLImage defaults to jpeg", async () => {
+  test("createGMLImage defaults to png", async () => {
     const image = await createGMLImage("<gml></gml>", { width: 10, height: 10 });
-    expect(Buffer.from(image).toString("hex").startsWith("ffd8ff")).toBe(true);
+    expect(Buffer.from(image).toString("hex").startsWith("89504e47")).toBe(true);
   });
 });
 
@@ -146,18 +158,18 @@ describe("RenderContextPureImage", () => {
   test.each([
     ["png", "89504e47"],
     ["jpeg", "ffd8ff"],
-  ] as const)("renderToBlob encodes %s", async (type, magic) => {
+  ] as const)("renderToBlob encodes %s", async (format, magic) => {
     const blob = await new RenderContextPureImage(10, 10).renderToBlob({
-      type,
+      format,
     });
     const bytes = Buffer.from(await blob.arrayBuffer());
     expect(bytes.toString("hex").startsWith(magic)).toBe(true);
-    expect(blob.type).toBe(`image/${type}`);
+    expect(blob.type).toBe(`image/${format}`);
   });
 
   test("renderToDataURL encodes png", async () => {
     const dataURL = await new RenderContextPureImage(10, 10).renderToDataURL({
-      type: "png",
+      format: "png",
     });
     expect(dataURL).toMatch(/^data:image\/png;base64,iVBORw0KGgo/);
   });
@@ -166,7 +178,7 @@ describe("RenderContextPureImage", () => {
     const context = new RenderContextPureImage(10, 10);
     context.width = 20;
     context.height = 5;
-    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ type: "png" }));
+    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ format: "png" }));
     expect([pixels.width, pixels.height]).toEqual([20, 5]);
   });
 
@@ -180,7 +192,7 @@ describe("RenderContextPureImage", () => {
     context.lineTo(35, 5);
     context.lineTo(5, 35);
     context.stroke();
-    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ type: "png" }));
+    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ format: "png" }));
     // pureimage's own stroke() fills with the even-odd rule, leaving the crossing white.
     expect(pixels.at(20, 20).r).toBeLessThan(64);
   });
@@ -193,7 +205,7 @@ describe("RenderContextPureImage", () => {
     context.moveTo(10, 10);
     context.lineTo(30, 10);
     context.stroke();
-    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ type: "png" }));
+    const pixels = await pixelReaderfromDataURL(await context.renderToBlob({ format: "png" }));
     // Past the ends on the center line: inside the cap.
     expect(pixels.at(7, 10).r).toBeLessThan(64);
     expect(pixels.at(32, 10).r).toBeLessThan(64);

@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest supported version (engines: >=22.18 for development) and current releases.
+        node: ["22", "24", "26"]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          node-version: ${{ matrix.node }}
+          cache: true
+
+      - run: vp check
+      - run: vp run -r build
+      - run: vp run -r test
+
+  package:
+    name: Check packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          node-version: "24"
+          cache: true
+
+      - run: vp run -r build
+      - name: publint
+        run: for p in core canvas render cli; do vpx publint@0.3.25 "packages/$p"; done
+      - name: Are the types wrong
+        run: |
+          for p in core canvas render; do
+            vpx @arethetypeswrong/cli@0.18.5 --pack "packages/$p" --profile esm-only
+          done

@@ -5,9 +5,12 @@
   "scripts": {
     "ready": "vp check && vp run -r build && vp run -r test",
     "dev": "vp run -r --parallel dev",
-    "prepare": "vp config"
+    "prepare": "vp config",
+    "changeset": "changeset",
+    "release": "vp run ready && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "catalog:",
     "vite-plus": "catalog:"
   },
   "devEngines": {
