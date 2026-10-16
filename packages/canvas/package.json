@@ -53,7 +53,7 @@
     "dev": "vp pack --watch",
     "test": "vp test",
     "check": "vp check",
-    "prepublishOnly": "vp run build"
+    "prepublishOnly": "vp pack"
   },
   "devDependencies": {
     "@types/node": "catalog:",

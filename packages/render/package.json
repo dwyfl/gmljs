@@ -51,7 +51,7 @@
     "bench": "node scripts/bench.ts",
     "bench:gml": "node scripts/gml-bench.ts",
     "examples:gml": "node scripts/gml-examples.ts",
-    "prepublishOnly": "vp run build"
+    "prepublishOnly": "vp pack"
   },
   "dependencies": {
     "@gmljs/canvas": "workspace:^",
