@@ -8,7 +8,7 @@ import { GML_DATA, renderGml, RenderContextSkiaReference } from "./helpers/gml-c
 import { compareImages, decodePng, pixelHash } from "./helpers/image-metrics.ts";
 
 const documents = readdirSync(GML_DATA)
-  .filter((name) => name.endsWith(".xml"))
+  .filter((name) => name.startsWith("example") && name.endsWith(".xml"))
   .sort();
 
 describe("gmljs-canvas compared with skia-canvas", () => {
@@ -44,7 +44,7 @@ describe("gmljs-canvas compared with skia-canvas", () => {
   }
 
   test("414 meets the strict stroke-accuracy targets", async () => {
-    await expectStrictStrokeAccuracy(join(GML_DATA, "414.gml"));
+    await expectStrictStrokeAccuracy(join(GML_DATA, "414.xml"));
   });
 
   test.each([
@@ -65,32 +65,32 @@ describe("gmljs-canvas compared with skia-canvas", () => {
     ],
     [
       "414",
-      join(GML_DATA, "414.gml"),
+      join(GML_DATA, "414.xml"),
       "4c105aaf9b0eca9fb9a0bbcf4179616a6c976dcfc5119cf43b4824d2368b9f9a",
     ],
     [
       "409",
-      join(GML_DATA, "409.gml"),
+      join(GML_DATA, "409.xml"),
       "33d5d2958754c6daa1b309d161347eda10a997dbf29910d8bf9166650cd63709",
     ],
     [
       "158",
-      join(GML_DATA, "158.gml"),
+      join(GML_DATA, "158.xml"),
       "987ea02f5e3e43d892dd63ab41a6871f7f6a323aeb669316745e296280c90ce0",
     ],
     [
       "20312",
-      join(GML_DATA, "20312.gml"),
+      join(GML_DATA, "20312.xml"),
       "7b9e306ac579fd8949faa0bfce3a723934cdd80f6993f3d5e3747d9c664426b0",
     ],
     [
       "19938",
-      join(GML_DATA, "19938.gml"),
+      join(GML_DATA, "19938.xml"),
       "aeca4af16262f4667c630a68604e01141452686aa44cf24d4c2b17fa4d7a25ee",
     ],
     [
       "18476",
-      join(GML_DATA, "18476.gml"),
+      join(GML_DATA, "18476.xml"),
       "908b6cfc9aef496dd5ab5c5540d80c6383ed6e92f86044574c996315381bc064",
     ],
   ])("%s matches its round-geometry pixel hash", async (_name, path, hash) => {

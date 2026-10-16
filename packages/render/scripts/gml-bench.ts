@@ -285,10 +285,10 @@ function writeReport(
 
 function defaultCorpus(): DocumentInput[] {
   const examples = readdirSync(GML_DATA)
-    .filter((name) => name.endsWith(".xml"))
+    .filter((name) => name.startsWith("example") && name.endsWith(".xml"))
     .sort()
     .map((name) => documentInput(join(GML_DATA, name)));
-  const real = ["414.gml", "409.gml", "158.gml", "20312.gml", "19938.gml", "18476.gml"].map(
+  const real = ["414.xml", "409.xml", "158.xml", "20312.xml", "19938.xml", "18476.xml"].map(
     (name) => documentInput(join(GML_DATA, name)),
   );
   return [...examples, ...real];

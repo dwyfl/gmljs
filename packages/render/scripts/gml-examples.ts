@@ -13,7 +13,7 @@ rmSync(outputDirectory, { recursive: true, force: true });
 mkdirSync(outputDirectory, { recursive: true });
 
 const documents = readdirSync(GML_DATA)
-  .filter((name) => name.endsWith(".xml"))
+  .filter((name) => name.startsWith("example") && name.endsWith(".xml"))
   .sort();
 
 for (const document of documents) {

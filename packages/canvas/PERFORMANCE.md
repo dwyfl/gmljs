@@ -48,8 +48,8 @@ the operation and profile wall times both fall. Corpus pixel hashes remain uncha
 ## Real-document performance
 
 The corpus contains the three non-empty gmlrender examples and six real tags. The
-truncated `109.gml` was replaced with `20312.gml` (74 strokes, 852 points), `19938.gml`
-(58 strokes, 3,145 points), and `18476.gml` (354 single-point strokes). The last tag is
+truncated `109.gml` was replaced with `20312.xml` (74 strokes, 852 points), `19938.xml`
+(58 strokes, 3,145 points), and `18476.xml` (354 single-point strokes). The last tag is
 blank in every backend and isolates the fixed cost of an empty paint.
 
 | Document      |  Original | Bounded raster | Round geometry | Sparse sweep | Node draw | Sparse at 2048×1536 |
@@ -64,14 +64,14 @@ blank in every backend and isolates the fixed cost of an empty paint.
 | 19938         | 114.24 ms |        6.44 ms |        4.43 ms |      3.27 ms |   4.03 ms |             6.10 ms |
 | 18476         | 648.11 ms |        1.92 ms |        1.92 ms |      0.54 ms |   0.33 ms |             1.14 ms |
 
-`414.gml` is now 33.3× faster than the original and remains below the 10 ms draw target.
-The sparse sweep makes the legitimate full-canvas background cheap as well: `18476.gml`
+`414.xml` is now 33.3× faster than the original and remains below the 10 ms draw target.
+The sparse sweep makes the legitimate full-canvas background cheap as well: `18476.xml`
 drops from 1.92 ms to 0.54 ms, below the approximate 1 ms goal, while all 354 empty
 strokes still return before touching the raster workspace. `example002` falls below its
 3 ms draw target for the first time. At 2048×1536, simple and spatially broad documents
 improve by 2.0× to 6.9× over the round-geometry step.
 
-The outline change reduces a completed `414.gml` render from 1,447 contours and 15,028
+The outline change reduces a completed `414.xml` render from 1,447 contours and 15,028
 points to 93 contours and 3,504 points: 15.6× fewer contours and 4.3× fewer vertices.
 Its 60-frame draw-and-readback animation improves from 26.57 to 25.48 ms/frame, versus
 21.26 ms for node-canvas and 18.30 ms for skia-canvas in the same run. The draw-plus-PNG
@@ -80,7 +80,7 @@ end-to-end path.
 
 The round correction adds no vertices. Five-run draw medians move between -5% and +12%
 relative to the outline step, without a consistent relationship to round-arc count. In a
-matched 100-draw instrumentation run, `414.gml` moves from 5.19 ms to 5.08 ms and stroker
+matched 100-draw instrumentation run, `414.xml` moves from 5.19 ms to 5.08 ms and stroker
 time from 0.12 ms to 0.11 ms. The change is therefore performance-neutral within run
 noise; the correction avoids the roughly 2× edge-count cost of finer tessellation.
 
@@ -146,7 +146,7 @@ mean error 0.22, maximum error 8, and no pixels over 16 against the 16× box-fil
 reference. Against native-resolution Skia it still has +4.39% ink bias, but maximum error
 falls to 63; the supersampled result shows that native Skia underfills this focused case.
 
-`414.gml` now meets every strict compatibility target and its formerly expected-failing
+`414.xml` now meets every strict compatibility target and its formerly expected-failing
 test is a normal passing test. `example001` and `example002` still miss one or more strict
 limits, chiefly maximum per-pixel error, and remain explicit expected failures.
 
@@ -249,7 +249,7 @@ PNG time improves by 1.47× to 1.64×. Both PNG-only and draw-plus-PNG are now w
 Sampling increases file size by at most 3.3% over exhaustive scoring in this corpus, and
 every tscanvas file remains no larger than its node-canvas counterpart.
 
-Matched Node v24.22.0 CPU profiles of three `414.gml` renders show where the time moved:
+Matched Node v24.22.0 CPU profiles of three `414.xml` renders show where the time moved:
 
 | PNG state        | Total samples | `chooseFilter` | Unpremultiply | Filter write |
 | ---------------- | ------------: | -------------: | ------------: | -----------: |

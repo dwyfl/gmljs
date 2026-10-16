@@ -242,7 +242,7 @@ const dataDir = fileURLToPath(new URL("../tests/data/", import.meta.url));
 const documents = files.length
   ? files
   : readdirSync(dataDir)
-      .filter((name) => name.endsWith(".xml"))
+      .filter((name) => name.startsWith("example") && name.endsWith(".xml"))
       .sort()
       .map((name) => join(dataDir, name));
 
