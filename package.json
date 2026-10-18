@@ -6,8 +6,7 @@
     "ready": "vp run -r build && vp check && vp run -r test",
     "dev": "vp run -r --parallel dev",
     "prepare": "vp config",
-    "changeset": "changeset",
-    "release": "vp run ready && changeset publish"
+    "changeset": "changeset"
   },
   "devDependencies": {
     "@changesets/cli": "catalog:",

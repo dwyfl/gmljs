@@ -1,7 +1,7 @@
 # @gmljs/render
 
 - It renders [GML (Graffiti Markup Language)](https://en.wikipedia.org/wiki/Graffiti_Markup_Language) documents to images and videos.
-- It's a JavaScript library with full TypeScript support, for Node.js and browsers.
+- It's a TypeScript library for Node.js and browsers.
 - It's open source.
 
 ## Installation

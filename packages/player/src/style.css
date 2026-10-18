@@ -1,0 +1,220 @@
+/* @gmljs/player — override the custom properties to theme the player. */
+
+.gmlp-root {
+  --gmlp-bg: #fff;
+  --gmlp-fg: #71717a;
+  --gmlp-border: rgb(0 0 0 / 10%);
+  --gmlp-button-border: #d4d4d8;
+  --gmlp-button-hover: #f4f4f5;
+  --gmlp-button-active-bg: #f4f4f5;
+  --gmlp-button-active-fg: #52525b;
+  --gmlp-button-active-border: #a1a1aa;
+  --gmlp-track: #e4e4e7;
+  --gmlp-track-fill: #808080;
+  --gmlp-track-frames: rgb(128 128 128 / 20%);
+  --gmlp-focus: #3b82f6;
+  --gmlp-overlay-bg: rgb(0 0 0 / 5%);
+  --gmlp-overlay-hover: rgb(0 0 0 / 10%);
+  --gmlp-overlay-fg: rgb(0 0 0 / 20%);
+  --gmlp-controls-height: 56px;
+  /* Space around the drawing inside the stage. */
+  --gmlp-stage-inset: 2.5%;
+  --gmlp-font: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: var(--gmlp-bg);
+  color: var(--gmlp-fg);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.gmlp-root:focus {
+  outline: none;
+}
+
+.gmlp-root:focus-visible {
+  outline: 2px solid var(--gmlp-focus);
+  outline-offset: -2px;
+}
+
+.gmlp-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  cursor: pointer;
+}
+
+.gmlp-canvas-wrap {
+  position: absolute;
+  inset: var(--gmlp-stage-inset);
+}
+
+.gmlp-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gmlp-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.gmlp-overlay-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--gmlp-overlay-bg);
+  color: var(--gmlp-overlay-fg);
+  transition: background-color 150ms;
+}
+
+.gmlp-stage:hover .gmlp-overlay-button {
+  background: var(--gmlp-overlay-hover);
+}
+
+.gmlp-controls {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+  height: var(--gmlp-controls-height);
+  padding: 0 16px;
+  border-top: 1px solid var(--gmlp-border);
+  background: var(--gmlp-bg);
+}
+
+.gmlp-button {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--gmlp-button-border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--gmlp-fg);
+  cursor: pointer;
+  transition:
+    background-color 150ms,
+    border-color 150ms;
+}
+
+.gmlp-button:hover {
+  background: var(--gmlp-button-hover);
+}
+
+.gmlp-button:focus-visible {
+  outline: 2px solid var(--gmlp-focus);
+  outline-offset: 2px;
+}
+
+.gmlp-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+.gmlp-button--active {
+  border-color: var(--gmlp-button-active-border);
+  background: var(--gmlp-button-active-bg);
+  color: var(--gmlp-button-active-fg);
+}
+
+.gmlp-time {
+  flex-shrink: 0;
+  padding: 0 4px;
+  font-family: var(--gmlp-font);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.gmlp-seekbar {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  height: 32px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.gmlp-seekbar:focus {
+  outline: none;
+}
+
+.gmlp-seekbar:focus-visible .gmlp-track {
+  outline: 2px solid var(--gmlp-focus);
+  outline-offset: 4px;
+}
+
+.gmlp-seekbar--disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.gmlp-track {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--gmlp-track);
+  transition: height 150ms;
+}
+
+.gmlp-seekbar:hover .gmlp-track {
+  height: 8px;
+}
+
+.gmlp-track-fill,
+.gmlp-track-frames {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 9999px;
+}
+
+.gmlp-track-fill {
+  background: var(--gmlp-track-fill);
+}
+
+.gmlp-track-frames {
+  background: var(--gmlp-track-frames);
+}
+
+.gmlp-preview {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 8px;
+  transform: translateX(-50%);
+  overflow: hidden;
+  border: 1px solid var(--gmlp-button-border);
+  border-radius: 4px;
+  background: var(--gmlp-bg);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  pointer-events: none;
+}
+
+.gmlp-preview--hidden {
+  visibility: hidden;
+}
+
+.gmlp-preview-canvas {
+  display: block;
+}

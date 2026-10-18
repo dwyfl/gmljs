@@ -1,6 +1,6 @@
 # @gmljs/canvas
 
-A portable Canvas 2D rasterizer written in strict TypeScript.
+A portable 2D rasterizer written in TypeScript.
 
 Current features include:
 

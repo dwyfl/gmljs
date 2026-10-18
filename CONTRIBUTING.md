@@ -14,7 +14,11 @@ vp run ready   # check (format, lint, types), build, and test everything
 ```
 
 The packages depend on each other's built output, so run `vp run -r build` after changing
-`@gmljs/core` or `@gmljs/canvas`, before testing `@gmljs/render` or `@gmljs/cli`.
+`@gmljs/core` or `@gmljs/canvas`, before testing `@gmljs/render`, `@gmljs/player` or `@gmljs/cli`.
+
+To work on the player interactively, run `vp run @gmljs/player#dev:interactive`. It rebuilds
+the player on every change and serves a demo page with sample documents, which reloads after
+each rebuild.
 
 The render and canvas tests compare against [skia-canvas](https://github.com/samizdatco/skia-canvas)
 and [node-canvas](https://github.com/Automattic/node-canvas), which install native binaries.
@@ -27,6 +31,7 @@ If either fails to install on your platform, open an issue.
 | `packages/core`   | Parses GML (XML) into a document tree. Node and browser builds.    |
 | `packages/canvas` | A pure-TypeScript Canvas 2D rasterizer. See its `ARCHITECTURE.md`. |
 | `packages/render` | Renders GML to images and video, with several canvas backends.     |
+| `packages/player` | The `GMLPlayer` React component.                                   |
 | `packages/cli`    | The `gmljs` command.                                               |
 
 ## Pull requests
@@ -44,8 +49,12 @@ prerelease mode (`.changeset/pre.json`), so versions are `1.0.0-beta.N`, publish
 the `beta` dist-tag.
 
 ```bash
-vp run changeset version   # apply pending changesets: bump versions, write changelogs
+vp run changeset version     # apply pending changesets: bump versions, write changelogs
 git commit -am "chore: release"
-vp run release             # check, build, test, then publish what isn't on npm yet
+vp run ready                 # build, check, test
+pnpm exec changeset publish  # publish what isn't on npm yet
 git push --follow-tags
 ```
+
+Run `changeset publish` directly rather than through `vp run`: it needs an interactive
+terminal to ask for the npm one-time password.

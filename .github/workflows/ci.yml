@@ -43,9 +43,10 @@ jobs:
 
       - run: vp run -r build
       - name: publint
-        run: for p in core canvas render cli; do vpx publint@0.3.25 "packages/$p"; done
+        run: for p in core canvas render player cli; do vpx publint@0.3.25 "packages/$p"; done
       - name: Are the types wrong
+        # attw can't resolve CSS entrypoints (@gmljs/player/style.css).
         run: |
-          for p in core canvas render; do
-            vpx @arethetypeswrong/cli@0.18.5 --pack "packages/$p" --profile esm-only
+          for p in core canvas render player; do
+            vpx @arethetypeswrong/cli@0.18.5 --pack "packages/$p" --profile esm-only --exclude-entrypoints style.css
           done

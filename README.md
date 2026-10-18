@@ -8,6 +8,7 @@ TypeScript libraries and tools for [GML (Graffiti Markup Language)](https://en.w
 | ---------------------------------- | -------------------------------------------------------------------- |
 | [`@gmljs/core`](packages/core)     | Parse GML documents.                                                 |
 | [`@gmljs/render`](packages/render) | Render GML documents to images and videos.                           |
+| [`@gmljs/player`](packages/player) | A React component that plays GML documents, with playback controls.  |
 | [`@gmljs/canvas`](packages/canvas) | A no-dependency Canvas 2D rasterizer.                                |
 | [`@gmljs/cli`](packages/cli)       | The `gmljs` CLI command, which renders GML documents to image files. |
 

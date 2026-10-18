@@ -1,0 +1,67 @@
+{
+  "name": "@gmljs/player",
+  "version": "1.0.0-beta.0",
+  "description": "React player component for GML documents.",
+  "homepage": "https://github.com/dwyfl/gmljs",
+  "bugs": {
+    "url": "https://github.com/dwyfl/gmljs/issues"
+  },
+  "license": "MIT",
+  "author": "Gustav Peterz <gpeterz@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dwyfl/gmljs.git",
+    "directory": "packages/player"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    },
+    "./style.css": "./dist/style.css",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "dev:interactive": "vp pack && vp dev playground --config playground/vite.config.ts",
+    "test": "vp test",
+    "check": "vp check",
+    "prepublishOnly": "vp pack"
+  },
+  "dependencies": {
+    "@gmljs/render": "workspace:^"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "jsdom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "^18.3.0 || ^19.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
