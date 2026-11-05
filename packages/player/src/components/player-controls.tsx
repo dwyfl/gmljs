@@ -5,6 +5,7 @@ import { PlayerButton } from "./player-button.tsx";
 import { Seekbar } from "./seekbar.tsx";
 import { TimeDisplay } from "./time-display.tsx";
 import { FullscreenExitIcon, FullscreenIcon, PauseIcon, PlayIcon, RepeatIcon } from "./icons.tsx";
+import { selectIsLooping, selectIsPlaying, selectReady } from "../utils/selectors.ts";
 
 export interface PlayerControlsProps {
   /** Show a thumbnail when hovering the seekbar. */
@@ -14,10 +15,6 @@ export interface PlayerControlsProps {
   onToggleFullscreen?: () => void;
   className?: string;
 }
-
-const selectIsPlaying = (state: { isPlaying: boolean }) => state.isPlaying;
-const selectIsLooping = (state: { isLooping: boolean }) => state.isLooping;
-const selectReady = (state: { ready: boolean }) => state.ready;
 
 /** The control bar: play/pause, loop, time, seekbar and fullscreen. */
 export function PlayerControls({

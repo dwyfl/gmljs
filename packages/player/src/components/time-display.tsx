@@ -1,10 +1,7 @@
 import { usePlayerState } from "../hooks/use-player-state.ts";
 import { formatTime } from "../utils/format-time.ts";
 import { classNames } from "../utils/class-names.ts";
-
-// Whole seconds, so the display re-renders once per second rather than every frame.
-const selectCurrentSeconds = (state: { currentTime: number }) => Math.floor(state.currentTime);
-const selectTotalSeconds = (state: { totalTime: number }) => Math.floor(state.totalTime);
+import { selectCurrentSeconds, selectTotalSeconds } from "../utils/selectors.ts";
 
 export function TimeDisplay({ className }: { className?: string }) {
   const currentTime = usePlayerState(selectCurrentSeconds);

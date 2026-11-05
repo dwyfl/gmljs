@@ -191,4 +191,12 @@ describe("settings", () => {
     expect(view.setRenderOptions).toHaveBeenCalledWith({ background: "black" });
     expect(controller.renderOptions).toEqual({ background: "black" });
   });
+
+  test("setRenderOptions merges across calls, like the view does", () => {
+    const { controller, view } = setup();
+    controller.setRenderOptions({ color: "red" });
+    controller.setRenderOptions({ background: "black" });
+    expect(view.setRenderOptions).toHaveBeenLastCalledWith({ background: "black" });
+    expect(controller.renderOptions).toEqual({ color: "red", background: "black" });
+  });
 });

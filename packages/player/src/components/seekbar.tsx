@@ -11,6 +11,12 @@ import { usePlayerState } from "../hooks/use-player-state.ts";
 import { usePointerDrag } from "../hooks/use-pointer-drag.ts";
 import { formatTime } from "../utils/format-time.ts";
 import { classNames } from "../utils/class-names.ts";
+import {
+  selectCurrentSeconds,
+  selectFramePosition,
+  selectPosition,
+  selectReady,
+} from "../utils/selectors.ts";
 import { SeekbarPreview } from "./seekbar-preview.tsx";
 
 export interface SeekbarProps {
@@ -21,11 +27,6 @@ export interface SeekbarProps {
 
 /** Delay before the preview hides after the pointer leaves, in ms. */
 const PREVIEW_HIDE_DELAY = 300;
-
-const selectPosition = (state: { position: number }) => state.position;
-const selectFramePosition = (state: { framePosition: number }) => state.framePosition;
-const selectReady = (state: { ready: boolean }) => state.ready;
-const selectCurrentSeconds = (state: { currentTime: number }) => Math.floor(state.currentTime);
 
 interface Hover {
   position: number;

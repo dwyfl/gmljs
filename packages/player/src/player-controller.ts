@@ -85,6 +85,7 @@ export class PlayerController {
     return this._view?.gml ?? this._gml;
   }
 
+  /** The options accumulated across calls to setRenderOptions(); used to seed new views. */
   get renderOptions(): Partial<RenderOptions> {
     return this._renderOptions;
   }
@@ -153,8 +154,9 @@ export class PlayerController {
     this._emit();
   }
 
+  /** Merges into the current options, same as the view's own setRenderOptions. */
   setRenderOptions(renderOptions: Partial<RenderOptions>): void {
-    this._renderOptions = renderOptions;
+    this._renderOptions = { ...this._renderOptions, ...renderOptions };
     this._view?.setRenderOptions(renderOptions);
     this._view?.draw();
   }

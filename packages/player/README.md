@@ -108,6 +108,8 @@ export function MinimalPlayer({ gml }: { gml: string }) {
 
 `usePlayerState(selector)` only re-renders when the selected value changes, so components that don't show the time don't re-render on every frame.
 
+`useKeyboardShortcuts(ref, controller, options)` is also exported, so a custom layout can wire up the same shortcuts `GMLPlayer` uses (see [`src/hooks/use-keyboard-shortcuts.ts`](src/hooks/use-keyboard-shortcuts.ts)).
+
 ## Development
 
 ```

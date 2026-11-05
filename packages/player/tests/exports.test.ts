@@ -15,6 +15,7 @@ test("exports the runtime API", () => {
     "TimeDisplay",
     "formatTime",
     "useGMLPlayer",
+    "useKeyboardShortcuts",
     "usePlayerController",
     "usePlayerState",
   ]);
