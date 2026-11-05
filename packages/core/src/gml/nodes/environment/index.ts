@@ -27,6 +27,28 @@ export class GMLEnvironment extends GMLNode {
   getRotation() {
     return this.getChild(GMLNodeName.ENVIRONMENT_ROTATION)?.getXYZ();
   }
+  getOrigin() {
+    return this.getChild(GMLNodeName.ENVIRONMENT_ORIGIN)?.getXYZ();
+  }
+  getRealScale() {
+    return this.getChild(GMLNodeName.ENVIRONMENT_REAL_SCALE)?.getXYZ();
+  }
+  setScreenBounds(width: number, height: number): void {
+    this.setPoint(GMLNodeName.ENVIRONMENT_SCREEN_BOUNDS, width, height);
+  }
+  setOffset(x: number, y: number, z?: number): void {
+    this.setPoint(GMLNodeName.ENVIRONMENT_OFFSET, x, y, z);
+  }
+  /** Sets the spec's vaguely-defined <rotation> point; unrelated to rotate() below. */
+  setRotation(x: number, y: number, z?: number): void {
+    this.setPoint(GMLNodeName.ENVIRONMENT_ROTATION, x, y, z);
+  }
+  setOrigin(x: number, y: number, z?: number): void {
+    this.setPoint(GMLNodeName.ENVIRONMENT_ORIGIN, x, y, z);
+  }
+  setRealScale(x: number, y: number, z?: number): void {
+    this.setPoint(GMLNodeName.ENVIRONMENT_REAL_SCALE, x, y, z);
+  }
   /**
    * Rotates the document's declared orientation clockwise by swinging the <up> vector
    * through the same angle; the renderer already rotates content so <up> points to
@@ -53,9 +75,14 @@ export class GMLEnvironment extends GMLNode {
       });
     }
   }
-  private getOrCreatePoint(
-    name: typeof GMLNodeName.ENVIRONMENT_UP | typeof GMLNodeName.ENVIRONMENT_SCREEN_BOUNDS,
-  ): GML3DPoint {
+  private setPoint(name: GMLEnvPointName, x: number, y: number, z?: number): void {
+    this.getOrCreatePoint(name).setValues({
+      [GMLNodeName.POINT_X]: x,
+      [GMLNodeName.POINT_Y]: y,
+      ...(z !== undefined && { [GMLNodeName.POINT_Z]: z }),
+    });
+  }
+  private getOrCreatePoint(name: GMLEnvPointName): GML3DPoint {
     const existing = this.getChild(name);
     if (existing) {
       return existing;
@@ -74,13 +101,21 @@ export class GMLEnvironment extends GMLNode {
       up: this.getUp(),
       offset: this.getOffset(),
       rotation: this.getRotation(),
-      origin: this.getChild(GMLNodeName.ENVIRONMENT_ORIGIN)?.getXYZ(),
-      realScale: this.getChild(GMLNodeName.ENVIRONMENT_REAL_SCALE)?.getXYZ(),
+      origin: this.getOrigin(),
+      realScale: this.getRealScale(),
       audio: text(GMLNodeName.ENVIRONMENT_AUDIO),
       background: text(GMLNodeName.ENVIRONMENT_BACKGROUND),
     });
   }
 }
+
+type GMLEnvPointName =
+  | typeof GMLNodeName.ENVIRONMENT_UP
+  | typeof GMLNodeName.ENVIRONMENT_SCREEN_BOUNDS
+  | typeof GMLNodeName.ENVIRONMENT_OFFSET
+  | typeof GMLNodeName.ENVIRONMENT_ROTATION
+  | typeof GMLNodeName.ENVIRONMENT_ORIGIN
+  | typeof GMLNodeName.ENVIRONMENT_REAL_SCALE;
 
 export const GMLEnvironmentDefinition: GMLNodeDefinition<GMLEnvironment> = {
   name: GMLNodeName.ENVIRONMENT,

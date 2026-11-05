@@ -78,3 +78,62 @@ describe("GMLEnvironment.rotate()", () => {
     expect(reparsed.getScreenBounds()).toEqual(env.getScreenBounds());
   });
 });
+
+describe("GMLEnvironment setters", () => {
+  it("setScreenBounds() sets width/height", () => {
+    const env = createGmlNodeFromTagName(GMLNodeName.ENVIRONMENT);
+    env.setScreenBounds(640, 480);
+    expect(env.getScreenBounds()).toEqual([640, 480]);
+  });
+
+  it("setOffset() sets x/y/z, creating <offset> if missing", () => {
+    const env = createGmlNodeFromTagName(GMLNodeName.ENVIRONMENT);
+    expect(env.getOffset()).toBeUndefined();
+    env.setOffset(1, 2, 3);
+    expect(env.getOffset()).toEqual([1, 2, 3]);
+  });
+
+  it("setOffset() without z leaves an existing z untouched", () => {
+    const env = createGmlNodeFromTagName(GMLNodeName.ENVIRONMENT);
+    env.setOffset(1, 2, 3);
+    env.setOffset(4, 5);
+    expect(env.getOffset()).toEqual([4, 5, 3]);
+  });
+
+  it("setRotation() sets the <rotation> point", () => {
+    const env = createGmlNodeFromTagName(GMLNodeName.ENVIRONMENT);
+    expect(env.getRotation()).toBeUndefined();
+    env.setRotation(10, 20, 30);
+    expect(env.getRotation()).toEqual([10, 20, 30]);
+  });
+
+  it("setOrigin() sets the <origin> point", () => {
+    const env = createGmlNodeFromTagName(GMLNodeName.ENVIRONMENT);
+    expect(env.getOrigin()).toBeUndefined();
+    env.setOrigin(0.1, 0.2, 0.3);
+    expect(env.getOrigin()).toEqual([0.1, 0.2, 0.3]);
+  });
+
+  it("setRealScale() sets the <realScale> point", () => {
+    const env = createGmlNodeFromTagName(GMLNodeName.ENVIRONMENT);
+    expect(env.getRealScale()).toBeUndefined();
+    env.setRealScale(1000, 600, 0);
+    expect(env.getRealScale()).toEqual([1000, 600, 0]);
+  });
+
+  it("round-trips every setter through toString()/parse", () => {
+    const env = createGmlNodeFromTagName(GMLNodeName.ENVIRONMENT);
+    env.setScreenBounds(640, 480);
+    env.setOffset(1, 2, 3);
+    env.setRotation(4, 5, 6);
+    env.setOrigin(7, 8, 9);
+    env.setRealScale(10, 11, 12);
+
+    const reparsed = createGmlNodeFromXml(env.toString()) as GMLEnvironment;
+    expect(reparsed.getScreenBounds()).toEqual(env.getScreenBounds());
+    expect(reparsed.getOffset()).toEqual(env.getOffset());
+    expect(reparsed.getRotation()).toEqual(env.getRotation());
+    expect(reparsed.getOrigin()).toEqual(env.getOrigin());
+    expect(reparsed.getRealScale()).toEqual(env.getRealScale());
+  });
+});
