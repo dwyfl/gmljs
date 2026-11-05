@@ -1,5 +1,5 @@
 import type { MouseEventHandler, ReactNode } from "react";
-import { classNames } from "../class-names.ts";
+import { classNames } from "../utils/class-names.ts";
 
 export interface PlayerButtonProps {
   onClick?: MouseEventHandler<HTMLButtonElement>;

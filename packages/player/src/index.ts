@@ -1,4 +1,4 @@
-export { GMLPlayer, type GMLPlayerProps } from "./gml-player.tsx";
+export { GMLPlayer, type GMLPlayerProps } from "./player.tsx";
 export {
   PlayerController,
   type PlayerControllerOptions,
@@ -16,4 +16,4 @@ export { PlayerButton, type PlayerButtonProps } from "./components/player-button
 export { Seekbar, type SeekbarProps } from "./components/seekbar.tsx";
 export { SeekbarPreview, type SeekbarPreviewProps } from "./components/seekbar-preview.tsx";
 export { TimeDisplay } from "./components/time-display.tsx";
-export { formatTime } from "./format-time.ts";
+export { formatTime } from "./utils/format-time.ts";

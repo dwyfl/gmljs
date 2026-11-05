@@ -1,7 +1,7 @@
 import { useRef, type CSSProperties } from "react";
 import type { GML, RenderOptions } from "@gmljs/render";
 import { PlayerContext } from "./context.ts";
-import { classNames } from "./class-names.ts";
+import { classNames } from "./utils/class-names.ts";
 import { useGMLPlayer } from "./hooks/use-gml-player.ts";
 import { useFullscreen } from "./hooks/use-fullscreen.ts";
 import { useKeyboardShortcuts, type KeyboardMode } from "./hooks/use-keyboard-shortcuts.ts";

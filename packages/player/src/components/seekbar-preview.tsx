@@ -1,7 +1,8 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import type { GMLView } from "@gmljs/render";
 import { usePlayerController } from "../context.ts";
-import { classNames } from "../class-names.ts";
+import { classNames } from "../utils/class-names.ts";
+import { getPixelRatio, toDevicePixels } from "../utils/pixel-ratio.ts";
 
 export interface SeekbarPreviewProps {
   /** The hovered position, 0..1. */
@@ -43,6 +44,10 @@ export function SeekbarPreview({
   const aspect =
     mainContext && mainContext.width > 0 ? mainContext.height / mainContext.width : DEFAULT_ASPECT;
   const height = Math.max(1, Math.round(width * aspect));
+  // The canvas bitmap in device pixels, so the thumbnail is sharp on high-density displays.
+  const ratio = getPixelRatio();
+  const pixelWidth = toDevicePixels(width, ratio);
+  const pixelHeight = toDevicePixels(height, ratio);
 
   // One view per document, created on the preview's canvas.
   useEffect(() => {
@@ -53,8 +58,8 @@ export function SeekbarPreview({
     const view = controller.createView(gml, {
       type: "html-canvas",
       canvas,
-      width,
-      height,
+      width: pixelWidth,
+      height: pixelHeight,
       ...controller.renderOptions,
     });
     viewRef.current = view;
@@ -71,8 +76,8 @@ export function SeekbarPreview({
   }, [controller, gml]);
 
   useEffect(() => {
-    viewRef.current?.setSize(width, height);
-  }, [width, height]);
+    viewRef.current?.setSize(pixelWidth, pixelHeight);
+  }, [pixelWidth, pixelHeight]);
 
   // Draw at most once per frame, at the latest hovered position.
   useEffect(() => {
@@ -88,7 +93,7 @@ export function SeekbarPreview({
         view.draw();
       }
     });
-  }, [position, visible, width, height]);
+  }, [position, visible, pixelWidth, pixelHeight]);
 
   const half = width / 2;
   const left = Math.max(half, Math.min(trackWidth - half, position * trackWidth));

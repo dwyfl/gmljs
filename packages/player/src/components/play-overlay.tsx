@@ -1,5 +1,5 @@
 import { usePlayerState } from "../hooks/use-player-state.ts";
-import { classNames } from "../class-names.ts";
+import { classNames } from "../utils/class-names.ts";
 import { PlayIcon } from "./icons.tsx";
 
 const selectVisible = (state: { ready: boolean; hasStarted: boolean }) =>

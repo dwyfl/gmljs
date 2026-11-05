@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { formatTime } from "../src/format-time.ts";
+import { formatTime } from "../src/utils/format-time.ts";
 
 test.each([
   [0, "0:00"],

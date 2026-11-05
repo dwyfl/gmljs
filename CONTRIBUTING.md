@@ -16,7 +16,7 @@ vp run ready   # check (format, lint, types), build, and test everything
 The packages depend on each other's built output, so run `vp run -r build` after changing
 `@gmljs/core` or `@gmljs/canvas`, before testing `@gmljs/render`, `@gmljs/player` or `@gmljs/cli`.
 
-To work on the player interactively, run `vp run @gmljs/player#dev:interactive`. It rebuilds
+To work on the player interactively, run `vp run --filter @gmljs/player dev:interactive`. It rebuilds
 the player on every change and serves a demo page with sample documents, which reloads after
 each rebuild.
 

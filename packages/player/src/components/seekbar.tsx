@@ -9,8 +9,8 @@ import {
 import { usePlayerController } from "../context.ts";
 import { usePlayerState } from "../hooks/use-player-state.ts";
 import { usePointerDrag } from "../hooks/use-pointer-drag.ts";
-import { formatTime } from "../format-time.ts";
-import { classNames } from "../class-names.ts";
+import { formatTime } from "../utils/format-time.ts";
+import { classNames } from "../utils/class-names.ts";
 import { SeekbarPreview } from "./seekbar-preview.tsx";
 
 export interface SeekbarProps {

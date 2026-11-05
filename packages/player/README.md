@@ -111,7 +111,7 @@ export function MinimalPlayer({ gml }: { gml: string }) {
 ## Development
 
 ```
-vp run @gmljs/player#dev:interactive
+vp run --filter @gmljs/player dev:interactive
 ```
 
 This rebuilds the library on every change and serves a demo page (`playground/`) that loads the built output, with sample documents, drag-and-drop for your own `.xml` files and toggles for the props. Add `?autoplay` to the URL to start playing on load.

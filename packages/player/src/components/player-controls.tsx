@@ -1,6 +1,6 @@
 import { usePlayerController } from "../context.ts";
 import { usePlayerState } from "../hooks/use-player-state.ts";
-import { classNames } from "../class-names.ts";
+import { classNames } from "../utils/class-names.ts";
 import { PlayerButton } from "./player-button.tsx";
 import { Seekbar } from "./seekbar.tsx";
 import { TimeDisplay } from "./time-display.tsx";

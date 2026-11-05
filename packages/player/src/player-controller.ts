@@ -98,7 +98,10 @@ export class PlayerController {
 
   getSnapshot = (): PlayerState => this._state;
 
-  /** Creates a view drawing into the canvas. A previously attached view is unloaded. */
+  /**
+   * Creates a view drawing into the canvas, sized in canvas (device) pixels. A previously
+   * attached view is unloaded.
+   */
   attach(canvas: HTMLCanvasElement, gml: string | GML, width: number, height: number): void {
     this.detach();
     this._gml = gml;
@@ -156,6 +159,7 @@ export class PlayerController {
     this._view?.draw();
   }
 
+  /** Sets the canvas size in canvas (device) pixels. */
   resize(width: number, height: number): void {
     const view = this._view;
     if (!view || width <= 0 || height <= 0) {

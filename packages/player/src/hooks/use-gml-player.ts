@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import type { GML, RenderOptions } from "@gmljs/render";
 import { PlayerController, type CreateViewFn } from "../player-controller.ts";
+import { toDevicePixels } from "../utils/pixel-ratio.ts";
 
 export interface UseGMLPlayerOptions {
   gml: string | GML;
@@ -47,8 +48,8 @@ export function useGMLPlayer(
     controller.attach(
       canvas,
       initial.current.gml,
-      canvas.clientWidth || DEFAULT_WIDTH,
-      canvas.clientHeight || DEFAULT_HEIGHT,
+      toDevicePixels(canvas.clientWidth || DEFAULT_WIDTH),
+      toDevicePixels(canvas.clientHeight || DEFAULT_HEIGHT),
     );
     if (initial.current.autoPlay) {
       controller.play();
