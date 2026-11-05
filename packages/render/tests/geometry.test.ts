@@ -1,4 +1,5 @@
 import { describe, test, expect } from "vite-plus/test";
+import { GML } from "@gmljs/core";
 import { GMLView } from "../src/view.ts";
 import { GMLRenderer } from "../src/render/index.ts";
 import { MockContext } from "./helpers/mock-context.ts";
@@ -159,6 +160,45 @@ describe("Rotated documents (Fat Tag / DustTag: 480×320, up = (1,0,0))", () => 
     ).stroke;
     expect(to!.x - from!.x).toBeCloseTo(0.25 * 320, 2);
     expect(to!.y - from!.y).toBeCloseTo(0, 2);
+  });
+});
+
+describe("GMLEnvironment.rotate() (the --rotate CLI option's underlying mechanism)", () => {
+  // Starts from a plain 480×320 document (default up, no rotation), then applies rotate()
+  // the same way the CLI does before handing the document to the renderer.
+  function rotated(degrees: 90 | 180 | 270) {
+    const gmlDoc = new GML(gml({ bounds: bounds(480, 320) }));
+    gmlDoc.getTags()[0]?.getEnvironment()?.rotate(degrees);
+    return gmlDoc.toString();
+  }
+
+  test("rotate(90): a rightward stroke becomes a downward stroke, with screenBounds swapped", () => {
+    // The document's own bounds are swapped by rotate(), so a 320×480 canvas now fits exactly.
+    const { stroke, document } = render(rotated(90), 320, 480);
+    expectRect(document, [0, 0, 320, 480]);
+    const [from, to] = stroke;
+    expect(from!.x).toBeCloseTo(160, 2);
+    expect(from!.y).toBeCloseTo(240, 2);
+    expect(to!.x).toBeCloseTo(160, 2);
+    expect(to!.y - from!.y).toBeCloseTo(0.25 * 480, 2);
+  });
+
+  test("rotate(180): a rightward stroke becomes a leftward stroke, screenBounds unchanged", () => {
+    // screenBounds stays 480×320, so a matching 480×320 canvas fits exactly, as unrotated.
+    const { stroke, document } = render(rotated(180), 480, 320);
+    expectRect(document, [0, 0, 480, 320]);
+    const [from, to] = stroke;
+    expect(from!.y).toBeCloseTo(to!.y!, 2);
+    expect(to!.x - from!.x).toBeCloseTo(-0.25 * 480, 2);
+  });
+
+  test("rotate(270): a rightward stroke becomes an upward stroke, with screenBounds swapped", () => {
+    const { stroke, document } = render(rotated(270), 320, 480);
+    expectRect(document, [0, 0, 320, 480]);
+    const [from, to] = stroke;
+    expect(from!.x).toBeCloseTo(160, 2);
+    expect(to!.x).toBeCloseTo(160, 2);
+    expect(to!.y - from!.y).toBeCloseTo(-0.25 * 480, 2);
   });
 });
 
