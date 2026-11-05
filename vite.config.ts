@@ -22,5 +22,10 @@ export default defineConfig({
   },
   run: {
     cache: true,
+    tasks: {
+      // Uncached, so it runs in the terminal and can show its prompts. Cached tasks and
+      // scripts get no terminal input.
+      changeset: { command: "changeset", cache: false },
+    },
   },
 });
