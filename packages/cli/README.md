@@ -26,6 +26,7 @@ Options:
   -h, --height <size>          force image height (default: 768)
   -b, --background <hexcolor>  background color (default: "white")
   -f, --format <format>        output format (choices: "png", "jpeg", default: "png")
+  --rotate <degrees>           rotate the document clockwise before rendering: 90, 180, or 270
   --help                       print help text
 
 Effect options
@@ -42,6 +43,8 @@ $ gmljs ~/nyc/dondi.gml --format jpeg
 ✅ Rendered 1024x768 jpeg file: ~/nyc/dondi.jpg
 $ gmljs ~/nyc/cope2.gml -w 1920 -h 1080 --background '#aaddff'
 ✅ Rendered 1920x1080 png file: ~/nyc/cope2.png
+$ gmljs ~/nyc/sideways.gml --rotate 90
+✅ Rendered 1024x768 png file: ~/nyc/sideways.png
 ```
 
 ## Notes

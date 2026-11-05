@@ -244,6 +244,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@gmljs/core':
+        specifier: workspace:^
+        version: link:../core
       '@gmljs/render':
         specifier: workspace:^
         version: link:../render

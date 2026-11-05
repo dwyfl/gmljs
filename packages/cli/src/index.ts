@@ -3,6 +3,7 @@ import { program, Option, InvalidArgumentError } from "commander";
 import fs from "node:fs";
 import path from "node:path";
 import packageJson from "../package.json" with { type: "json" };
+import { GML } from "@gmljs/core";
 import { createGMLImage } from "@gmljs/render/server";
 
 // GML files are rarely more than a few megabytes; this guards against parsing something else.
@@ -22,6 +23,14 @@ function parseDripFactor(value: string): number {
     throw new InvalidArgumentError("Must be a number from 0 to 1.");
   }
   return factor;
+}
+
+function parseRotate(value: string): 90 | 180 | 270 {
+  const degrees = Number(value);
+  if (degrees !== 90 && degrees !== 180 && degrees !== 270) {
+    throw new InvalidArgumentError("Must be 90, 180, or 270.");
+  }
+  return degrees;
 }
 
 program
@@ -45,13 +54,18 @@ program
   .addOption(
     new Option("-f, --format <format>", "output format").choices(["png", "jpeg"]).default("png"),
   )
+  .option(
+    "--rotate <degrees>",
+    "rotate the document clockwise before rendering: 90, 180, or 270",
+    parseRotate,
+  )
   .optionsGroup("Effect options")
   .option("--drips", "enable drip effect (experimental)")
   .option("--drip-factor <value>", "drip factor 0-1 (default 0.2)", parseDripFactor)
   .parse(process.argv);
 
 const options = program.opts();
-const { format, width, height, out, background, clearColor, drips, dripFactor } = options;
+const { format, width, height, out, background, clearColor, drips, dripFactor, rotate } = options;
 const files = program.args;
 
 if (out && !fs.existsSync(out) && files.length > 1) {
@@ -114,7 +128,23 @@ for (const file of files) {
 
     const document = fs.readFileSync(file, "utf8");
 
-    const image = await createGMLImage(document, {
+    let input: string | GML = document;
+    if (rotate) {
+      const gml = new GML(document);
+      for (const tag of gml.getTags()) {
+        const environment = tag.getEnvironment();
+        if (environment) {
+          environment.rotate(rotate);
+        } else {
+          console.error(
+            `⚠️ "${file}" has a tag with no <environment>; --rotate has no effect on it.`,
+          );
+        }
+      }
+      input = gml;
+    }
+
+    const image = await createGMLImage(input, {
       width,
       height,
       background,

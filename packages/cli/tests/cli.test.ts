@@ -19,6 +19,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI = join(__dirname, "../src/index.ts");
 const EXAMPLE = join(__dirname, "data/example001.xml");
 const EXAMPLE_XML = readFileSync(EXAMPLE, "utf8");
+// A 100x100 document (matching the canvas size used below, so contentScale is 1:1) with a
+// single short, thick stroke near the right-center edge, for testing --rotate's direction.
+const ROTATE_SQUARE = join(__dirname, "data/rotate-square.xml");
+
+function isDark(png: PNG, x: number, y: number): boolean {
+  const i = (png.width * y + x) * 4;
+  const r = png.data[i]!;
+  const g = png.data[i + 1]!;
+  const b = png.data[i + 2]!;
+  return r < 50 && g < 50 && b < 50;
+}
 
 function run(args: string[]) {
   return spawnSync("node", ["--experimental-strip-types", CLI, ...args], {
@@ -169,5 +180,43 @@ describe("CLI", () => {
     const result = run([join(tmpDir, "no-such-file.xml")]);
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain("is not a file");
+  });
+
+  test.each([["45"], ["0"], ["-90"], ["abc"]])("rejects an invalid --rotate (%s)", (value) => {
+    const result = run([EXAMPLE, "--rotate", value]);
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("Must be 90, 180, or 270.");
+  });
+
+  test("--rotate 90 turns the drawing 90° clockwise", () => {
+    const before = join(tmpDir, "before.png");
+    const after = join(tmpDir, "after.png");
+    run([ROTATE_SQUARE, "-o", before, "-w", "100", "-h", "100"]);
+    run([ROTATE_SQUARE, "-o", after, "-w", "100", "-h", "100", "--rotate", "90"]);
+
+    const beforePng = PNG.sync.read(readFileSync(before));
+    const afterPng = PNG.sync.read(readFileSync(after));
+
+    // Unrotated: the stroke sits at the right-center of the canvas.
+    expect(isDark(beforePng, 90, 50)).toBe(true);
+    expect(isDark(beforePng, 50, 90)).toBe(false);
+
+    // Rotated 90° clockwise: content at the right edge moves to the bottom edge.
+    expect(isDark(afterPng, 50, 90)).toBe(true);
+    expect(isDark(afterPng, 90, 50)).toBe(false);
+  });
+
+  test("--rotate 180 turns the drawing upside down", () => {
+    const before = join(tmpDir, "before.png");
+    const after = join(tmpDir, "after.png");
+    run([ROTATE_SQUARE, "-o", before, "-w", "100", "-h", "100"]);
+    run([ROTATE_SQUARE, "-o", after, "-w", "100", "-h", "100", "--rotate", "180"]);
+
+    const beforePng = PNG.sync.read(readFileSync(before));
+    const afterPng = PNG.sync.read(readFileSync(after));
+
+    expect(isDark(beforePng, 90, 50)).toBe(true);
+    expect(isDark(afterPng, 10, 50)).toBe(true);
+    expect(isDark(afterPng, 90, 50)).toBe(false);
   });
 });

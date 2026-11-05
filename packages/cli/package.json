@@ -28,6 +28,7 @@
     "prepublishOnly": "vp pack"
   },
   "dependencies": {
+    "@gmljs/core": "workspace:^",
     "@gmljs/render": "workspace:^",
     "commander": "^15.0.0"
   },
