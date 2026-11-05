@@ -30,6 +30,66 @@ describe("public entry", () => {
     expect(new GML(gml.toString()).toString()).toBe(gml.toString());
   });
 
+  it("creates documents from points with no options unchanged", () => {
+    const strokes = [
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+      ],
+    ];
+    expect(GML.fromPoints(strokes).toString()).toBe(GML.fromPoints(strokes, {}).toString());
+  });
+
+  it("attaches a brush width to the first stroke", () => {
+    const gml = GML.fromPoints([[{ x: 0, y: 0 }], [{ x: 1, y: 1 }]], { brush: { width: 4 } });
+    const strokes = gml.getStrokes();
+    expect(strokes[0]?.isDrawing()).toBe(true);
+    expect(strokes[0]?.getBrush()?.getWidth()).toBe(4);
+    expect(strokes[1]?.getBrush()).toBeUndefined();
+  });
+
+  it("attaches a brush color to the first stroke", () => {
+    const gml = GML.fromPoints([[{ x: 0, y: 0 }]], {
+      brush: { width: 2, color: [10, 20, 30, 128] },
+    });
+    expect(gml.getStroke(0, 0, 0)?.getBrush()?.getColor()).toStrictEqual([10, 20, 30, 128]);
+  });
+
+  it("overrides client name/version", () => {
+    const gml = GML.fromPoints([[{ x: 0, y: 0 }]], {
+      client: { name: "WritersBench", version: "1.0" },
+    });
+    expect(gml.getClient()?.toData()).toMatchObject({ name: "WritersBench", version: "1.0" });
+  });
+
+  it("keeps client defaults when client option is omitted", () => {
+    const withBounds = GML.fromPoints([[{ x: 0, y: 0 }]], { screenBounds: { x: 1, y: 1 } });
+    expect(withBounds.getClient()).toBeUndefined();
+    expect(GML.fromPoints([[{ x: 0, y: 0 }]]).getClient()).toBeUndefined();
+  });
+
+  it("round-trips brush, client and screenBounds through toString/parse", () => {
+    const gml = GML.fromPoints(
+      [
+        [
+          { x: 0, y: 0 },
+          { x: 1, y: 1 },
+        ],
+      ],
+      {
+        screenBounds: { x: 800, y: 600 },
+        brush: { width: 6, color: [1, 2, 3, 4] },
+        client: { name: "WritersBench", version: "1.0" },
+      },
+    );
+    const reparsed = new GML(gml.toString());
+    expect(reparsed.getSize()).toStrictEqual([800, 600]);
+    expect(reparsed.getClient()?.toData()).toMatchObject({ name: "WritersBench", version: "1.0" });
+    expect(reparsed.getStroke(0, 0, 0)?.getBrush()?.getWidth()).toBe(6);
+    expect(reparsed.getStroke(0, 0, 0)?.getBrush()?.getColor()).toStrictEqual([1, 2, 3, 4]);
+    expect(reparsed.toString()).toBe(gml.toString());
+  });
+
   it("runs the README example", () => {
     const gml = new GML(`
 <gml spec='1.0'>

@@ -11,6 +11,7 @@ import {
   createGMLDocumentFromPointArrays,
   createGmlNodeFromTagName,
   parseGML,
+  type GMLFromPointsOptions,
   type GMLPointValues,
 } from "./gml/util/index.ts";
 
@@ -26,7 +27,7 @@ export type {
   GMLTagData,
 } from "./gml/data.ts";
 export type { GMLParseOptions } from "./gml/types.ts";
-export type { GMLPointValues } from "./gml/util/index.ts";
+export type { GMLFromPointsOptions, GMLPointValues } from "./gml/util/index.ts";
 export type { GMLRGBA } from "./gml/nodes/point/color.ts";
 
 // The document tree that GML's getters return. Nodes are created by parsing, so the
@@ -59,11 +60,12 @@ export class GML {
   }
   /**
    * Creates a document with one tag and one drawing, holding one stroke per array of points.
-   * Pass `screenBounds` to record the coordinate space the points were drawn in.
+   * Pass `screenBounds` to record the coordinate space the points were drawn in, `brush` to
+   * give the drawing a stroke width/color, and `client` to override the client name/version.
    */
   static fromPoints(
     strokes: readonly (readonly GMLPointValues[])[],
-    options: { screenBounds?: { x: number; y: number } } = {},
+    options: GMLFromPointsOptions = {},
   ): GML {
     const gml = new GML();
     gml.#doc = createGMLDocumentFromPointArrays(strokes, options);
